@@ -3,41 +3,42 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarGroup,
-    SidebarHeader, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem,
+    SidebarHeader, SidebarMenu, SidebarMenuButton,
+    SidebarMenuItem, SidebarProvider, SidebarRail,
 } from "@/components/ui/sidebar"
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@radix-ui/react-dropdown-menu";
-import {ChevronDown} from "lucide-react";
+import {Clock, Axe, BookUser} from "lucide-react";
+import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
+import Image from "next/image";
 
 export function AppSidebar() {
     return (
-        <Sidebar>
-                <SidebarHeader>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <SidebarMenuButton>
-                                        Select Workspace
-                                        <ChevronDown className="ml-auto" />
-                                    </SidebarMenuButton>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-                                    <DropdownMenuItem>
-                                        <span>Acme Inc</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarHeader>
-            <SidebarContent>
-                <SidebarGroup about={"Test"}>
-                <SidebarMenuBadge>sasd</SidebarMenuBadge>
-                <SidebarMenuItem>test</SidebarMenuItem>
-                    </SidebarGroup >
-                <SidebarGroup />
-            </SidebarContent>
-            <SidebarFooter />
-        </Sidebar>
-    )
+        <div className="h-full w-16">
+            <SidebarHeader>
+                <Image
+                    className="dark:invert justify-center pl-2"
+                    src="/logo_small.png"
+                    alt="Next.js logo"
+                    width={64}
+                    height={64}
+                    priority
+                />
+            </SidebarHeader>
+            <ResizablePanelGroup orientation="vertical" className="min-h-lvh max-w-[64px]">
+                <ResizablePanel defaultSize="75%">
+                    <SidebarMenuItem className={"justify-center p-5"}>
+                        <Clock size={24}/>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem className={"justify-center pl-5"}>
+                        <BookUser size={24}/>
+                    </SidebarMenuItem>
+                </ResizablePanel>
+                <ResizableHandle />
+                <ResizablePanel defaultSize="25%">
+                    <div className="flex h-full items-end justify-center p-6">
+                        <Axe/>
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </div>
+        )
 }

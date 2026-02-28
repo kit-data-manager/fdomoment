@@ -8,8 +8,6 @@ const config = {
 	"./node_modules/flowbite-react/**/*.js"
   ],
     plugins: [
-      require('@tailwindcss/forms'),
-      require("tailwindcss-animate"),
   ]
 }
 
