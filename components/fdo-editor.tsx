@@ -22,13 +22,15 @@ const Section: React.FC<SectionProps> = ({ title, children, onRemove, onAdd, onT
       {children}
       {isLast && (
         <div className="section-actions flex justify-end items-center gap-2">
-          <button 
+          {title != "Basic" && (
+          <button
             onClick={onRemove}
-            className="btn btn-ghost btn-sm"
-            title="Remove section"
+            className="btn btn-ghost btn-sm mt-2"
+            title="Remove module"
           >
             <Icon icon="mdi:delete" width="20" height="20" />
           </button>
+          )}
           {availableTypes.length > 0 && (
             <select 
               onChange={(e) => {
@@ -41,7 +43,7 @@ const Section: React.FC<SectionProps> = ({ title, children, onRemove, onAdd, onT
               className="select select-bordered select-sm"
               title="Select section type to add"
             >
-              <option value="">Add Section</option>
+              <option value="">Add Module After</option>
               {availableTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
               ))}
@@ -49,12 +51,12 @@ const Section: React.FC<SectionProps> = ({ title, children, onRemove, onAdd, onT
           )}
         </div>
       )}
-      {!isLast && (
+      {!isLast && title != "Basic" && (
         <div className="section-actions flex justify-end items-center gap-2">
           <button 
             onClick={onRemove}
             className="btn btn-ghost btn-sm"
-            title="Remove section"
+            title="Remove module"
           >
             <Icon icon="mdi:delete" width="20" height="20" />
           </button>
@@ -74,28 +76,7 @@ const FdoEditor: React.FC = () => {
   // State to hold all section data
   const [sectionData, setSectionData] = useState<Record<string, any>>({});
   
-  // Theme state
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Check for user's preferred color scheme on mount
-  useEffect(() => {
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setDarkMode(prefersDark);
-  }, []);
-
-  // Toggle theme function
-  const toggleTheme = () => {
-    setDarkMode(!darkMode);
-  };
-
-  // Apply theme to document body using data-theme attribute
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.setAttribute('data-theme', 'business');
-    } else {
-      document.documentElement.setAttribute('data-theme', 'winter');
-    }
-  }, [darkMode]);
+  // Theme state is now managed in ThemeContext
 
   // Get available section types (those not already in sections)
   const availableSectionTypes = ['Basic', 'Dataset', 'Additional'].filter(
@@ -104,10 +85,6 @@ const FdoEditor: React.FC = () => {
 
   const handleRemoveSection = (id: number) => {
     setSections(sections.filter(section => section.id !== id));
-  };
-
-  const handleAddSection = () => {
-    // This function is now empty as the combobox handles adding sections
   };
 
   const handleTitleChange = (id: number | undefined, title: string) => {
@@ -135,7 +112,7 @@ const FdoEditor: React.FC = () => {
   };
 
   return (
-    <div className="fdo-editor p-4 rounded-lg shadow-md">
+    <div className="p-4 rounded-lg shadow-md">
       {sections.map((section, index) => (
         <Section
           key={section.id}
@@ -165,12 +142,6 @@ const FdoEditor: React.FC = () => {
           Collect Data
         </button>
       </div>
-      <button 
-        className="btn btn-secondary fixed top-4 right-4"
-        onClick={toggleTheme}
-      >
-        {darkMode ? <Icon icon="mdi:white-balance-sunny" width="20" height="20" /> : <Icon icon="mdi:moon-waning-crescent" width="20" height="20" />}
-      </button>
     </div>
   );
 };
