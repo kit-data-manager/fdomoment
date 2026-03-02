@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 interface TypeAPIResponse {
   id: string;
   name: string;
+  fundamentalType: string;
   type: string;
   schema: any;
 }
@@ -46,15 +47,14 @@ export class TypeAPIClient {
       if (!response.ok) {
         throw new Error(`Search failed: ${response.status} ${response.statusText}`);
       }
-      
-      const data: TypeSearchResponse = await response.json();
-      
+      const data: TypeAPIResponse[] = await response.json();
+
       // Cache the results
-      data.content.forEach(type => {
+      data.forEach(type => {
         typeCache.set(type.id, type);
       });
       
-      return data.content;
+      return data;
     } catch (error) {
       console.error('Error searching types:', error);
       throw error;

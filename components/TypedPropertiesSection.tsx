@@ -231,7 +231,6 @@ const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeS
         ) : (
           <div>
             <input
-              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full p-2 border rounded"

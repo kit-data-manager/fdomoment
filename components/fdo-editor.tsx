@@ -4,6 +4,7 @@ import BasicSection from './BasicSection';
 import DatasetSection from './DatasetSection';
 import AdditionalSection from './AdditionalSection';
 import { Icon } from '@iconify/react';
+import TypedPropertiesSection from "@/components/TypedPropertiesSection";
 
 interface SectionProps {
   title: string;
@@ -122,7 +123,7 @@ const FdoEditor: React.FC = () => {
             <DatasetSection onDataChange={(data) => updateSectionData('Dataset Properties', data)} />
           )}
           {section.title === 'Typed Properties' && (
-                <AdditionalSection onDataChange={(data) => updateSectionData('Typed Properties', data)} />
+                <TypedPropertiesSection onTypeSelected={(data) => updateSectionData('Typed Properties', data)} />
           )}
           {section.title === 'Additional Properties' && (
             <AdditionalSection onDataChange={(data) => updateSectionData('Additional Properties', data)} />
