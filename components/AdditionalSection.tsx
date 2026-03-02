@@ -9,13 +9,6 @@ interface AdditionalSectionProps {
 const AdditionalSection: React.FC<AdditionalSectionProps> = ({onDataChange}) => {
     const [rows, setRows] = useState<{ key: string, value: string }[]>([]);
 
-    const handleComboboxChange = (index: number, value: string) => {
-        const newRows = [...rows];
-        newRows[index].key = value;
-        setRows(newRows);
-        onDataChange(newRows);
-    };
-
     const handleInputChange = (index: number, value: string) => {
         const newRows = [...rows];
         newRows[index].value = value;

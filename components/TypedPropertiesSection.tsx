@@ -11,20 +11,32 @@ const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeS
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedType, setSelectedType] = useState<any>(null);
   const [formValue, setFormValue] = useState<Record<string, any>>({});
+  const [showSuggestions, setShowSuggestions] = useState(false);
   
-  // Search for types when query changes
+  // Search for types with debounced search
   useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      searchTypes(searchQuery)
-        .then(results => {
+    const fetchSuggestions = async () => {
+      if (searchQuery.length >= 5) {
+        try {
+          const results = await searchTypes(searchQuery);
           setSearchResults(results);
-        })
-        .catch(error => {
+          setShowSuggestions(true);
+        } catch (error) {
           console.error('Error searching types:', error);
-        });
-    } else {
-      setSearchResults([]);
-    }
+          setSearchResults([]);
+          setShowSuggestions(false);
+        }
+      } else {
+        setSearchResults([]);
+        setShowSuggestions(false);
+      }
+    };
+    
+    const debounce = setTimeout(() => {
+      fetchSuggestions();
+    }, 300);
+    
+    return () => clearTimeout(debounce);
   }, [searchQuery, searchTypes]);
 
   // Handle type selection
@@ -61,6 +73,10 @@ const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeS
       }
       setFormValue(initialValue);
       
+      // Clear search query and hide suggestions
+      setSearchQuery('');
+      setShowSuggestions(false);
+      
       // Notify parent component
       onTypeSelected(typeId, initialValue);
     } catch (error) {
@@ -88,120 +104,155 @@ const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeS
 
     const schema = selectedType.schema;
     
-    if (schema.type === 'object' && schema.properties) {
-      return (
-        <div className="mt-4 p-4 border rounded">
-          <h3 className="text-lg font-semibold mb-2">{selectedType.name}</h3>
-          {Object.keys(schema.properties).map(key => {
-            const property = schema.properties[key];
-            const required = schema.required && schema.required.includes(key);
-            
-            return (
-              <div key={key} className="mb-4">
-                <label className="block mb-1">
-                  {property.title || key}
-                  {required && <span className="text-red-500"> *</span>}
-                </label>
-                
-                {property.type === 'string' && (
-                  <input
-                    type="text"
-                    value={(formValue[key] as string) || ''}
-                    onChange={(e) => handleFormChange(key, e.target.value)}
-                    className="w-full p-2 border rounded"
-                    placeholder={property.description || `Enter ${key}`}
-                  />
-                )}
-                
-                {property.type === 'number' && (
-                  <input
-                    type="number"
-                    value={(formValue[key] as number) || 0}
-                    onChange={(e) => handleFormChange(key, parseFloat(e.target.value))}
-                    className="w-full p-2 border rounded"
-                    placeholder={property.description || `Enter ${key}`}
-                  />
-                )}
-                
-                {property.type === 'boolean' && (
-                  <select
-                    value={(formValue[key] as boolean) ? 'true' : 'false'}
-                    onChange={(e) => handleFormChange(key, e.target.value === 'true')}
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value="false">False</option>
-                    <option value="true">True</option>
-                  </select>
-                )}
-                
-                {property.type === 'array' && (
-                  <div className="w-full p-2 border rounded">
+    return (
+      <div className="mt-4 p-4 border rounded">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-lg font-semibold">{selectedType.name}</h3>
+          <button
+            className="btn btn-sm btn-ghost"
+            onClick={() => {
+              setSelectedType(null);
+              setFormValue({});
+              setSearchQuery('');
+              setShowSuggestions(false);
+            }}
+          >
+            ×
+          </button>
+        </div>
+        {schema.type === 'object' && schema.properties && (
+          <div>
+            {Object.keys(schema.properties).map(key => {
+              const property = schema.properties[key];
+              const required = schema.required && schema.required.includes(key);
+              
+              return (
+                <div key={key} className="mb-4">
+                  <label className="block mb-1">
+                    {property.title || key}
+                    {required && <span className="text-red-500"> *</span>}
+                  </label>
+                  
+                  {property.type === 'string' && (
                     <input
                       type="text"
-                      value={Array.isArray(formValue[key]) ? (formValue[key] as any[]).join(', ') : ''}
-                      onChange={(e) => handleFormChange(key, e.target.value.split(',').map(item => item.trim()))}
-                      className="w-full"
-                      placeholder={property.description || `Enter comma-separated values for ${key}`}
+                      value={(formValue[key] as string) || ''}
+                      onChange={(e) => handleFormChange(key, e.target.value)}
+                      className="w-full p-2 border rounded"
+                      placeholder={property.description || `Enter ${key}`}
                     />
-                  </div>
-                )}
-                
-                {property.type === 'object' && (
-                  <div className="w-full p-2 border rounded">
-                    <p>Object type - not implemented in this example</p>
-                  </div>
-                )}
-                
-                {property.enum && (
-                  <select
-                    value={(formValue[key] as string) || ''}
-                    onChange={(e) => handleFormChange(key, e.target.value)}
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value="">Select {key}</option>
-                    {property.enum.map((option: string) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      );
-    }
-    
-    return null;
+                  )}
+                  
+                  {property.type === 'number' && (
+                    <input
+                      type="number"
+                      value={(formValue[key] as number) || 0}
+                      onChange={(e) => handleFormChange(key, parseFloat(e.target.value))}
+                      className="w-full p-2 border rounded"
+                      placeholder={property.description || `Enter ${key}`}
+                    />
+                  )}
+                  
+                  {property.type === 'boolean' && (
+                    <select
+                      value={(formValue[key] as boolean) ? 'true' : 'false'}
+                      onChange={(e) => handleFormChange(key, e.target.value === 'true')}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="false">False</option>
+                      <option value="true">True</option>
+                    </select>
+                  )}
+                  
+                  {property.type === 'array' && (
+                    <div className="w-full p-2 border rounded">
+                      <input
+                        type="text"
+                        value={Array.isArray(formValue[key]) ? (formValue[key] as any[]).join(', ') : ''}
+                        onChange={(e) => handleFormChange(key, e.target.value.split(',').map(item => item.trim()))}
+                        className="w-full"
+                        placeholder={property.description || `Enter comma-separated values for ${key}`}
+                      />
+                    </div>
+                  )}
+                  
+                  {property.type === 'object' && (
+                    <div className="w-full p-2 border rounded">
+                      <p>Object type - not implemented in this example</p>
+                    </div>
+                  )}
+                  
+                  {property.enum && (
+                    <select
+                      value={(formValue[key] as string) || ''}
+                      onChange={(e) => handleFormChange(key, e.target.value)}
+                      className="w-full p-2 border rounded"
+                    >
+                      <option value="">Select {key}</option>
+                      {property.enum.map((option: string) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
     <div className="mb-6">
       <h2 className="text-xl font-bold mb-3">Typed Properties</h2>
       
-      {/* Type Search */}
+      {/* Type Search or Selected Type Display */}
       <div className="mb-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 border rounded"
-          placeholder="Search for types..."
-        />
-        
-        {/* Search Results */}
-        {searchResults.length > 0 && (
-          <div className="mt-2 max-h-60 overflow-y-auto border rounded">
-            {searchResults.map(type => (
-              <div
-                key={type.id}
-                className="p-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => handleTypeSelect(type.id)}
-              >
-                {type.name}
+        {selectedType ? (
+          <div className="flex items-center justify-between p-2 border rounded">
+            <span className="flex items-center">
+              {selectedType.name} ({selectedType.id})
+            </span>
+            <button
+              className="btn btn-sm btn-ghost"
+              onClick={() => {
+                setSelectedType(null);
+                setFormValue({});
+                setSearchQuery('');
+                setShowSuggestions(false);
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ) : (
+          <div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full p-2 border rounded"
+              placeholder="Search for types..."
+              onFocus={() => searchQuery.length >= 5 && setShowSuggestions(true)}
+            />
+            
+            {/* Search Results */}
+            {showSuggestions && searchResults.length > 0 && (
+              <div className="absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1">
+                {searchResults.map(type => (
+                  <div
+                    key={type.id}
+                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleTypeSelect(type.id)}
+                  >
+                    {type.name} ({type.id})
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
