@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import BasicSection from './BasicSection';
 import DatasetSection from './DatasetSection';
 import AdditionalSection from './AdditionalSection';
@@ -13,64 +13,43 @@ interface SectionProps {
   onTitleChange: (id: number | undefined, title: string) => void;
   isLast: boolean;
   availableTypes: string[];
+  isActive: boolean;
+  onClick: () => void;
 }
 
-const Section: React.FC<SectionProps> = ({ title, children, onRemove, onAdd, onTitleChange, isLast, availableTypes }) => {
+const Section: React.FC<SectionProps> = ({ title, children, onRemove, onAdd, onTitleChange, isLast, availableTypes, isActive, onClick }) => {
   return (
-    <div className="section-container p-4 rounded-lg border mb-4">
-      <h3 className="text-lg font-semibold mb-4 border-b pb-2">{title}</h3>
-      {children}
-      {isLast && (
-        <div className="section-actions flex justify-end items-center gap-2">
-          {title != "Basic" && (
+    <div 
+      className={`section-container p-4 rounded-lg border mb-4 transition-all duration-300 ${isActive ? 'z-10 scale-100' : 'z-0 scale-80 opacity-70'}`} 
+      onClick={onClick}
+    >
+      <div className="flex justify-between items-center mb-4 border-b pb-2">
+        <h3 className={`text-lg font-semibold ${isActive ? 'cursor-pointer' : 'cursor-default'}`}>
+          {title}
+        </h3>
+        {title != "Basic Properties" && (
           <button
-            onClick={onRemove}
-            className="btn btn-ghost btn-sm mt-2"
-            title="Remove module"
-          >
-            <Icon icon="mdi:delete" width="20" height="20" />
-          </button>
-          )}
-          {availableTypes.length > 0 && (
-            <select 
-              onChange={(e) => {
-                if (e.target.value) {
-                  onAdd();
-                  // Pass undefined as id to indicate new section
-                  onTitleChange(undefined, e.target.value);
-                }
-              }}
-              className="select select-bordered select-sm"
-              title="Select section type to add"
-            >
-              <option value="">Add Module After</option>
-              {availableTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          )}
-        </div>
-      )}
-      {!isLast && title != "Basic" && (
-        <div className="section-actions flex justify-end items-center gap-2">
-          <button 
-            onClick={onRemove}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
             className="btn btn-ghost btn-sm"
             title="Remove module"
           >
-            <Icon icon="mdi:delete" width="20" height="20" />
+            <Icon icon="mdi:close" width="20" height="20" />
           </button>
-        </div>
-      )}
+        )}
+      </div>
+      {children}
     </div>
   );
 };
 
 const FdoEditor: React.FC = () => {
   const [sections, setSections] = useState([
-    { id: 1, title: 'Basic' },
-    { id: 2, title: 'Dataset' },
-    { id: 3, title: 'Additional' }
+    { id: 1, title: 'Basic Properties' },
+    { id: 2, title: 'Dataset Properties' },
+    { id: 3, title: 'Additional Properties' }
   ]);
   
   // State to hold all section data
@@ -79,7 +58,7 @@ const FdoEditor: React.FC = () => {
   // Theme state is now managed in ThemeContext
 
   // Get available section types (those not already in sections)
-  const availableSectionTypes = ['Basic', 'Dataset', 'Additional'].filter(
+  const availableSectionTypes = ['Basic Properties', 'Dataset Properties', 'Additional Properties'].filter(
     type => !sections.some(section => section.title === type)
   );
 
@@ -114,34 +93,66 @@ const FdoEditor: React.FC = () => {
   return (
     <div className="p-4 rounded-lg shadow-md">
       {sections.map((section, index) => (
-        <Section
-          key={section.id}
-          title={section.title}
-          onRemove={() => handleRemoveSection(section.id)}
-          onAdd={() => {}}
-          onTitleChange={(id, title) => handleTitleChange(id, title)}
-          isLast={index === sections.length - 1}
-          availableTypes={availableSectionTypes}
-        >
-          {section.title === 'Basic' && (
-            <BasicSection onDataChange={(data) => updateSectionData('Basic', data)} />
+          <Section
+            key={section.id}
+            title={section.title}
+            onRemove={() => handleRemoveSection(section.id)}
+            onAdd={() => {}}
+            onTitleChange={(id, title) => handleTitleChange(id, title)}
+            isLast={index === sections.length - 1}
+            availableTypes={availableSectionTypes}
+            isActive={index === 0}
+            onClick={() => {
+              if (index !== 0) {
+                // Move this section to the top
+                const movedSection = sections[index];
+                // Get the current top section
+                const topSection = sections[0];
+                // Create new array with the moved section at top, current top section at end, and other sections in between
+                const remainingSections = sections.filter((_, i) => i !== index && i !== 0);
+                setSections([movedSection, ...remainingSections, topSection]);
+              }
+            }}
+          >
+          {section.title === 'Basic Properties' && (
+            <BasicSection onDataChange={(data) => updateSectionData('Basic Properties', data)} />
           )}
-          {section.title === 'Dataset' && (
-            <DatasetSection onDataChange={(data) => updateSectionData('Dataset', data)} />
+          {section.title === 'Dataset Properties' && (
+            <DatasetSection onDataChange={(data) => updateSectionData('Dataset Properties', data)} />
           )}
-          {section.title === 'Additional' && (
-            <AdditionalSection onDataChange={(data) => updateSectionData('Additional', data)} />
+          {section.title === 'Additional Properties' && (
+            <AdditionalSection onDataChange={(data) => updateSectionData('Additional Properties', data)} />
           )}
         </Section>
       ))}
-      <div className="section-actions mt-4 flex justify-end">
-        <button 
-          className="btn btn-primary"
-          onClick={() => console.debug(JSON.stringify(collectData(),null, 4))}
-        >
-          Collect Data
-        </button>
-      </div>
+       <div className="section-actions mt-4 flex justify-between items-center">
+         <div className="flex gap-2">
+            {availableSectionTypes.length > 0 && (
+             <select 
+               onChange={(e) => {
+                 if (e.target.value) {
+                   // Add new section
+                   const newId = Math.max(...sections.map(s => s.id), 0) + 1;
+                   setSections([...sections, { id: newId, title: e.target.value }]);
+                 }
+               }}
+               className="select select-bordered select-sm"
+               title="Select module to add"
+             >
+               <option value="">Add Module</option>
+               {availableSectionTypes.map(type => (
+                 <option key={type} value={type}>{type}</option>
+               ))}
+             </select>
+           )}
+         </div>
+         <button 
+           className="btn btn-primary"
+           onClick={() => console.debug(JSON.stringify(collectData(),null, 4))}
+         >
+           Collect Data
+         </button>
+       </div>
     </div>
   );
 };

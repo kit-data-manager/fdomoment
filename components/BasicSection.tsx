@@ -69,89 +69,6 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
     setInputs(newInputs);
     onDataChange(newInputs);
   };
-/*
-  return (
-    <div className="basic-section grid grid-cols-1 gap-4">
-      <div className="flex items-center gap-2 z-60">
-        <fieldset className="fieldset w-full">
-          <label className="input w-full ">
-            <User/>
-            <ORCiDAutocomplete
-                value={inputs.user_orcid}
-                displayValue={inputs.user_orcid_name}
-                onChange={(value) => setInputs(prev => ({...prev, user_orcid: value, user_orcid_name: ''}))}
-                onSelect={handleORCiDSelect}
-            />
-          </label>
-          <p className="label">The associated users ORCiD.</p>
-          <button
-              className="btn btn-sm btn-ghost"
-              onClick={() => {
-                localStorage.setItem('user_orcid', inputs.user_orcid);
-                localStorage.setItem('user_orcid_name', inputs.user_orcid_name);
-              }}
-          >
-            Save
-          </button>
-        </fieldset>
-      </div>
-      <div className="flex items-center gap-2 z-50">
-        <fieldset className="fieldset w-full">
-          <label className="input w-full">
-            <Building2/>
-            <RORAutocomplete
-                value={inputs.user_ror}
-                displayValue={inputs.user_ror_name}
-                onChange={(value) => setInputs(prev => ({...prev, user_ror: value, user_ror_name: ''}))}
-                onSelect={handleRORSelect}
-            />
-          </label>
-          <p className="label">The associated research organization identifier.</p>
-
-          <button
-              className="btn btn-sm btn-ghost"
-              onClick={() => {
-                localStorage.setItem('user_ror', inputs.user_ror);
-                localStorage.setItem('user_ror_name', inputs.user_ror_name);
-              }}
-          >
-            Save
-          </button>
-        </fieldset>
-      </div>
-      <div className="flex items-center gap-2">
-        <fieldset className="fieldset w-full">
-          <label className="input w-full">
-            <TestTubeDiagonal/>
-            <input
-                name="research_field"
-                value={inputs.research_field}
-                onChange={handleChange}
-                className="w-full"
-                list="fields"
-            />
-            <datalist id="fields">
-              <option value="Aeronautics, Space, Transport"></option>
-              <option value="Earth&Environment"></option>
-              <option value="Energy"></option>
-              <option value="Health"></option>
-              <option value="Information"></option>
-              <option value="Matter"></option>
-            </datalist>
-          </label>
-          <p className="label">The associated research field.</p>
-          <button
-              className="btn btn-sm btn-ghost"
-              onClick={() => {
-                localStorage.setItem('research_field', inputs.research_field);
-              }}
-          >
-            Save
-          </button>
-        </fieldset>
-      </div>
-    </div>
-  );*/
 
   return (
       <div className="card card-side bg-base-100 shadow-sm">
@@ -177,7 +94,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
         <div className="card-body">
           <div className="flex items-center gap-2 z-60">
             <fieldset className="fieldset w-full">
-              <label className="input w-full ">
+              <label className="input w-full">
                 <User/>
                 <ORCiDAutocomplete
                     value={inputs.user_orcid}
@@ -188,7 +105,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
               </label>
               <p className="label">The associated users ORCiD.</p>
               <button
-                  className="btn btn-sm btn-ghost"
+                  className="btn btn-sm btn-soft btn-info"
                   onClick={() => {
                     localStorage.setItem('user_orcid', inputs.user_orcid);
                     localStorage.setItem('user_orcid_name', inputs.user_orcid_name);
@@ -212,7 +129,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
               <p className="label">The associated research organization identifier.</p>
 
               <button
-                  className="btn btn-sm btn-ghost"
+                  className="btn btn-sm btn-soft btn-info"
                   onClick={() => {
                     localStorage.setItem('user_ror', inputs.user_ror);
                     localStorage.setItem('user_ror_name', inputs.user_ror_name);
@@ -244,7 +161,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
               </label>
               <p className="label">The associated research field.</p>
               <button
-                  className="btn btn-sm btn-ghost"
+                  className="btn btn-sm btn-soft btn-info"
                   onClick={() => {
                     localStorage.setItem('research_field', inputs.research_field);
                   }}
