@@ -1,29 +1,30 @@
 import React, {useState} from 'react';
 import {Icon} from '@iconify/react';
+import {ChartCandlestick, KeyRound} from "lucide-react";
 
 interface AdditionalSectionProps {
     onDataChange: (data: any) => void;
 }
 
 const AdditionalSection: React.FC<AdditionalSectionProps> = ({onDataChange}) => {
-    const [rows, setRows] = useState<{ combobox: string, inputField: string }[]>([]);
+    const [rows, setRows] = useState<{ key: string, value: string }[]>([]);
 
     const handleComboboxChange = (index: number, value: string) => {
         const newRows = [...rows];
-        newRows[index].combobox = value;
+        newRows[index].key = value;
         setRows(newRows);
         onDataChange(newRows);
     };
 
     const handleInputChange = (index: number, value: string) => {
         const newRows = [...rows];
-        newRows[index].inputField = value;
+        newRows[index].value = value;
         setRows(newRows);
         onDataChange(newRows);
     };
 
     const addRow = () => {
-        setRows([...rows, {combobox: 'Option 1', inputField: ''}]);
+        setRows([...rows, {key: '', value: ''}]);
     };
 
     const removeRow = (index: number) => {
@@ -35,28 +36,37 @@ const AdditionalSection: React.FC<AdditionalSectionProps> = ({onDataChange}) => 
     return (
         <div className="additional-section">
             {rows.map((row, index) => (
-                <div key={index} className="row flex items-center gap-2 mb-2">
-                    <select
-                        value={row.combobox}
-                        onChange={(e) => handleComboboxChange(index, e.target.value)}
-                        className="select select-bordered w-full"
-                    >
-                        <option value="Option 1">Option 1</option>
-                        <option value="Option 2">Option 2</option>
-                    </select>
-                    <input
-                        value={row.inputField}
-                        onChange={(e) => handleInputChange(index, e.target.value)}
-                        className="input input-bordered w-full"
-                    />
-                    <button
-                        onClick={() => removeRow(index)}
-                        className="btn btn-ghost btn-sm"
-                    >
-                        <Icon icon="mdi:delete" width="20" height="20"/>
-                    </button>
+                <div key={index} className="row flex items-start gap-2 mb-2">
+                    <fieldset className="fieldset w-full">
+                        <label className="input w-full">
+                            <KeyRound/>
+                            <input
+                                value={row.key}
+                                onChange={(e) => handleInputChange(index, e.target.value)}
+                                className="input input-bordered w-full"
+                            />
+                        </label>
+                        <p className="label">The custom attribute key.</p>
+                    </fieldset>
+                    <fieldset className="fieldset w-full">
+                        <label className="input w-full">
+                            <ChartCandlestick/>
+                            <input
+                                value={row.value}
+                                onChange={(e) => handleInputChange(index, e.target.value)}
+                                className="input input-bordered w-full"
+                            />
+                        </label>
+                        <p className="label">The custom attribute value.</p>
+                    </fieldset>
+                        <button
+                            onClick={() => removeRow(index)}
+                            className="btn btn-ghost mt-1 justify-self-end"
+                        >
+                            <Icon icon="mdi:delete" width="20" height="20"/>
+                        </button>
                 </div>
-            ))}
+                ))}
             <button
                 onClick={addRow}
                 className="btn btn-soft btn-info btn-sm w-full"

@@ -49,7 +49,8 @@ const FdoEditor: React.FC = () => {
   const [sections, setSections] = useState([
     { id: 1, title: 'Basic Properties' },
     { id: 2, title: 'Dataset Properties' },
-    { id: 3, title: 'Additional Properties' }
+    { id: 3, title: 'Typed Properties' },
+    { id: 4, title: 'Additional Properties' }
   ]);
   
   // State to hold all section data
@@ -58,7 +59,7 @@ const FdoEditor: React.FC = () => {
   // Theme state is now managed in ThemeContext
 
   // Get available section types (those not already in sections)
-  const availableSectionTypes = ['Basic Properties', 'Dataset Properties', 'Additional Properties'].filter(
+  const availableSectionTypes = ['Basic Properties', 'Dataset Properties', 'Typed Properties', 'Additional Properties'].filter(
     type => !sections.some(section => section.title === type)
   );
 
@@ -119,6 +120,9 @@ const FdoEditor: React.FC = () => {
           )}
           {section.title === 'Dataset Properties' && (
             <DatasetSection onDataChange={(data) => updateSectionData('Dataset Properties', data)} />
+          )}
+          {section.title === 'Typed Properties' && (
+                <AdditionalSection onDataChange={(data) => updateSectionData('Typed Properties', data)} />
           )}
           {section.title === 'Additional Properties' && (
             <AdditionalSection onDataChange={(data) => updateSectionData('Additional Properties', data)} />
