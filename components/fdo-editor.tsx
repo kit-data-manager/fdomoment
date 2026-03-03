@@ -131,33 +131,33 @@ const FdoEditor: React.FC = () => {
         </Section>
       ))}
        <div className="section-actions mt-4 flex justify-between items-center">
-         <div className="flex gap-2">
-            {availableSectionTypes.length > 0 && (
-             <select 
-               onChange={(e) => {
-                 if (e.target.value) {
-                   // Add new section
-                   const newId = Math.max(...sections.map(s => s.id), 0) + 1;
-                   setSections([...sections, { id: newId, title: e.target.value }]);
-                 }
-               }}
-               className="select select-bordered select-sm"
-               title="Select module to add"
-             >
-               <option value="">Add Module</option>
-               {availableSectionTypes.map(type => (
-                 <option key={type} value={type}>{type}</option>
-               ))}
-             </select>
-           )}
-         </div>
-         <button 
-           className="btn btn-primary"
-           onClick={() => console.debug(JSON.stringify(collectData(),null, 4))}
-         >
-           Collect Data
-         </button>
-       </div>
+          <div className="flex gap-2">
+             {availableSectionTypes.length > 0 && (
+              <select 
+                onChange={(e) => {
+                  if (e.target.value) {
+                    // Add new section
+                    const newId = Math.max(...sections.map(s => s.id), 0) + 1;
+                    setSections([...sections, { id: newId, title: e.target.value }]);
+                  }
+                }}
+                className="select select-bordered select-sm"
+                title="Select module to add"
+              >
+                <option value="">Add Module</option>
+                {availableSectionTypes.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            )}
+          </div>
+          <button 
+            className="btn btn-primary"
+            onClick={() => console.debug(JSON.stringify(collectData(),null, 4))}
+          >
+            Collect Data
+          </button>
+        </div>
     </div>
   );
 };

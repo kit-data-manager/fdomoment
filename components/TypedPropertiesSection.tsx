@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTypeAPI } from '../utils/typeapi-client';
-import Form, { IChangeEvent } from '@rjsf/core';
-import validator from '@rjsf/validator-ajv8';
+import Form from '@rjsf/core';
 
 interface TypedPropertiesSectionProps {
   onTypeSelected: (typeId: string, value: any) => void;

@@ -121,7 +121,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
     // Update inputs with the selected ORCiD ID
     const newInputs = { ...inputs, user_orcid: id, user_orcid_name: name };
     setInputs(newInputs);
-      onDataChange(newInputs);
+    onDataChange(newInputs);
   };
 
   const save = () => {

@@ -1,30 +1,73 @@
-import React, { useState } from 'react';
-import {Building2, Copy, Copyright, FileType, Link, TestTubeDiagonal, Users} from "lucide-react";
+import React, {useEffect, useState} from 'react';
+import {Building2, Copyright, FileType, Link, TestTubeDiagonal, Users} from "lucide-react";
+import MimeTypeAutocomplete from './MimeTypeAutocomplete';
+import LicenseAutocomplete from './LicenseAutocomplete';
 
 interface DatasetSectionProps {
   onDataChange: (data: any) => void;
 }
 
 const DatasetSection: React.FC<DatasetSectionProps> = ({ onDataChange }) => {
-    const [inputs, setInputs] = useState({
-        mimeType: '',
-        license: '',
-        contentLocation: ''
-    });
+     const [inputs, setInputs] = useState({
+         mimeType: '',
+         license_id: localStorage.getItem('dataset_license_id') || '',
+         license_name: localStorage.getItem('dataset_license_name') || '',
+         contentLocation: ''
+     });
 
-    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        const newInputs = { ...inputs, "mimeType": value };
+    // Load saved values from localStorage on component mount
+    useEffect(() => {
+        const savedLicenseId = localStorage.getItem('dataset_license_id');
+        const savedLicenseName = localStorage.getItem('dataset_license_name');
+
+        let updatedInputs = {
+            mimeType: '',
+            license_id: savedLicenseId || '',
+            license_name: savedLicenseName || '',
+            contentLocation: ''
+        };
+        // Set individual values
+        if (savedLicenseId || savedLicenseName) {
+            if (savedLicenseId && savedLicenseId.includes(' (')) {
+                const parts = savedLicenseId.split(' (');
+                if (parts.length === 2) {
+                    const id = parts[1].replace(')', '').trim();
+                    const name = parts[0].trim();
+                    updatedInputs = {
+                        ...updatedInputs,
+                        license_id: id,
+                        license_name: name
+                    };
+                }
+            }
+        }
+        console.log("UP", updatedInputs);
+        onDataChange(updatedInputs);
+    }, []);
+
+    const handleMimetypeSelect = (value: string) => {
+        const newInputs = { ...inputs, mimeType: value};
         setInputs(newInputs);
         onDataChange(newInputs);
     };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleLicenseSelect = (id: string, name: string, url: string) => {
+        const newInputs = { ...inputs, license_id: id, license_name: name };
+        setInputs(newInputs);
+        onDataChange(newInputs);
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       const newInputs = { ...inputs, [name]: value };
       setInputs(newInputs);
       onDataChange(newInputs);
   };
+
+    const saveLicense = () => {
+        localStorage.setItem('dataset_license_id', inputs.license_id);
+        localStorage.setItem('dataset_license_name', inputs.license_name);
+    }
 
     return (
         <div className="card card-side bg-base-100 shadow-sm">
@@ -50,15 +93,12 @@ const DatasetSection: React.FC<DatasetSectionProps> = ({ onDataChange }) => {
                     <fieldset className="fieldset w-full">
                         <label className="input w-full">
                             <FileType/>
-                            <select
+                            <MimeTypeAutocomplete
                                 value={inputs.mimeType}
-                                onChange={handleSelectChange}
-                                className="grow w-full"
-                            >
-                                <option value="text/plain">Text</option>
-                                <option value="image/jpeg">JPEG Image</option>
-                                <option value="application/json">JSON</option>
-                            </select>
+                                displayValue={inputs.mimeType}
+                                onChange={(value) => setInputs(prev => ({...prev, mimeType: value}))}
+                                onSelect={handleMimetypeSelect}
+                            />
                         </label>
                         <p className="label">The associated content&apos;s mime type.</p>
                     </fieldset>
@@ -67,15 +107,36 @@ const DatasetSection: React.FC<DatasetSectionProps> = ({ onDataChange }) => {
                     <fieldset className="fieldset w-full">
                         <label className="input w-full">
                             <Copyright/>
-                            <select
-                                value={inputs.license}
-                                onChange={handleSelectChange}
-                                className="grow w-full"
-                            >
-                                <option value="text/plain">Text</option>
-                                <option value="image/jpeg">JPEG Image</option>
-                                <option value="application/json">JSON</option>
-                            </select>
+                             <LicenseAutocomplete
+                                 value={inputs.license_id}
+                                 displayValue={inputs.license_name ? `${inputs.license_name} (${inputs.license_id})` : ''}
+                                 onChange={(value) => {
+                                     // Parse the value to extract name and ID if it's in format "name (id)"
+                                     if (value && value.includes(' (')) {
+                                         const parts = value.split(' (');
+                                         const name = parts[0];
+                                         const id = parts[1].replace(')', '');
+                                         setInputs(prev => ({
+                                             ...prev,
+                                             license_id: id,
+                                             license_name: name,
+                                         }));
+                                     } else {
+                                         setInputs(prev => ({
+                                             ...prev,
+                                             license_id: value,
+                                             license_name: '',
+                                         }));
+                                     }
+                                 }}
+                                 onSelect={handleLicenseSelect}
+                             />
+                             <button
+                                 className="btn btn-sm btn-soft btn-info mt-2"
+                                 onClick={saveLicense}
+                             >
+                                 Save License
+                             </button>
                         </label>
                         <p className="label">The associated content&apos;s license.</p>
                     </fieldset>
