@@ -9,8 +9,7 @@ interface ORCiDAutocompleteProps {
 
 const ORCiDAutocomplete: React.FC<ORCiDAutocompleteProps> = ({ value, displayValue, onChange, onSelect }) => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  
+
   // Fetch ORCiD suggestions when input changes
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -24,19 +23,15 @@ const ORCiDAutocomplete: React.FC<ORCiDAutocompleteProps> = ({ value, displayVal
           const data = await response.json();
           if (data['expanded-result'] && data['expanded-result'].length > 0) {
             setSuggestions(data['expanded-result'] );
-            setShowSuggestions(true);
           } else {
             setSuggestions([]);
-            setShowSuggestions(false);
           }
         } catch (error) {
           console.error('Error fetching ORCiD suggestions:', error);
           setSuggestions([]);
-          setShowSuggestions(false);
         }
       } else {
         setSuggestions([]);
-        setShowSuggestions(false);
       }
     };
     
@@ -49,13 +44,10 @@ const ORCiDAutocomplete: React.FC<ORCiDAutocompleteProps> = ({ value, displayVal
 
   const handleSelect = (item: any) => {
     // Extract ORCiD ID and name from the result
-      console.log("IN SELECTION");
     const orcidId = item['orcid-id'] || '';
     const name = `${item['family-names']}, ${item['given-names']}`;
-    console.log("HANDLE SELE", orcidId);
     onSelect(orcidId, name);
     setSuggestions([]);
-    setShowSuggestions(false);
   };
 
   return (
@@ -72,7 +64,6 @@ const ORCiDAutocomplete: React.FC<ORCiDAutocompleteProps> = ({ value, displayVal
             `${item['family-names']}, ${item['given-names']} (${item['orcid-id']})` === selectedValue
           );
           if (selectedItem) {
-              console.log("HANDLE SELE", selectedItem);
             handleSelect(selectedItem);
           }
         }}

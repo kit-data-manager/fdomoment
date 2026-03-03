@@ -9,12 +9,10 @@ interface RORAutocompleteProps {
 
 const RORAutocomplete: React.FC<RORAutocompleteProps> = ({ value, displayValue, onChange, onSelect }) => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Fetch ROR suggestions when input changes
   useEffect(() => {
     const fetchSuggestions = async () => {
-      console.log("Fetching Suggestions", value);
       if ( value.length >= 5) {
         try {
           const response = await fetch(`https://api.ror.org/organizations?query=${encodeURIComponent(value)}`);
@@ -22,19 +20,15 @@ const RORAutocomplete: React.FC<RORAutocompleteProps> = ({ value, displayValue, 
           
           if (data.items && data.items.length > 0) {
             setSuggestions(data.items);
-            setShowSuggestions(true);
           } else {
             setSuggestions([]);
-            setShowSuggestions(false);
           }
         } catch (error) {
           console.error('Error fetching ROR suggestions:', error);
           setSuggestions([]);
-          setShowSuggestions(false);
         }
       } else {
         setSuggestions([]);
-        setShowSuggestions(false);
       }
     };
     
@@ -48,7 +42,6 @@ const RORAutocomplete: React.FC<RORAutocompleteProps> = ({ value, displayValue, 
   const handleSelect = (item: any) => {
     onSelect(item.id, item.names[0].value);
     setSuggestions([]);
-    setShowSuggestions(false);
   };
 
   return (

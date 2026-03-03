@@ -21,7 +21,7 @@ interface SectionProps {
 const Section: React.FC<SectionProps> = ({ title, children, onRemove, onAdd, onTitleChange, isLast, availableTypes, isActive, onClick }) => {
   return (
     <div 
-      className={`section-container p-4 rounded-lg border mb-4 transition-all duration-300 ${isActive ? 'z-10 scale-100' : 'z-0 scale-80 opacity-70'}`} 
+      className={`section-container p-4 rounded-lg border mb-4 transition-all duration-300 ${isActive ? 'z-10 scale-100' : 'z-0 scale-80 opacity-70'}`}
       onClick={onClick}
     >
       <div className="flex justify-between items-center mb-4 border-b pb-2">
@@ -81,7 +81,6 @@ const FdoEditor: React.FC = () => {
 
   // Function to update section data
   const updateSectionData = (sectionTitle: string, data: any) => {
-      console.log("Section", sectionTitle, data);
       setSectionData(prev => ({
       ...prev,
       [sectionTitle]: data

@@ -107,7 +107,6 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
     const { name, value } = e.target;
     const newInputs = { ...inputs, [name]: value };
     setInputs(newInputs);
-    console.log("ON CHANGE", newInputs);
     onDataChange(newInputs);
   };
 
@@ -115,7 +114,6 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
     // Update inputs with the selected ROR ID
     const newInputs = { ...inputs, user_ror: id, user_ror_name: name };
     setInputs(newInputs);
-    console.log("ON CHANGE", newInputs);
     onDataChange(newInputs);
   };
 
@@ -123,12 +121,10 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
     // Update inputs with the selected ORCiD ID
     const newInputs = { ...inputs, user_orcid: id, user_orcid_name: name };
     setInputs(newInputs);
-      console.log("ON CHANGE", newInputs);
       onDataChange(newInputs);
   };
 
   const save = () => {
-        console.log("CLICK ", inputs);
         localStorage.setItem('user_orcid', inputs.user_orcid);
         localStorage.setItem('user_orcid_name', inputs.user_orcid_name);
     }
@@ -143,7 +139,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
           <div
               className="absolute -top-15 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
               <span
-                  className="text-sm">This modules contains basic kernel attributes to specify ownership and context.</span>
+                  className="text-sm">This modules contains basic kernel attributes to specify an FDO&apos;s ownership and context.</span>
             <br/>
             <span className="text-sm">These are {" "}
                   <Users width={12} height={12} className="inline align-baseline"/> ORCiD and {" "}
