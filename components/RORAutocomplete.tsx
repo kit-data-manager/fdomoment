@@ -57,21 +57,26 @@ const RORAutocomplete: React.FC<RORAutocompleteProps> = ({ value, displayValue, 
         value={displayValue || value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full"
-        onFocus={() => value.length >= 5 && setShowSuggestions(true)}
+        list="rorSuggestions"
+        onInput={(e) => {
+          // Find the selected item from suggestions
+          const selectedValue = (e.target as HTMLInputElement).value;
+          const selectedItem = suggestions.find(item => 
+            `${item.names.find((name: any) => name.types && name.types.includes('ror_display'))?.value || item.names[0].value} (${item.id})` === selectedValue
+          );
+          if (selectedItem) {
+            handleSelect(selectedItem);
+          }
+        }}
       />
-      {showSuggestions && suggestions.length > 1 && (
-        <div className="absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1">
-          {suggestions.map((item, index) => (
-            <div
-              key={index}
-              className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleSelect(item)}
-            >
-              {item.names[0].value} ({item.id})
-            </div>
-          ))}
-        </div>
-      )}
+      <datalist id="rorSuggestions">
+        {suggestions.map((item, index) => (
+          <option 
+            key={index} 
+            value={`${item.names.find((name: any) => name.types && name.types.includes('ror_display'))?.value || item.names[0].value} (${item.id})`}
+          />
+        ))}
+      </datalist>
     </div>
   );
 };

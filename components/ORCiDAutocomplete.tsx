@@ -17,7 +17,7 @@ const ORCiDAutocomplete: React.FC<ORCiDAutocompleteProps> = ({ value, displayVal
       if (value.length >= 5) {
         try {
           // ORCiD API doesn't have a direct autocomplete endpoint, so we'll use their search API
-          const response = await fetch(`https://pub.orcid.org/v3.0/expanded-search/?q=email:${encodeURIComponent(value)}&start=0&rows=10`, {
+          const response = await fetch(`https://pub.orcid.org/v3.0/expanded-search/?q=email:${encodeURIComponent(value)}&start=0&rows=50`, {
               headers: {
             "Accept": "application/vnd.orcid+json",
           }});
@@ -49,9 +49,10 @@ const ORCiDAutocomplete: React.FC<ORCiDAutocompleteProps> = ({ value, displayVal
 
   const handleSelect = (item: any) => {
     // Extract ORCiD ID and name from the result
+      console.log("IN SELECTION");
     const orcidId = item['orcid-id'] || '';
     const name = `${item['family-names']}, ${item['given-names']}`;
-    
+    console.log("HANDLE SELE", orcidId);
     onSelect(orcidId, name);
     setSuggestions([]);
     setShowSuggestions(false);
@@ -63,21 +64,27 @@ const ORCiDAutocomplete: React.FC<ORCiDAutocompleteProps> = ({ value, displayVal
         value={displayValue || value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full"
-        onFocus={() => value.length >= 5 && setShowSuggestions(true)}
+        list="orcidSuggestions"
+        onInput={(e) => {
+          // Find the selected item from suggestions
+          const selectedValue = (e.target as HTMLInputElement).value;
+          const selectedItem = suggestions.find(item => 
+            `${item['family-names']}, ${item['given-names']} (${item['orcid-id']})` === selectedValue
+          );
+          if (selectedItem) {
+              console.log("HANDLE SELE", selectedItem);
+            handleSelect(selectedItem);
+          }
+        }}
       />
-      {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1">
-          {suggestions.map((item, index) => { console.log("ITEM", item);return (
-            <div
-              key={index}
-              className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleSelect(item)}
-            >
-              {item['family-names']}, {item['given-names']} ({item['orcid-id']})
-            </div>
-          )})}
-        </div>
-      )}
+      <datalist id="orcidSuggestions">
+        {suggestions.map((item, index) => (
+          <option 
+            key={index} 
+            value={`${item['family-names']}, ${item['given-names']} (${item['orcid-id']})`}
+          />
+        ))}
+      </datalist>
     </div>
   );
 };

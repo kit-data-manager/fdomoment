@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTypeAPI } from '../utils/typeapi-client';
+import Form, { IChangeEvent } from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
 
 interface TypedPropertiesSectionProps {
   onTypeSelected: (typeId: string, value: any) => void;
@@ -96,13 +98,16 @@ const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeS
     }
   };
 
-  // Render form based on schema
+  // Render form using RJSF
   const renderForm = () => {
     if (!selectedType || !selectedType.schema) {
       return null;
     }
 
     const schema = selectedType.schema;
+    
+    // Use ajv8 validator for RJSF
+    const validator = validator;
     
     return (
       <div className="mt-4 p-4 border rounded">
@@ -120,87 +125,34 @@ const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeS
             ×
           </button>
         </div>
-        {schema.type === 'object' && schema.properties && (
-          <div>
-            {Object.keys(schema.properties).map(key => {
-              const property = schema.properties[key];
-              const required = schema.required && schema.required.includes(key);
-              
-              return (
-                <div key={key} className="mb-4">
-                  <label className="block mb-1">
-                    {property.title || key}
-                    {required && <span className="text-red-500"> *</span>}
-                  </label>
-                  
-                  {property.type === 'string' && (
-                    <input
-                      type="text"
-                      value={(formValue[key] as string) || ''}
-                      onChange={(e) => handleFormChange(key, e.target.value)}
-                      className="w-full p-2 border rounded"
-                      placeholder={property.description || `Enter ${key}`}
-                    />
-                  )}
-                  
-                  {property.type === 'number' && (
-                    <input
-                      type="number"
-                      value={(formValue[key] as number) || 0}
-                      onChange={(e) => handleFormChange(key, parseFloat(e.target.value))}
-                      className="w-full p-2 border rounded"
-                      placeholder={property.description || `Enter ${key}`}
-                    />
-                  )}
-                  
-                  {property.type === 'boolean' && (
-                    <select
-                      value={(formValue[key] as boolean) ? 'true' : 'false'}
-                      onChange={(e) => handleFormChange(key, e.target.value === 'true')}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="false">False</option>
-                      <option value="true">True</option>
-                    </select>
-                  )}
-                  
-                  {property.type === 'array' && (
-                    <div className="w-full p-2 border rounded">
-                      <input
-                        type="text"
-                        value={Array.isArray(formValue[key]) ? (formValue[key] as any[]).join(', ') : ''}
-                        onChange={(e) => handleFormChange(key, e.target.value.split(',').map(item => item.trim()))}
-                        className="w-full"
-                        placeholder={property.description || `Enter comma-separated values for ${key}`}
-                      />
-                    </div>
-                  )}
-                  
-                  {property.type === 'object' && (
-                    <div className="w-full p-2 border rounded">
-                      <p>Object type - not implemented in this example</p>
-                    </div>
-                  )}
-                  
-                  {property.enum && (
-                    <select
-                      value={(formValue[key] as string) || ''}
-                      onChange={(e) => handleFormChange(key, e.target.value)}
-                      className="w-full p-2 border rounded"
-                    >
-                      <option value="">Select {key}</option>
-                      {property.enum.map((option: string) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </div>
-              );
-            })}
+        <Form
+          schema={schema}
+          formData={formValue}
+          onChange={({ formData }) => {
+            if (formData) {
+              setFormValue(formData);
+              if (selectedType) {
+                onTypeSelected(selectedType.id, formData);
+              }
+            }
+          }}
+          onSubmit={({ formData }) => {
+            if (formData) {
+              if (selectedType) {
+                onTypeSelected(selectedType.id, formData);
+              }
+            }
+          }}
+          liveValidate={true}
+          validator={validator}
+          className="w-full"
+        >
+          <div className="mt-4">
+            <button type="submit" className="btn btn-primary">
+              Submit
+            </button>
           </div>
-        )}
+        </Form>
       </div>
     );
   };

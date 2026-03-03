@@ -8,14 +8,14 @@ interface TypeAPIResponse {
   type: string;
   schema: any;
 }
-
+/*
 interface TypeSearchResponse {
   content: TypeAPIResponse[];
   totalElements: number;
   totalPages: number;
   size: number;
   number: number;
-}
+}*/
 
 // Cache for storing fetched types
 const typeCache: Map<string, TypeAPIResponse> = new Map();

@@ -81,7 +81,8 @@ const FdoEditor: React.FC = () => {
 
   // Function to update section data
   const updateSectionData = (sectionTitle: string, data: any) => {
-    setSectionData(prev => ({
+      console.log("Section", sectionTitle, data);
+      setSectionData(prev => ({
       ...prev,
       [sectionTitle]: data
     }));
