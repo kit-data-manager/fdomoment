@@ -2,12 +2,18 @@ import {
     SidebarHeader,
     SidebarMenuItem
 } from "@/components/ui/sidebar"
-import {Clock, Axe, BookUser} from "lucide-react";
+import {Axe, Boxes, Blocks} from "lucide-react";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+    availableSectionTypes: string[];
+    onAddSection: (title: string) => void;
+    onCollectData: () => void;
+}
+
+export function AppSidebar({ availableSectionTypes, onAddSection, onCollectData }: AppSidebarProps) {
     return (
         <div className="h-full w-16">
             <SidebarHeader>
@@ -21,17 +27,42 @@ export function AppSidebar() {
                 />
             </SidebarHeader>
             <ResizablePanelGroup orientation="vertical" className="min-h-lvh max-w-[64px]">
-                <ResizablePanel defaultSize="75%">
-                    <SidebarMenuItem className={"justify-center p-5"}>
-                        <Clock size={24}/>
+                <ResizablePanel defaultSize="65%">
+                    <SidebarMenuItem className="justify-center pl-2 pb-5 pt-5" title="Compile FAIR Digital Object...">
+                            <button
+                                onClick={onCollectData}
+                                className="btn btn-link btn-sm"
+                            >
+                                <Boxes size={24}/>
+                            </button>
                     </SidebarMenuItem>
-                    <SidebarMenuItem className={"justify-center pl-2"}>
+                    <SidebarMenuItem className="justify-center pl-2 pb-5" title="Add an additional Module">
+                        {availableSectionTypes.length > 0 ? (
+                            <div className="dropdown dropdown-end">
+                                <button tabIndex={0} className="btn  btn-link btn-sm">
+                                    <Blocks size={24} />
+                                </button>
+                                <ul tabIndex={0} className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 fixed left-16 mt-2">
+                                    {availableSectionTypes.map(type => (
+                                        <li key={type}>
+                                            <button onClick={() => onAddSection(type)}>{type}</button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <button className="btn btn-ghost btn-sm" disabled>
+                                <Blocks size={24} />
+                            </button>
+                        )}
+                    </SidebarMenuItem>
+                    <SidebarMenuItem className="justify-center pl-2" title="Toggle dark/light mode">
                         <ThemeToggle  />
                     </SidebarMenuItem>
 
                 </ResizablePanel>
                 <ResizableHandle />
-                <ResizablePanel defaultSize="25%">
+                <ResizablePanel defaultSize="35%">
                     <div className="flex h-full items-end justify-center p-6">
                         <Axe/>
                     </div>

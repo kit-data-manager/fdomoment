@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTypeAPI } from '../utils/typeapi-client';
 import Form from '@rjsf/core';
+import ajv from '@rjsf/validator-ajv8'
 
 interface TypedPropertiesSectionProps {
   onTypeSelected: (typeId: string, value: any) => void;
@@ -106,7 +107,7 @@ const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeS
     const schema = selectedType.schema;
     
     // Use ajv8 validator for RJSF
-    const validator = validator;
+    const validator = ajv;
     
     return (
       <div className="mt-4 p-4 border rounded">

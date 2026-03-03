@@ -1,13 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, forwardRef, useImperativeHandle} from 'react';
 import {Building2, Copyright, FileType, Link, TestTubeDiagonal, Users} from "lucide-react";
 import MimeTypeAutocomplete from './MimeTypeAutocomplete';
 import LicenseAutocomplete from './LicenseAutocomplete';
 
 interface DatasetSectionProps {
   onDataChange: (data: any) => void;
+  onSave?: () => void;
 }
 
-const DatasetSection: React.FC<DatasetSectionProps> = ({ onDataChange }) => {
+const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ onDataChange, onSave }, ref) => {
      const [inputs, setInputs] = useState({
          mimeType: '',
          license_id: localStorage.getItem('dataset_license_id') || '',
@@ -64,10 +65,15 @@ const DatasetSection: React.FC<DatasetSectionProps> = ({ onDataChange }) => {
       onDataChange(newInputs);
   };
 
-    const saveLicense = () => {
+    const save = () => {
         localStorage.setItem('dataset_license_id', inputs.license_id);
         localStorage.setItem('dataset_license_name', inputs.license_name);
+        onSave?.();
     }
+
+    useImperativeHandle(ref, () => ({
+        save
+    }));
 
     return (
         <div className="card card-side bg-base-100 shadow-sm">
@@ -129,15 +135,9 @@ const DatasetSection: React.FC<DatasetSectionProps> = ({ onDataChange }) => {
                                          }));
                                      }
                                  }}
-                                 onSelect={handleLicenseSelect}
-                             />
-                             <button
-                                 className="btn btn-sm btn-soft btn-info mt-2"
-                                 onClick={saveLicense}
-                             >
-                                 Save License
-                             </button>
-                        </label>
+                                  onSelect={handleLicenseSelect}
+                              />
+                         </label>
                         <p className="label">The associated content&apos;s license.</p>
                     </fieldset>
                 </div>
@@ -157,7 +157,9 @@ const DatasetSection: React.FC<DatasetSectionProps> = ({ onDataChange }) => {
                 </div>
             </div>
         </div>
-    )
-};
+    );
+});
+
+DatasetSection.displayName = 'DatasetSection';
 
 export default DatasetSection;

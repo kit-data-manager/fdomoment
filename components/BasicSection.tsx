@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import {Building2, TestTubeDiagonal, User, Users} from "lucide-react";
 import RORAutocomplete from '@/components/RORAutocomplete';
 import ORCiDAutocomplete from '@/components/ORCiDAutocomplete';
 
 interface BasicSectionProps {
   onDataChange: (data: any) => void;
+  onSave?: () => void;
 }
 
-const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
+const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDataChange, onSave }, ref) => {
   const [inputs, setInputs] = useState({
     user_orcid: '',
     user_orcid_name: '',
@@ -125,9 +126,17 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
   };
 
   const save = () => {
-        localStorage.setItem('user_orcid', inputs.user_orcid);
-        localStorage.setItem('user_orcid_name', inputs.user_orcid_name);
-    }
+    localStorage.setItem('user_orcid', inputs.user_orcid);
+    localStorage.setItem('user_orcid_name', inputs.user_orcid_name);
+    localStorage.setItem('user_ror', inputs.user_ror);
+    localStorage.setItem('user_ror_name', inputs.user_ror_name);
+    localStorage.setItem('research_field', inputs.research_field);
+    onSave?.();
+  }
+
+  useImperativeHandle(ref, () => ({
+    save
+  }));
 
   return (
       <div className="card card-side bg-base-100 shadow-sm">
@@ -181,12 +190,6 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
                 />
               </label>
               <p className="label">The associated users ORCiD.</p>
-              <button
-                  className="btn btn-sm btn-soft btn-info"
-                  onClick={save}
-              >
-                Save
-              </button>
             </fieldset>
           </div>
           <div className="flex items-center gap-2 z-50">
@@ -221,16 +224,6 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
                 />
               </label>
               <p className="label">The associated research organization identifier.</p>
-
-              <button
-                  className="btn btn-sm btn-soft btn-info"
-                  onClick={() => {
-                    localStorage.setItem('user_ror', inputs.user_ror);
-                    localStorage.setItem('user_ror_name', inputs.user_ror_name);
-                  }}
-              >
-                Save
-              </button>
             </fieldset>
           </div>
           <div className="flex items-center gap-2">
@@ -254,19 +247,13 @@ const BasicSection: React.FC<BasicSectionProps> = ({ onDataChange }) => {
                 </datalist>
               </label>
               <p className="label">The associated research field.</p>
-              <button
-                  className="btn btn-sm btn-soft btn-info"
-                  onClick={() => {
-                    localStorage.setItem('research_field', inputs.research_field);
-                  }}
-              >
-                Save
-              </button>
             </fieldset>
           </div>
         </div>
       </div>
-  )
-};
+  );
+});
+
+BasicSection.displayName = 'BasicSection';
 
 export default BasicSection;
