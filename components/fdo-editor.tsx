@@ -18,6 +18,8 @@ export function EditorWithSidebar() {
   
   const [sectionData, setSectionData] = useState<Record<string, any>>({});
   
+  const [openSectionId, setOpenSectionId] = useState<number>(1);
+  
   const sectionRefs = useRef<Record<number, React.RefObject<SectionRef>>>({});
   
   const availableSectionTypes = ['Basic Properties', 'Dataset Properties', 'Typed Properties', 'Additional Properties'].filter(
@@ -43,7 +45,13 @@ export function EditorWithSidebar() {
   };
 
   const collectData = () => {
-    return sectionData;
+    const visibleData: Record<string, any> = {};
+    sections.forEach(section => {
+      if (sectionData[section.title]) {
+        visibleData[section.title] = sectionData[section.title];
+      }
+    });
+    return visibleData;
   };
 
   const addSection = (title: string) => {
@@ -80,7 +88,14 @@ export function EditorWithSidebar() {
           <div className="join join-vertical w-full">
             {sections.map((section) => (
               <div key={section.id} className="collapse join-item border mb-2 relative">
-                <input type="radio" name="accordion" defaultChecked={section.title === 'Basic Properties'} />
+                <input 
+                  type="radio" 
+                  name="accordion" 
+                  defaultChecked={section.title === 'Basic Properties'}
+                  onChange={() => {
+                    setOpenSectionId(section.id);
+                  }}
+                />
                 <div className="collapse-title flex justify-between items-center pr-2">
                   <label className="text-lg font-semibold cursor-pointer">{section.title}</label>
                 </div>
