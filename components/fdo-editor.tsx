@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import BasicSection from './BasicSection';
 import DatasetSection from './DatasetSection';
 import AdditionalSection from './AdditionalSection';
+import SoftwareSection from './SoftwareSection';
 import { Icon } from '@iconify/react';
 import TypedPropertiesSection from "@/components/TypedPropertiesSection";
 import { AppSidebar } from './app-sidebar';
@@ -20,11 +21,51 @@ export function EditorWithSidebar() {
   
   const [openSectionId, setOpenSectionId] = useState<number>(1);
   
-  const sectionRefs = useRef<Record<number, React.RefObject<SectionRef>>>({});
+const sectionRefs = useRef<Record<number, React.RefObject<SectionRef>>>({});
+
+const sectionsWithSave = new Set(['Basic Properties', 'Dataset Properties', 'Software Properties']);
+
+const allSectionTypes = ['Basic Properties', 'Dataset Properties', 'Software Properties', 'Typed Properties', 'Additional Properties'];
+
+const exclusiveGroups = [
+  { types: ['Dataset Properties', 'Software Properties'], icon: 'solar:link-round-angle-line-duotone' }
+];
+
+const getSectionStatus = (sections: { id: number; title: string }[]) => {
+  const addedTypes = new Set(sections.map(s => s.title));
   
-  const availableSectionTypes = ['Basic Properties', 'Dataset Properties', 'Typed Properties', 'Additional Properties'].filter(
-    type => !sections.some(section => section.title === type)
-  );
+  const disabledReasons: Record<string, string> = {};
+  
+  for (const type of allSectionTypes) {
+    if (addedTypes.has(type)) {
+      disabledReasons[type] = 'added';
+    }
+  }
+  
+  for (const group of exclusiveGroups) {
+    const presentInSections = group.types.filter(type => addedTypes.has(type));
+    if (presentInSections.length > 0) {
+      for (const type of group.types) {
+        if (!addedTypes.has(type)) {
+          disabledReasons[type] = `exclusive:${presentInSections[0]}`;
+        }
+      }
+    }
+  }
+
+  return disabledReasons;
+};
+
+const getExclusiveInfo = (type: string) => {
+  for (const group of exclusiveGroups) {
+    if (group.types.includes(type)) {
+      return group;
+    }
+  }
+  return null;
+};
+
+const sectionStatus = getSectionStatus(sections);
 
   const handleRemoveSection = (id: number) => {
     setSections(sections.filter(section => section.id !== id));
@@ -60,26 +101,33 @@ export function EditorWithSidebar() {
   };
 
   const renderSectionContent = (title: string, id: number) => {
-    const ref = (sectionRefs.current[id] = sectionRefs.current[id] || React.createRef<SectionRef>());
+    const hasSave = sectionsWithSave.has(title);
+    const ref = hasSave ? (sectionRefs.current[id] = sectionRefs.current[id] || React.createRef<SectionRef>()) : null;
     
     switch (title) {
       case 'Basic Properties':
-        return <BasicSection ref={ref} onDataChange={(data) => updateSectionData('Basic Properties', data)} />;
+        return <BasicSection ref={ref!} onDataChange={(data) => updateSectionData('Basic Properties', data)} />;
       case 'Dataset Properties':
-        return <DatasetSection ref={ref} onDataChange={(data) => updateSectionData('Dataset Properties', data)} />;
+        return <DatasetSection ref={ref!} onDataChange={(data) => updateSectionData('Dataset Properties', data)} />;
       case 'Typed Properties':
         return <TypedPropertiesSection onTypeSelected={(data) => updateSectionData('Typed Properties', data)} />;
       case 'Additional Properties':
         return <AdditionalSection onDataChange={(data) => updateSectionData('Additional Properties', data)} />;
+      case 'Software Properties':
+        return <SoftwareSection onDataChange={(data) => updateSectionData('Software Properties', data)} />;
       default:
         return null;
     }
   };
 
+  const hasSaveSupport = (title: string) => sectionsWithSave.has(title);
+
   return (
     <div className="flex h-screen w-full">
       <AppSidebar 
-        availableSectionTypes={availableSectionTypes}
+        allSectionTypes={allSectionTypes}
+        sectionStatus={sectionStatus}
+        getExclusiveInfo={getExclusiveInfo}
         onAddSection={addSection}
         onCollectData={() => console.debug(JSON.stringify(collectData(), null, 4))}
       />
@@ -100,13 +148,15 @@ export function EditorWithSidebar() {
                   <label className="text-lg font-semibold cursor-pointer">{section.title}</label>
                 </div>
                 <div className="absolute right-4 top-4 z-20 flex gap-1">
-                  <button
+                    {hasSaveSupport(section.title) && (
+                    <button
                       onClick={() => handleSaveSection(section.id)}
                       className="btn btn-link btn-primary btn-xs"
                       title="Save module"
-                  >
+                    >
                       <Icon icon="mdi:content-save" width="20" height="20" />
-                  </button>
+                    </button>
+                  )}
                   {section.title !== 'Basic Properties' && (
                     <button
                       onClick={() => handleRemoveSection(section.id)}

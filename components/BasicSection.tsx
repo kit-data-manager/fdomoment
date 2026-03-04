@@ -2,6 +2,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'rea
 import {Building2, TestTubeDiagonal, User, Users} from "lucide-react";
 import RORAutocomplete from '@/components/RORAutocomplete';
 import ORCiDAutocomplete from '@/components/ORCiDAutocomplete';
+import {Icon} from "@iconify/react";
 
 interface BasicSectionProps {
   onDataChange: (data: any) => void;
@@ -161,7 +162,7 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
           <div className="flex items-center gap-2 z-60">
             <fieldset className="fieldset w-full">
               <label className="input w-full">
-                <User/>
+                <Icon icon={"academicons:orcid"} width={24} />
                 <ORCiDAutocomplete
                     value={inputs.user_orcid}
                     displayValue={inputs.user_orcid_display}
@@ -195,7 +196,7 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
           <div className="flex items-center gap-2 z-50">
             <fieldset className="fieldset w-full">
               <label className="input w-full">
-                <Building2/>
+                  <Icon icon={"academicons:ror"} width={24} />
                 <RORAutocomplete
                     value={inputs.user_ror}
                     displayValue={inputs.user_ror_display}

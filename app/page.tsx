@@ -11,8 +11,8 @@ export default function Home() {
              <Image
                src="/logo_full.png"
                alt="FDO Moment Logo"
-               width={273}
-               height={128}
+               width={640}
+               height={89}
                className="justify-self-center"
              />
            </div>
