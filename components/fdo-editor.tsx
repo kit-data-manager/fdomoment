@@ -1,53 +1,77 @@
 "use client";
-import React, { useState, useRef } from 'react';
-import BasicSection from './BasicSection';
-import DatasetSection from './DatasetSection';
-import AdditionalSection from './AdditionalSection';
-import SoftwareSection from './SoftwareSection';
+import React, { useState, useRef, useEffect } from 'react';
+import CoreAttributes from './CoreAttributes';
+import DigitalObjectAttributes, {DigitalObjectModuleData} from './DigitalObjectAttributes';
+import AdditionalAttributes from './AdditionalAttributes';
+import SoftwareAttributes from './SoftwareAttributes';
 import { Icon } from '@iconify/react';
 import TypedPropertiesSection from "@/components/TypedPropertiesSection";
 import { AppSidebar } from './app-sidebar';
 
-type SectionRef = {
+type ModuleRef = {
   save: () => void;
 };
 
+type ModuleDataType =
+    | DigitalObjectModuleData;
+
+type ModuleType = {
+    id:number;
+    title:string;
+}
+
 export function EditorWithSidebar() {
-  const [sections, setSections] = useState([
-    { id: 1, title: 'Basic Properties' }
-  ]);
+  // Load saved modules from localStorage on component mount
+  const [modules, setModules] = useState((): ModuleType[] => {
+    const savedModules: string = localStorage.getItem('fdoEditorModules') as string;
+    if (savedModules) {
+      try {
+        return JSON.parse(savedModules);
+      } catch (error) {
+        console.error('Error parsing saved modules:', error);
+      }
+    }
+    // Default to Core Attributes if no saved modules
+    return [
+      { id: 1, title: 'Core Attributes' }
+    ];
+  });
   
-  const [sectionData, setSectionData] = useState<Record<string, any>>({});
+  const [modulesData, setModulesData] = useState<Record<string, ModuleDataType>>({});
   
-  const [openSectionId, setOpenSectionId] = useState<number>(1);
+  // Load saved open module ID from localStorage on component mount
+  const [openModuleId, setOpenModuleId] = useState<number>(() => {
+    const savedOpenModuleId = localStorage.getItem('openModuleId');
+    return savedOpenModuleId ? parseInt(savedOpenModuleId) : 1;
+  });
   
-const sectionRefs = useRef<Record<number, React.RefObject<SectionRef>>>({});
+const moduleRefs = useRef<Record<number, React.RefObject<ModuleRef>>>({});
 
-const sectionsWithSave = new Set(['Basic Properties', 'Dataset Properties', 'Software Properties']);
+const modulesWithSave = new Set(['Core Attributes', 'Digital Object Attributes', 'Additional Properties']);
 
-const allSectionTypes = ['Basic Properties', 'Dataset Properties', 'Software Properties', 'Typed Properties', 'Additional Properties'];
+const allModuleTypes = ['Core Attributes', 'Digital Object Attributes', 'Software Attributes', 'Typed Properties', 'Additional Properties'];
 
 const exclusiveGroups = [
-  { types: ['Dataset Properties', 'Software Properties'], icon: 'solar:link-round-angle-line-duotone' }
+  { types: ['Digital Object Attributes', 'Software Attributes'], icon: 'solar:link-round-angle-line-duotone' }
 ];
 
-const getSectionStatus = (sections: { id: number; title: string }[]) => {
-  const addedTypes = new Set(sections.map(s => s.title));
+const getModuleStatus = (modules: { id: number; title: string }[]) => {
+  const addedTypes = new Set(modules.map(s => s.title));
   
   const disabledReasons: Record<string, string> = {};
   
-  for (const type of allSectionTypes) {
+  for (const type of allModuleTypes) {
     if (addedTypes.has(type)) {
       disabledReasons[type] = 'added';
     }
   }
   
   for (const group of exclusiveGroups) {
-    const presentInSections = group.types.filter(type => addedTypes.has(type));
-    if (presentInSections.length > 0) {
+    const presentInModules = group.types.filter(type => addedTypes.has(type));
+    if (presentInModules.length > 0) {
       for (const type of group.types) {
         if (!addedTypes.has(type)) {
-          disabledReasons[type] = `exclusive:${presentInSections[0]}`;
+          disabledReasons[type] = `exclusive:${presentInModules[0]}`;
         }
       }
     }
@@ -65,101 +89,116 @@ const getExclusiveInfo = (type: string) => {
   return null;
 };
 
-const sectionStatus = getSectionStatus(sections);
+const moduleStatus = getModuleStatus(modules);
 
-  const handleRemoveSection = (id: number) => {
-    setSections(sections.filter(section => section.id !== id));
+  const handleRemoveModule = (id: number) => {
+      const modified_modules = modules.filter(module => module.id !== id);
+      localStorage.setItem('fdoEditorModules', JSON.stringify(modified_modules));
+      setModules(modified_modules);
+
+    // If removed module was the open one, open the first module
+    if (openModuleId === id) {
+      const firstModuleId = modules.length > 1 ? modules[0].id : 1;
+      setOpenModuleId(firstModuleId);
+    }
   };
 
-  const handleSaveSection = (id: number) => {
-    const ref = sectionRefs.current[id];
+  const handleSaveModule = (id: number) => {
+    const ref = moduleRefs.current[id];
     if (ref?.current) {
       ref.current.save();
     }
   };
 
-  const updateSectionData = (sectionTitle: string, data: any) => {
-      setSectionData(prev => ({
-      ...prev,
-      [sectionTitle]: data
-    }));
-  };
+  // Save open module ID to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('openModuleId', openModuleId.toString());
+  }, [openModuleId]);
+
+  const updateModuleData = (moduleTitle: string, data: ModuleDataType) => {
+       setModulesData(prev => ({
+       ...prev,
+       [moduleTitle]: data
+     }));
+   };
 
   const collectData = () => {
-    const visibleData: Record<string, any> = {};
-    sections.forEach(section => {
-      if (sectionData[section.title]) {
-        visibleData[section.title] = sectionData[section.title];
+    const visibleData: Record<string, ModuleDataType> = {};
+    modules.forEach((module: { id: number, title: string }) => {
+      if (modulesData[module.title]) {
+        visibleData[module.title] = modulesData[module.title];
       }
     });
     return visibleData;
   };
 
-  const addSection = (title: string) => {
-    const newId = Math.max(...sections.map(s => s.id), 0) + 1;
-    setSections([...sections, { id: newId, title }]);
+  const addModule = (title: string) => {
+    const newId = Math.max(...modules.map((s: { id: number, title: string }) => s.id), 0) + 1;
+    const modified_modules =[...modules, { id: newId, title }];
+    localStorage.setItem('fdoEditorModules', JSON.stringify(modified_modules));
+    setModules(modified_modules);
   };
 
-  const renderSectionContent = (title: string, id: number) => {
-    const hasSave = sectionsWithSave.has(title);
-    const ref = hasSave ? (sectionRefs.current[id] = sectionRefs.current[id] || React.createRef<SectionRef>()) : null;
+  const renderModuleContent = (title: string, id: number) => {
+    const hasSave = modulesWithSave.has(title);
+    const ref = hasSave ? (moduleRefs.current[id] = moduleRefs.current[id] || React.createRef<ModuleRef>()) : null;
     
     switch (title) {
-      case 'Basic Properties':
-        return <BasicSection ref={ref!} onDataChange={(data) => updateSectionData('Basic Properties', data)} />;
-      case 'Dataset Properties':
-        return <DatasetSection ref={ref!} onDataChange={(data) => updateSectionData('Dataset Properties', data)} />;
+      case 'Core Attributes':
+        return <CoreAttributes ref={ref!} onDataChange={(data) => updateModuleData('Core Attributes', data)} />;
+      case 'Digital Object Attributes':
+        return <DigitalObjectAttributes ref={ref!} onDataChange={(data) => updateModuleData('Digital Object Attributes', data)} />;
       case 'Typed Properties':
-        return <TypedPropertiesSection onTypeSelected={(data) => updateSectionData('Typed Properties', data)} />;
+        return <TypedPropertiesSection onTypeSelected={(data) => updateModuleData('Typed Properties', data)} />;
       case 'Additional Properties':
-        return <AdditionalSection onDataChange={(data) => updateSectionData('Additional Properties', data)} />;
-      case 'Software Properties':
-        return <SoftwareSection onDataChange={(data) => updateSectionData('Software Properties', data)} />;
+        return <AdditionalAttributes ref={ref!} onDataChange={(data) => updateModuleData('Additional Properties', data)} />;
+      case 'Software Attributes':
+        return <SoftwareAttributes onDataChange={(data) => updateModuleData('Software Attributes', data)} />;
       default:
         return null;
     }
   };
 
-  const hasSaveSupport = (title: string) => sectionsWithSave.has(title);
+  const hasSaveSupport = (title: string) => modulesWithSave.has(title);
 
   return (
     <div className="flex h-screen w-full">
       <AppSidebar 
-        allSectionTypes={allSectionTypes}
-        sectionStatus={sectionStatus}
+        allModuleTypes={allModuleTypes}
+        moduleStatus={moduleStatus}
         getExclusiveInfo={getExclusiveInfo}
-        onAddSection={addSection}
+        onAddModule={addModule}
         onCollectData={() => console.debug(JSON.stringify(collectData(), null, 4))}
       />
       <main className="flex-1 p-6">
         <div className="p-4 rounded-lg shadow-md">
           <div className="join join-vertical w-full">
-            {sections.map((section) => (
-              <div key={section.id} className="collapse join-item border mb-2 relative">
+            {modules.map((module) => (
+              <div key={module.id} className="collapse join-item border mb-2 relative">
                 <input 
                   type="radio" 
                   name="accordion" 
-                  defaultChecked={section.title === 'Basic Properties'}
+                  defaultChecked={module.title === 'Core Attributes'}
                   onChange={() => {
-                    setOpenSectionId(section.id);
+                    setOpenModuleId(module.id);
                   }}
                 />
                 <div className="collapse-title flex justify-between items-center pr-2">
-                  <label className="text-lg font-semibold cursor-pointer">{section.title}</label>
+                  <label className="text-lg font-semibold cursor-pointer">{module.title}</label>
                 </div>
                 <div className="absolute right-4 top-4 z-20 flex gap-1">
-                    {hasSaveSupport(section.title) && (
+                    {hasSaveSupport(module.title) && (
                     <button
-                      onClick={() => handleSaveSection(section.id)}
+                      onClick={() => handleSaveModule(module.id)}
                       className="btn btn-link btn-primary btn-xs"
                       title="Save module"
                     >
                       <Icon icon="mdi:content-save" width="20" height="20" />
                     </button>
                   )}
-                  {section.title !== 'Basic Properties' && (
+                  {module.title !== 'Core Attributes' && (
                     <button
-                      onClick={() => handleRemoveSection(section.id)}
+                      onClick={() => handleRemoveModule(module.id)}
                       className="btn btn-link btn-primary btn-xs"
                       title="Remove module"
                     >
@@ -168,7 +207,7 @@ const sectionStatus = getSectionStatus(sections);
                   )}
                 </div>
                 <div className="collapse-content">
-                  {renderSectionContent(section.title, section.id)}
+                  {renderModuleContent(module.title, module.id)}
                 </div>
               </div>
             ))}

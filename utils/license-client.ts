@@ -1,5 +1,17 @@
+export type LicenseId = 
+  | 'MIT'
+  | 'Apache-2.0'
+  | 'GPL-3.0'
+  | 'LGPL-3.0'
+  | 'BSD-3-Clause'
+  | 'BSD-2-Clause'
+  | 'ISC'
+  | 'CC-BY-4.0'
+  | 'CC-BY-SA-4.0'
+  | 'Unlicense';
+
 interface SPDXLicense {
-  id: string;
+  id: LicenseId;
   name: string;
   isOsiApproved: boolean;
   url: string;

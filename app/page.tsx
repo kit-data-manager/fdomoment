@@ -75,7 +75,7 @@ export default function Home() {
       </main>
 
         <footer className="py-6 px-6 text-center border-t">
-        © {new Date().getFullYear()} 2026 Karlsruhe Institute of Technology (KIT)
+        © {new Date().getFullYear()} Karlsruhe Institute of Technology (KIT)
       </footer>
     </div>
   );

@@ -1,15 +1,22 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import {Building2, TestTubeDiagonal, User, Users} from "lucide-react";
+import {TestTubeDiagonal} from "lucide-react";
 import RORAutocomplete from '@/components/RORAutocomplete';
 import ORCiDAutocomplete from '@/components/ORCiDAutocomplete';
 import {Icon} from "@iconify/react";
 
-interface BasicSectionProps {
+/*export interface CoreModuleData {
+    ?:string;
+    license_id?: string;
+    license_name?: string;
+    contentLocation?: string;
+}
+*/
+interface CoreAttributesProps {
   onDataChange: (data: any) => void;
   onSave?: () => void;
 }
 
-const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDataChange, onSave }, ref) => {
+const CoreAttributes = forwardRef<{ save: () => void }, CoreAttributesProps>(({ onDataChange, onSave }, ref) => {
   const [inputs, setInputs] = useState({
     user_orcid: '',
     user_orcid_name: '',
@@ -55,7 +62,7 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
 
   // Load saved values from localStorage on component mount
   useEffect(() => {
-    const savedInputs = localStorage.getItem('basicSectionInputs');
+    const savedInputs = localStorage.getItem('coreAttributesInputs');
     if (savedInputs) {
       try {
         const parsedInputs = JSON.parse(savedInputs);
@@ -102,7 +109,7 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
 
   // Save inputs to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('basicSectionInputs', JSON.stringify(inputs));
+    localStorage.setItem('coreAttributesInputs', JSON.stringify(inputs));
   }, [inputs]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,18 +151,19 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
         <figure className="relative w-72 h-full">
           <img
               src="./basic_background.png"
-              alt="Movie"
+              alt="CoreAttributesBackground"
               className="opacity-10 logo border-r-2 border-secondary"/>
           <div
-              className="absolute -top-15 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
-              <span
-                  className="text-sm">This modules contains basic kernel attributes to specify an FDO&apos;s ownership and context.</span>
+              className="absolute -top-12 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
+              <span className="text-sm">
+                  This module contributes core kernel attributes to define <span className="text-info">ownership and context</span> {" "}
+                  of the FAIR Digital Object. These information can be used to associate an FDO with a user, an organization,
+                  or a research field, which facilitates basic <span className="text-info">findability</span>.
+              </span>
             <br/>
-            <span className="text-sm">These are {" "}
-                  <Users width={12} height={12} className="inline align-baseline"/> ORCiD and {" "}
-                  <Building2 width={12} height={12} className="inline align-baseline"/> affiliation ROR of
-                  the creator as well as the <TestTubeDiagonal width={12} height={12}
-                  className="inline align-baseline"/> research field the FAIR Digital Object is related to.</span>
+              <span className="text-sm">All attributes in this module can be locally persisted to reuse them across all
+                  your FDOs.
+            </span>
           </div>
         </figure>
         <div className="card-body">
@@ -190,7 +198,7 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
                     onSelect={handleORCiDSelect}
                 />
               </label>
-              <p className="label">The associated users ORCiD.</p>
+              <p className="label">The ORCiD identifier of the owner.</p>
             </fieldset>
           </div>
           <div className="flex items-center gap-2 z-50">
@@ -224,7 +232,7 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
                     onSelect={handleRORSelect}
                 />
               </label>
-              <p className="label">The associated research organization identifier.</p>
+              <p className="label">The research organization identifier of the owner&apos;s primary affiliation.</p>
             </fieldset>
           </div>
           <div className="flex items-center gap-2">
@@ -247,7 +255,7 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
                   <option value="Matter"></option>
                 </datalist>
               </label>
-              <p className="label">The associated research field.</p>
+              <p className="label">The research field the FDO is associated with.</p>
             </fieldset>
           </div>
         </div>
@@ -255,6 +263,6 @@ const BasicSection = forwardRef<{ save: () => void }, BasicSectionProps>(({ onDa
   );
 });
 
-BasicSection.displayName = 'BasicSection';
+CoreAttributes.displayName = 'CoreAttributes';
 
-export default BasicSection;
+export default CoreAttributes;

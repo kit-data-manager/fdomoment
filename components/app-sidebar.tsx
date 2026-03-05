@@ -9,15 +9,15 @@ import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 
 interface AppSidebarProps {
-    allSectionTypes: string[];
-    sectionStatus: Record<string, string>;
+    allModuleTypes: string[];
+    moduleStatus: Record<string, string>;
     getExclusiveInfo: (type: string) => { types: string[]; icon: string } | null;
-    onAddSection: (title: string) => void;
+    onAddModule: (title: string) => void;
     onCollectData: () => void;
 }
 
-export function AppSidebar({ allSectionTypes, sectionStatus, getExclusiveInfo, onAddSection, onCollectData }: AppSidebarProps) {
-    const hasAvailableSections = allSectionTypes.some(type => !sectionStatus[type]);
+export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onAddModule, onCollectData }: AppSidebarProps) {
+    const hasAvailableModules = allModuleTypes.some(type => !moduleStatus[type]);
 
     return (
         <div className="h-full w-16">
@@ -42,19 +42,19 @@ export function AppSidebar({ allSectionTypes, sectionStatus, getExclusiveInfo, o
                             </button>
                     </SidebarMenuItem>
                     <SidebarMenuItem className="justify-center pl-2 pb-5" title="Add an additional Module">
-                        {hasAvailableSections ? (
+                        {hasAvailableModules ? (
                             <div className="dropdown dropdown-end">
                                 <button tabIndex={0} className="btn  btn-link btn-sm">
                                     <Blocks size={24} />
                                 </button>
                                 <ul tabIndex={0} className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 fixed left-16 mt-2">
-                                    {allSectionTypes.map(type => {
-                                        const isDisabled = !!sectionStatus[type];
+                                    {allModuleTypes.map(type => {
+                                        const isDisabled = !!moduleStatus[type];
                                         const exclusiveInfo = getExclusiveInfo(type);
                                         return (
                                             <li key={type}>
                                                 <button 
-                                                    onClick={() => !isDisabled && onAddSection(type)} 
+                                                    onClick={() => !isDisabled && onAddModule(type)}
                                                     disabled={isDisabled}
                                                     className={`flex items-center gap-2 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                 >

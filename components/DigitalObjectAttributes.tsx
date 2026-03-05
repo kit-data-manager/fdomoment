@@ -1,25 +1,32 @@
 import React, {useEffect, useState, forwardRef, useImperativeHandle} from 'react';
-import {Building2, Copyright, FileType, Link, TestTubeDiagonal, Users} from "lucide-react";
+import {Copyright, FileType, Link} from "lucide-react";
 import MimeTypeAutocomplete from './MimeTypeAutocomplete';
 import LicenseAutocomplete from './LicenseAutocomplete';
 
-interface DatasetSectionProps {
-  onDataChange: (data: any) => void;
+export interface DigitalObjectModuleData {
+    mimeType?:string;
+    license_id?: string;
+    license_name?: string;
+    contentLocation?: string;
+}
+
+interface DigitalObjectModuleProps {
+  onDataChange: (data: DigitalObjectModuleData) => void;
   onSave?: () => void;
 }
 
-const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ onDataChange, onSave }, ref) => {
-     const [inputs, setInputs] = useState({
+const DigitalObjectAttributes = forwardRef<{ save: () => void }, DigitalObjectModuleProps>(({ onDataChange, onSave }, ref) => {
+     const [inputs, setInputs] = useState<DigitalObjectModuleData>({
          mimeType: '',
-         license_id: localStorage.getItem('dataset_license_id') || '',
-         license_name: localStorage.getItem('dataset_license_name') || '',
+         license_id: localStorage.getItem('digital_object_license_id') || '',
+         license_name: localStorage.getItem('digital_object_license_name') || '',
          contentLocation: ''
      });
 
     // Load saved values from localStorage on component mount
     useEffect(() => {
-        const savedLicenseId = localStorage.getItem('dataset_license_id');
-        const savedLicenseName = localStorage.getItem('dataset_license_name');
+        const savedLicenseId = localStorage.getItem('digital_object_license_id');
+        const savedLicenseName = localStorage.getItem('digital_object_license_name');
 
         let updatedInputs = {
             mimeType: '',
@@ -42,7 +49,6 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
                 }
             }
         }
-        console.log("UP", updatedInputs);
         onDataChange(updatedInputs);
     }, []);
 
@@ -66,8 +72,8 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
   };
 
     const save = () => {
-        localStorage.setItem('dataset_license_id', inputs.license_id);
-        localStorage.setItem('dataset_license_name', inputs.license_name);
+        localStorage.setItem('digitalobject_license_id', inputs.license_id ?? '');
+        localStorage.setItem('digitalobject_license_name', inputs.license_name ?? '');
         onSave?.();
     }
 
@@ -80,18 +86,21 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
             <figure className="relative w-72 h-full">
                 <img
                     src="./dataset_background.png"
-                    alt="Movie"
+                    alt="DigitalObjectBackground"
                     className="opacity-10 logo border-r-2 border-secondary"/>
-                <div
-                    className="absolute -top-15 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
-              <span
-                  className="text-sm">This modules contains dataset kernel attributes to specify a dataset&apos;s type, location, and license.</span>
-                    <br/>
-                    <span className="text-sm">These are {" "}
-                        <Users width={12} height={12} className="inline align-baseline"/> ORCiD and {" "}
-                        <Building2 width={12} height={12} className="inline align-baseline"/> affiliation ROR of
-                  the creator as well as the <TestTubeDiagonal width={12} height={12}
-                                                               className="inline align-baseline"/> research field the FAIR Digital Object is related to.</span>
+                <div className="absolute left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
+                    <span className="text-sm">
+                        This modules contributes digital object-related attributes to the FAIR Digital Object. A digital object can be
+                        for example a dataset, a single file, but also a (metadata) document, schema, and even a stream. The contained
+                        attributes are mainly used to facilitate <span className="text-info">accessibility</span>.
+                        <br/><br/>
+                        <span className="text-info">Digital Object Module</span> and <span className="text-info">Software Module</span> are <span className="text-info">exclusive</span> {" "}
+                        and can not be used together.
+                        <br/><br/>
+                        For documents, primarily consumed by humans, i.e., articles, instructions, or protocols, the {" "}
+                        <span className="text-info">Document Module</span> can be added for extended {" "}
+                        <span className="text-info">findability</span>.
+                    </span>
                 </div>
             </figure>
             <div className="card-body">
@@ -100,13 +109,13 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
                         <label className="input w-full">
                             <FileType/>
                             <MimeTypeAutocomplete
-                                value={inputs.mimeType}
-                                displayValue={inputs.mimeType}
+                                value={inputs.mimeType ?? ''}
+                                displayValue={inputs.mimeType ?? ''}
                                 onChange={(value) => setInputs(prev => ({...prev, mimeType: value}))}
                                 onSelect={handleMimetypeSelect}
                             />
                         </label>
-                        <p className="label">The associated content&apos;s mime type.</p>
+                        <p className="label">The mime type of the digital object.</p>
                     </fieldset>
                 </div>
                 <div className="flex items-center gap-2">
@@ -114,7 +123,7 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
                         <label className="input w-full">
                             <Copyright/>
                              <LicenseAutocomplete
-                                 value={inputs.license_id}
+                                 value={inputs.license_id ?? ''}
                                  displayValue={inputs.license_name ? `${inputs.license_name} (${inputs.license_id})` : ''}
                                  onChange={(value) => {
                                      // Parse the value to extract name and ID if it's in format "name (id)"
@@ -138,7 +147,7 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
                                   onSelect={handleLicenseSelect}
                               />
                          </label>
-                        <p className="label">The associated content&apos;s license.</p>
+                        <p className="label">The license under which the digital object is published.</p>
                     </fieldset>
                 </div>
                 <div className="flex items-center gap-2">
@@ -152,7 +161,7 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
                                 className="w-full"
                             />
                         </label>
-                        <p className="label">The associated content&apos;s URL.</p>
+                        <p className="label">The digital object&ampos;s URL, preferably directly accessible via HTTP.</p>
                     </fieldset>
                 </div>
             </div>
@@ -160,6 +169,6 @@ const DatasetSection = forwardRef<{ save: () => void }, DatasetSectionProps>(({ 
     );
 });
 
-DatasetSection.displayName = 'DatasetSection';
+DigitalObjectAttributes.displayName = 'DigitalObjectAttributes';
 
-export default DatasetSection;
+export default DigitalObjectAttributes;
