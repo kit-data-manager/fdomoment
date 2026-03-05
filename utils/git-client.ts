@@ -7,6 +7,26 @@ export type RepositoryType =
     | "GitLab@KIT"
     | "Other";
 
+const STORAGE_KEY = 'fdo-editor-access-tokens';
+
+interface AccessTokens {
+    GitHub?: string;
+    GitLab?: string;
+    Other?: string;
+}
+
+function getAccessToken(repoType: RepositoryType): string | undefined {
+    if (typeof window === 'undefined') return undefined;
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+        const tokens: AccessTokens = JSON.parse(stored);
+        if (repoType === 'GitHub') return tokens.GitHub;
+        if (repoType === 'GitLab.com' || repoType === 'GitLab@KIT' || repoType === 'Codebase@Helmholtz') return tokens.GitLab;
+        return tokens.Other;
+    }
+    return undefined;
+}
+
 interface RepositoryInfo {
   repositoryType?: RepositoryType;
   license?: LicenseId;
@@ -60,15 +80,21 @@ export async function getRepositoryInfo(repoUrl: string): Promise<RepositoryInfo
     }
     
     if (isGitHub) {
+      const githubToken = getAccessToken('GitHub');
+      
       // Fetch repository information to get default branch
-      const repoResponse = await fetch(`${apiBase}/${owner}/${repo}`);
+      const repoResponse = await fetch(`${apiBase}/${owner}/${repo}`, {
+          headers: githubToken ? { "Authorization": `token ${githubToken}` } : {}
+      });
       if (!repoResponse.ok) {
         throw new Error(`Failed to fetch repository info: ${repoResponse.status}`);
       }
 
       // Try to fetch LICENSE file
       let licenseId: LicenseId | undefined = undefined;
-      const licenseResponse = await fetch(`${apiBase}/${owner}/${repo}/contents/LICENSE`);
+      const licenseResponse = await fetch(`${apiBase}/${owner}/${repo}/contents/LICENSE`, {
+          headers: githubToken ? { "Authorization": `token ${githubToken}` } : {}
+      });
       if (licenseResponse.ok) {
         const licenseData = await licenseResponse.json();
         const licenseContent = atob(licenseData.content);
@@ -79,7 +105,9 @@ export async function getRepositoryInfo(repoUrl: string): Promise<RepositoryInfo
       
       // Get README.md URL
       let readmeUrl: string | undefined = undefined;
-      const readmeResponse = await fetch(`${apiBase}/${owner}/${repo}/contents/README.md`);
+      const readmeResponse = await fetch(`${apiBase}/${owner}/${repo}/contents/README.md`, {
+          headers: githubToken ? { "Authorization": `token ${githubToken}` } : {}
+      });
       if (readmeResponse.ok) {
         const readmeData = await readmeResponse.json();
         readmeUrl = readmeData.html_url;
@@ -94,11 +122,12 @@ export async function getRepositoryInfo(repoUrl: string): Promise<RepositoryInfo
 
     // GitLab API base URL
     if (isGitLab) {
+      const gitlabToken = getAccessToken(gitlabName);
 
       // Get repository ID (GitLab doesn't directly expose the ID from the URL, so we need to search)
       const searchResponse = await fetch(`${apiBase}/projects?query=${encodeURIComponent(owner + '/' + repo)}`, {
           headers: {
-              "PRIVATE_TOKEN": ""
+              "PRIVATE_TOKEN": gitlabToken || ""
           }
       });
       if (!searchResponse.ok) {
@@ -114,7 +143,11 @@ export async function getRepositoryInfo(repoUrl: string): Promise<RepositoryInfo
       
       // Try to fetch LICENSE file
       let licenseId: LicenseId | undefined = undefined;
-      const licenseResponse = await fetch(`${apiBase}/projects/${projectId}/repository/files/LICENSE?ref=main`);
+      const licenseResponse = await fetch(`${apiBase}/projects/${projectId}/repository/files/LICENSE?ref=main`, {
+          headers: {
+              "PRIVATE_TOKEN": gitlabToken || ""
+          }
+      });
       if (licenseResponse.ok) {
         const licenseData = await licenseResponse.json();
         const licenseContent = atob(licenseData.content);
@@ -125,7 +158,11 @@ export async function getRepositoryInfo(repoUrl: string): Promise<RepositoryInfo
       
       // Get README.md URL
       let readmeUrl: string | undefined = undefined;
-      const readmeResponse = await fetch(`${apiBase}/projects/${projectId}/repository/files/README.md?ref=main`);
+      const readmeResponse = await fetch(`${apiBase}/projects/${projectId}/repository/files/README.md?ref=main`, {
+          headers: {
+              "PRIVATE_TOKEN": gitlabToken || ""
+          }
+      });
       if (readmeResponse.ok) {
         // GitLab doesn't provide a direct HTML URL, so we construct it
         readmeUrl = `${repoBase}/${owner}/${repo}/-/blob/main/README.md`;

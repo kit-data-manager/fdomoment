@@ -170,7 +170,7 @@ const moduleStatus = getModuleStatus(modules);
         onAddModule={addModule}
         onCollectData={() => console.debug(JSON.stringify(collectData(), null, 4))}
       />
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 overflow-auto">
         <div className="p-4 rounded-lg shadow-md">
           <div className="join join-vertical w-full">
             {modules.map((module) => (
