@@ -1,14 +1,23 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { ChartCandlestick, KeyRound } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { KeyRound } from "lucide-react";
 import { Icon } from "@iconify/react";
 
 interface AdditionalAttributesProps {
   onDataChange: (data: any) => void;
-  onSave?: () => void;
 }
 
-const AdditionalAttributes = forwardRef<{ save: () => void }, AdditionalAttributesProps>(({ onDataChange, onSave }, ref) => {
-  const [rows, setRows] = useState<{ key: string, value: string }[]>(JSON.parse(localStorage.getItem('additionalAttributesRows') ?? '[]'));
+const AdditionalAttributes = ({ onDataChange }: AdditionalAttributesProps) => {
+  const [rows, setRows] = useState<{ key: string, value: string }[]>(() => {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+    const stored = localStorage.getItem('additionalAttributesRows');
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('additionalAttributesRows', JSON.stringify(rows));
+  }, [rows]);
 
   const handleInputChange = (index: number, field: 'key' | 'value', value: string) => {
     const newRows = [...rows];
@@ -26,15 +35,6 @@ const AdditionalAttributes = forwardRef<{ save: () => void }, AdditionalAttribut
     setRows(newRows);
     onDataChange(newRows);
   };
-
-  const save = () => {
-    localStorage.setItem('additionalAttributesRows', JSON.stringify(rows));
-    onSave?.();
-  }
-
-  useImperativeHandle(ref, () => ({
-    save
-  }));
 
   return (
     <div className="card card-side bg-base-100 shadow-sm">
@@ -98,7 +98,7 @@ const AdditionalAttributes = forwardRef<{ save: () => void }, AdditionalAttribut
       </div>
     </div>
   );
-});
+};
 
 AdditionalAttributes.displayName = 'AdditionalAttributes';
 

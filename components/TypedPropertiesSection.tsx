@@ -1,217 +1,266 @@
-import React, { useState, useEffect } from 'react';
-import { useTypeAPI } from '../utils/typeapi-client';
-import Form from '@rjsf/core';
-import ajv from '@rjsf/validator-ajv8'
+'use client';
 
-interface TypedPropertiesSectionProps {
-  onTypeSelected: (typeId: string, value: any) => void;
+import React, { useState, useEffect } from 'react';
+import { useTypeAPI } from '@/utils/typeapi-client';
+import { Form } from '@rjsf/daisyui';
+import ajv from '@rjsf/validator-ajv8';
+import { Icon } from "@iconify/react";
+import { Tag, Plus, Trash2 } from "lucide-react";
+
+
+interface TypedProperty {
+    typeId: string;
+    typeName: string;
+    value: Record<string, any>;
 }
 
-const TypedPropertiesSection: React.FC<TypedPropertiesSectionProps> = ({ onTypeSelected }) => {
-  const { searchTypes, getTypeById, resolveNestedTypes } = useTypeAPI();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [selectedType, setSelectedType] = useState<any>(null);
-  const [formValue, setFormValue] = useState<Record<string, any>>({});
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  
-  // Search for types with debounced search
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (searchQuery.length >= 5) {
-        try {
-          const results = await searchTypes(searchQuery);
-          setSearchResults(results);
-          setShowSuggestions(true);
-        } catch (error) {
-          console.error('Error searching types:', error);
-          setSearchResults([]);
-          setShowSuggestions(false);
+interface TypedPropertiesSectionProps {
+  onTypeSelected: (data: Record<string, any>) => void;
+}
+
+const TypedPropertiesSection = ({ onTypeSelected }: TypedPropertiesSectionProps) => {
+    const { searchTypes, getTypeById, resolveNestedTypes } = useTypeAPI();
+    const [typedProperties, setTypedProperties] = useState<TypedProperty[]>(() => {
+        if (typeof window === 'undefined') {
+            return [];
         }
-      } else {
-        setSearchResults([]);
-        setShowSuggestions(false);
-      }
-    };
-    
-    const debounce = setTimeout(() => {
-      fetchSuggestions();
-    }, 300);
-    
-    return () => clearTimeout(debounce);
-  }, [searchQuery, searchTypes]);
+        const stored = localStorage.getItem('typedProperties');
+        return stored ? JSON.parse(stored) : [];
+    });
 
-  // Handle type selection
-  const handleTypeSelect = async (typeId: string) => {
-    try {
-      // Get the selected type
-      const type = await getTypeById(typeId);
-      
-      // If it's a combined attribute, resolve nested types
-      let resolvedType = type;
-      if (type.type === 'FdoCombinedAttribute') {
-        resolvedType = await resolveNestedTypes(type);
-      }
-      
-      setSelectedType(resolvedType);
-      
-      // Initialize form value based on schema
-      const initialValue: Record<string, any> = {};
-      if (resolvedType.schema && resolvedType.schema.properties) {
-        Object.keys(resolvedType.schema.properties).forEach(key => {
-          const property = resolvedType.schema.properties[key];
-          if (property.type === 'string') {
-            initialValue[key] = '';
-          } else if (property.type === 'number') {
-            initialValue[key] = 0;
-          } else if (property.type === 'boolean') {
-            initialValue[key] = false;
-          } else if (property.type === 'array') {
-            initialValue[key] = [];
-          } else if (property.type === 'object') {
-            initialValue[key] = {};
-          }
-        });
-      }
-      setFormValue(initialValue);
-      
-      // Clear search query and hide suggestions
-      setSearchQuery('');
-      setShowSuggestions(false);
-      
-      // Notify parent component
-      onTypeSelected(typeId, initialValue);
-    } catch (error) {
-      console.error('Error selecting type:', error);
-    }
-  };
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedType, setSelectedType] = useState<any>(null);
+    const [formValue, setFormValue] = useState<Record<string, any>>({});
+    const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  // Handle form value changes
-  const handleFormChange = (key: string, value: any) => {
-    const newFormValue: Record<string, any> = { ...formValue, [key]: value };
-    console.log("CHANGE", newFormValue);
-    setFormValue(newFormValue);
-    
-    // Notify parent component with updated value
-    if (selectedType) {
-      onTypeSelected(selectedType.id, newFormValue);
-    }
-  };
+    useEffect(() => {
+        localStorage.setItem('typedProperties', JSON.stringify(typedProperties));
+        onTypeSelected(typedProperties);
+    }, [typedProperties]);
 
-  // Render form using RJSF
-  const renderForm = () => {
-    if (!selectedType || !selectedType.schema) {
-      return null;
-    }
-
-    const schema = selectedType.schema;
-    
-    // Use ajv8 validator for RJSF
-    const validator = ajv;
-    
-    return (
-      <div className="mt-4 p-4 border rounded">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-semibold">{selectedType.name}</h3>
-          <button
-            className="btn btn-sm btn-ghost"
-            onClick={() => {
-              setSelectedType(null);
-              setFormValue({});
-              setSearchQuery('');
-              setShowSuggestions(false);
-            }}
-          >
-            ×
-          </button>
-        </div>
-        <Form
-          schema={schema}
-          formData={formValue}
-          onChange={({ formData }) => {
-            if (formData) {
-              setFormValue(formData);
-              if (selectedType) {
-                onTypeSelected(selectedType.id, formData);
-              }
-            }
-          }}
-          onSubmit={({ formData }) => {
-            if (formData) {
-              if (selectedType) {
-                onTypeSelected(selectedType.id, formData);
-              }
-            }
-          }}
-          liveValidate={true}
-          validator={validator}
-          className="w-full"
-        >
-          <div className="mt-4">
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-          </div>
-        </Form>
-      </div>
-    );
-  };
-
-  return (
-    <div className="mb-6">
-      <h2 className="text-xl font-bold mb-3">Typed Properties</h2>
-      
-      {/* Type Search or Selected Type Display */}
-      <div className="mb-4">
-        {selectedType ? (
-          <div className="flex items-center justify-between p-2 border rounded">
-            <span className="flex items-center">
-              {selectedType.name} ({selectedType.id})
-            </span>
-            <button
-              className="btn btn-sm btn-ghost"
-              onClick={() => {
-                setSelectedType(null);
-                setFormValue({});
-                setSearchQuery('');
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (searchQuery.length >= 3) {
+                try {
+                    const results = await searchTypes(searchQuery);
+                    setSearchResults(results);
+                    setShowSuggestions(true);
+                } catch (error) {
+                    console.error('Error searching types:', error);
+                    setSearchResults([]);
+                    setShowSuggestions(false);
+                }
+            } else {
+                setSearchResults([]);
                 setShowSuggestions(false);
-              }}
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div>
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Search for types..."
-              onFocus={() => searchQuery.length >= 5 && setShowSuggestions(true)}
-            />
-            
-            {/* Search Results */}
-            {showSuggestions && searchResults.length > 0 && (
-              <div className="absolute bg-white border border-gray-300 rounded-md shadow-lg mt-1">
-                {searchResults.map(type => (
-                  <div
-                    key={type.id}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleTypeSelect(type.id)}
-                  >
-                    {type.name} ({type.id})
-                  </div>
+            }
+        };
+
+        const debounce = setTimeout(() => {
+            fetchSuggestions();
+        }, 300);
+
+        return () => clearTimeout(debounce);
+    }, [searchQuery, searchTypes]);
+
+    const handleTypeSelect = async (typeId: string) => {
+        try {
+            const type = await getTypeById(typeId);
+            setSelectedType(type);
+            setSearchQuery('');
+            setShowSuggestions(false);
+            setIsModalOpen(true);
+        } catch (error) {
+            console.error('Error selecting type:', error);
+        }
+    };
+    const openEditModal = (index: number) => {
+        const property = typedProperties[index];
+        setEditingIndex(index);
+        getTypeById(property.typeId).then(async (type) => {
+            setSelectedType(type);
+            setFormValue(property.value);
+            setIsModalOpen(true);
+        });
+    };
+
+    const openAddModal = () => {
+        setEditingIndex(null);
+        setSelectedType(null);
+        setFormValue({});
+        setSearchQuery('');
+        setShowSuggestions(false);
+        setIsModalOpen(true);
+
+    };
+
+    const handleSaveProperty = () => {
+        if (!selectedType) return;
+
+        const newProperty: TypedProperty = {
+            typeId: selectedType.id,
+            typeName: selectedType.name,
+            value: formValue
+        };
+
+        if (editingIndex !== null) {
+            const updated = [...typedProperties];
+            updated[editingIndex] = newProperty;
+            setTypedProperties(updated);
+        } else {
+            setTypedProperties([...typedProperties, newProperty]);
+        }
+
+        setIsModalOpen(false);
+        setSelectedType(null);
+        setFormValue({});
+        setEditingIndex(null);
+    };
+
+    const removeProperty = (index: number) => {
+        const updated = typedProperties.filter((_, i) => i !== index);
+        setTypedProperties(updated);
+    };
+
+    const handleFormChange = (formData: any) => {
+        setFormValue(formData);
+    };
+
+    return (
+        <div className="card card-side bg-base-100 shadow-sm">
+            <figure className="relative w-72 h-full">
+                <img
+                    src="./typed_background.png"
+                    alt="TypedPropertiesBackground"
+                    className="opacity-10 logo border-r-2 border-secondary"/>
+                <div
+                    className="absolute -top-12 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
+                    <span className="text-sm">
+                        This module allows adding typed properties to the FAIR Digital Object. Each property has a specific type
+                        with a defined schema that must be followed.
+                        <br/><br/>
+                        <span className="text-info">Typed Properties</span> enable structured data with validation.
+                    </span>
+                </div>
+            </figure>
+            <div className="card-body">
+                {typedProperties.map((property, index) => (
+                    <div key={index} className="flex items-center gap-2 p-2 border rounded mb-2">
+                        <Tag className="flex-shrink-0" />
+                        <div className="flex-1">
+                            <span className="font-medium">{property.typeName}</span>
+                            <span className="text-sm text-base-content/60 ml-2">({property.typeId})</span>
+                        </div>
+                        <button
+                            onClick={() => openEditModal(index)}
+                            className="btn btn-ghost btn-xs"
+                            title="Edit property"
+                        >
+                            <Icon icon="mdi:pencil" width="16" height="16" />
+                        </button>
+                        <button
+                            onClick={() => removeProperty(index)}
+                            className="btn btn-ghost btn-xs"
+                            title="Remove property"
+                        >
+                            <Trash2 width="16" height="16" />
+                        </button>
+                    </div>
                 ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      
-      {/* Selected Type Form */}
-      {renderForm()}
-    </div>
-  );
+                <button
+                    onClick={openAddModal}
+                    className="btn btn-soft btn-info btn-sm w-full"
+                >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Typed Property
+                </button>
+            </div>
+
+            {/* Modal for adding/editing typed property */}
+            <dialog className={`modal ${isModalOpen ? 'modal-open' : ''}`}>
+                <div className="modal-box max-w-2xl">
+                    <h3 className="font-bold text-lg mb-4">
+                        {editingIndex !== null ? 'Edit' : 'Add'} Typed Property
+                    </h3>
+
+                    {!selectedType ? (
+                        <div className="relative">
+                            <fieldset className="fieldset w-full">
+                                <label className="input w-full">
+                                    <Tag />
+                                    <input
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full"
+                                        placeholder="Search for types (min 3 characters)..."
+                                        onFocus={() => searchQuery.length >= 3 && setShowSuggestions(true)}
+                                    />
+                                </label>
+                            </fieldset>
+
+                            {showSuggestions && searchResults.length > 0 && (
+                                <div className="absolute z-50 w-full bg-base-100 border rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
+                                    {searchResults.map(type => (
+                                        <button
+                                            key={type.id}
+                                            className="w-full text-left px-4 py-2 hover:bg-base-200"
+                                            onClick={() => {
+                                                handleTypeSelect(type.id);
+                                            }}
+                                        >
+                                            <div className="font-medium">{type.name}</div>
+                                            <div className="text-sm text-base-content/60">{type.id}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div>
+                            <div className="mb-4 flex items-center justify-between">
+                                <div>
+                                    <h4 className="font-semibold">{selectedType.name}</h4>
+                                    <p className="text-sm text-base-content/60">{selectedType.id}</p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setSelectedType(null);
+                                        setSearchQuery('');
+                                    }}
+                                    className="btn btn-ghost btn-sm"
+                                >
+                                    <Icon icon="mdi:close" width="20" height="20" />
+                                </button>
+                            </div>
+
+                            <Form
+                                schema={selectedType.schema || {}}
+                                formData={formValue}
+                                onChange={(data: any) => handleFormChange(data.formData)}
+                                validator={ajv}
+                                className="w-full"
+                            >
+                                <div className="mt-4" />
+                            </Form>
+                        </div>
+                    )}
+
+                    <div className="modal-action">
+                        <button className="btn btn-ghost" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                        {selectedType && (
+                            <button className="btn btn-primary" onClick={handleSaveProperty}>Save</button>
+                        )}
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button onClick={() => setIsModalOpen(false)}>close</button>
+                </form>
+            </dialog>
+        </div>
+    );
 };
 
 export default TypedPropertiesSection;

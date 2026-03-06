@@ -1,4 +1,4 @@
-import React, {useEffect, useState, forwardRef} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Copyright, FileQuestionMark, FileType, Link} from "lucide-react";
 import {Icon} from '@iconify/react';
 import LicenseAutocomplete from './LicenseAutocomplete';
@@ -9,7 +9,7 @@ interface SoftwareModuleProps {
   onDataChange: (data: any) => void;
 }
 
-const SoftwareAttributes = forwardRef<{ save: () => void }, SoftwareModuleProps>(({ onDataChange }, ref) => {
+const SoftwareAttributes = ({ onDataChange }: SoftwareModuleProps) => {
     const [inputs, setInputs] = useState({
         repositoryUrl: '',
         softwareLocation: '',
@@ -193,7 +193,7 @@ const SoftwareAttributes = forwardRef<{ save: () => void }, SoftwareModuleProps>
             </div>
         </div>
     );
-});
+};
 
 SoftwareAttributes.displayName = 'SoftwareAttributes';
 

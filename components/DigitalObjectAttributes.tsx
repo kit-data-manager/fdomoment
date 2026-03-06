@@ -1,4 +1,4 @@
-import React, {useEffect, useState, forwardRef, useImperativeHandle} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Copyright, FileType, Link} from "lucide-react";
 import MimeTypeAutocomplete from './MimeTypeAutocomplete';
 import LicenseAutocomplete from './LicenseAutocomplete';
@@ -12,45 +12,33 @@ export interface DigitalObjectModuleData {
 
 interface DigitalObjectModuleProps {
   onDataChange: (data: DigitalObjectModuleData) => void;
-  onSave?: () => void;
 }
 
-const DigitalObjectAttributes = forwardRef<{ save: () => void }, DigitalObjectModuleProps>(({ onDataChange, onSave }, ref) => {
-     const [inputs, setInputs] = useState<DigitalObjectModuleData>({
-         mimeType: '',
-         license_id: localStorage.getItem('digital_object_license_id') || '',
-         license_name: localStorage.getItem('digital_object_license_name') || '',
-         contentLocation: ''
-     });
+const DigitalObjectAttributes = ({ onDataChange }: DigitalObjectModuleProps) => {
+        const getInitialState = ()  => ({
+        mimeType: '',
+        license_id: '',
+        license_name: '',
+        contentLocation: ''
+    } );
 
-    // Load saved values from localStorage on component mount
-    useEffect(() => {
-        const savedLicenseId = localStorage.getItem('digital_object_license_id');
-        const savedLicenseName = localStorage.getItem('digital_object_license_name');
-
-        let updatedInputs = {
-            mimeType: '',
-            license_id: savedLicenseId || '',
-            license_name: savedLicenseName || '',
-            contentLocation: ''
-        };
-        // Set individual values
-        if (savedLicenseId || savedLicenseName) {
-            if (savedLicenseId && savedLicenseId.includes(' (')) {
-                const parts = savedLicenseId.split(' (');
-                if (parts.length === 2) {
-                    const id = parts[1].replace(')', '').trim();
-                    const name = parts[0].trim();
-                    updatedInputs = {
-                        ...updatedInputs,
-                        license_id: id,
-                        license_name: name
-                    };
-                }
-            }
+    const [inputs, setInputs] = useState(() : DigitalObjectModuleData => {
+        if (typeof window === 'undefined') {
+            return getInitialState();
         }
-        onDataChange(updatedInputs);
-    }, []);
+
+        const digitalObjectInput = localStorage.getItem('digitalObjectAttributesInputs');
+
+        if (digitalObjectInput) {
+            return JSON.parse(digitalObjectInput);
+        }
+
+        return getInitialState();
+    });
+
+    useEffect(() => {
+        localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(inputs));
+    }, [inputs]);
 
     const handleMimetypeSelect = (value: string) => {
         const newInputs = { ...inputs, mimeType: value};
@@ -70,16 +58,6 @@ const DigitalObjectAttributes = forwardRef<{ save: () => void }, DigitalObjectMo
       setInputs(newInputs);
       onDataChange(newInputs);
   };
-
-    const save = () => {
-        localStorage.setItem('digitalobject_license_id', inputs.license_id ?? '');
-        localStorage.setItem('digitalobject_license_name', inputs.license_name ?? '');
-        onSave?.();
-    }
-
-    useImperativeHandle(ref, () => ({
-        save
-    }));
 
     return (
         <div className="card card-side bg-base-100 shadow-sm">
@@ -111,7 +89,7 @@ const DigitalObjectAttributes = forwardRef<{ save: () => void }, DigitalObjectMo
                             <MimeTypeAutocomplete
                                 value={inputs.mimeType ?? ''}
                                 displayValue={inputs.mimeType ?? ''}
-                                onChange={(value) => setInputs(prev => ({...prev, mimeType: value}))}
+                                onChange={(value) => setInputs(inputs => ({...inputs, mimeType: value}))}
                                 onSelect={handleMimetypeSelect}
                             />
                         </label>
@@ -167,7 +145,7 @@ const DigitalObjectAttributes = forwardRef<{ save: () => void }, DigitalObjectMo
             </div>
         </div>
     );
-});
+};
 
 DigitalObjectAttributes.displayName = 'DigitalObjectAttributes';
 

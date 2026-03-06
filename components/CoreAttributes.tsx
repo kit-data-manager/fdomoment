@@ -1,150 +1,84 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect } from 'react';
 import {TestTubeDiagonal} from "lucide-react";
-import RORAutocomplete from '@/components/RORAutocomplete';
-import ORCiDAutocomplete from '@/components/ORCiDAutocomplete';
-import {Icon} from "@iconify/react";
+import OwnerIdAutocomplete, { OwnerIdType } from '@/components/OwnerIdAutocomplete';
 
-/*export interface CoreModuleData {
-    ?:string;
-    license_id?: string;
-    license_name?: string;
-    contentLocation?: string;
-}
-*/
-interface CoreAttributesProps {
-  onDataChange: (data: any) => void;
-  onSave?: () => void;
+export interface CoreAttributesModuleData {
+    owner_id?: string,
+    owner_name?: string,
+    owner_display?: string,
+    owner_id_type?: OwnerIdType,
+    research_field?: string
 }
 
-const CoreAttributes = forwardRef<{ save: () => void }, CoreAttributesProps>(({ onDataChange, onSave }, ref) => {
-  const [inputs, setInputs] = useState({
-    user_orcid: '',
-    user_orcid_name: '',
-    user_orcid_display: '',
-    user_ror: '',
-    user_ror_name: '',
-    user_ror_display:'',
+interface CoreAttributesModuleProps {
+  onDataChange: (data: CoreAttributesModuleData) => void;
+}
+
+const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
+  const getInitialState = () => ({
+    owner_id: '',
+    owner_name: '',
+    owner_display: '',
+    owner_id_type: 'ORCiD' as OwnerIdType,
     research_field: ''
   });
 
-  // Load saved values from localStorage on component mount
-  useEffect(() => {
-    const savedUserOrcid = localStorage.getItem('user_orcid');
-    const savedUserOrcidName = localStorage.getItem('user_orcid_name');
-    const savedUserRor = localStorage.getItem('user_ror');
-    const savedUserRorName = localStorage.getItem('user_ror_name');
-    const savedResearchField = localStorage.getItem('research_field');
-    
-    // Set individual values
-    if (savedUserOrcid) setInputs(prev => ({...prev, user_orcid: savedUserOrcid}));
-    if (savedUserOrcidName) setInputs(prev => ({...prev, user_orcid_name: savedUserOrcidName}));
-    if (savedUserRor) setInputs(prev => ({...prev, user_ror: savedUserRor}));
-    if (savedUserRorName) setInputs(prev => ({...prev, user_ror_name: savedUserRorName}));
-    if (savedResearchField) setInputs(prev => ({...prev, research_field: savedResearchField}));
-    
-    // Update display values to be in "name (id)" format for consistency with datalist
-    if (savedUserOrcid && savedUserOrcidName) {
-      setInputs(prev => ({
-        ...prev,
-        // Set display value to "name (id)" format
-        user_orcid_display: `${savedUserOrcidName} (${savedUserOrcid})`
-      }));
+  const [inputs, setInputs] = useState(() => {
+    if (typeof window === 'undefined') {
+      return getInitialState();
     }
     
-    if (savedUserRor && savedUserRorName) {
-      setInputs(prev => ({
-        ...prev,
-        // Set display value to "name (id)" format
-        user_ror_display: `${savedUserRorName} (${savedUserRor})`
-      }));
-    }
-  }, []);
+     const coreInput = localStorage.getItem('coreAttributesInputs');
 
-  // Load saved values from localStorage on component mount
-  useEffect(() => {
-    const savedInputs = localStorage.getItem('coreAttributesInputs');
-    if (savedInputs) {
-      try {
-        const parsedInputs = JSON.parse(savedInputs);
-        
-        // If we have combined values, split them into ID and name
-        let updatedInputs = {...parsedInputs};
-        
-        // Split ORCID value if it contains both ID and name
-        if (parsedInputs.user_orcid_display && parsedInputs.user_orcid_display.includes(' (')) {
-          const parts = parsedInputs.user_orcid_display.split(' (');
-          if (parts.length === 2) {
-            const id = parts[1].replace(')', '').trim();
-            const name = parts[0].trim();
-            updatedInputs = {
-              ...updatedInputs,
-              user_orcid: id,
-              user_orcid_name: name,
-              user_orcid_display:`${name} (${id})`
-            };
-          }
-        }
-        
-        // Split ROR value if it contains both ID and name
-        if (parsedInputs.user_ror_display && parsedInputs.user_ror_display.includes(' (')) {
-          const parts = parsedInputs.user_ror_display.split(' (');
-          if (parts.length === 2) {
-            const id = parts[1].replace(')', '').trim();
-            const name = parts[0].trim();
-            updatedInputs = {
-              ...updatedInputs,
-              user_ror: id,
-              user_ror_name: name,
-              user_ror_display:`${name} (${id})`
-            };
-          }
-        }
-        //setInputs(prev => ({...prev, ...updatedInputs}));
-        onDataChange(updatedInputs);
-      } catch (error) {
-        console.error('Error parsing saved inputs:', error);
+      if (coreInput) {
+        return JSON.parse(coreInput);
       }
-      }
-  }, []);
+    
+    return getInitialState();
+  });
 
-  // Save inputs to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('coreAttributesInputs', JSON.stringify(inputs));
   }, [inputs]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     const newInputs = { ...inputs, [name]: value };
     setInputs(newInputs);
     onDataChange(newInputs);
   };
 
-  const handleRORSelect = (id: string, name: string) => {
-    // Update inputs with the selected ROR ID
-    const newInputs = { ...inputs, user_ror: id, user_ror_name: name };
+  const handleOwnerIdChange = (value: string) => {
+    const newInputs = { 
+      ...inputs, 
+      owner_id: value,
+      owner_display: value
+    };
+    setInputs(newInputs);
+  };
+
+  const handleOwnerIdSelect = (id: string, name: string, type: OwnerIdType) => {
+    const newInputs = { 
+      ...inputs, 
+      owner_id: id, 
+      owner_name: name,
+      owner_display: `${name} (${id})`,
+      owner_id_type: type
+    };
     setInputs(newInputs);
     onDataChange(newInputs);
   };
 
-  const handleORCiDSelect = (id: string, name: string) => {
-    // Update inputs with the selected ORCiD ID
-    const newInputs = { ...inputs, user_orcid: id, user_orcid_name: name };
+  const handleTypeChange = (type: OwnerIdType) => {
+    const newInputs = { 
+      ...inputs, 
+      owner_id_type: type,
+      owner_id: '',
+      owner_name: '',
+      owner_display: ''
+    };
     setInputs(newInputs);
-    onDataChange(newInputs);
   };
-
-  const save = () => {
-    localStorage.setItem('user_orcid', inputs.user_orcid);
-    localStorage.setItem('user_orcid_name', inputs.user_orcid_name);
-    localStorage.setItem('user_ror', inputs.user_ror);
-    localStorage.setItem('user_ror_name', inputs.user_ror_name);
-    localStorage.setItem('research_field', inputs.research_field);
-    onSave?.();
-  }
-
-  useImperativeHandle(ref, () => ({
-    save
-  }));
 
   return (
       <div className="card card-side bg-base-100 shadow-sm">
@@ -170,90 +104,43 @@ const CoreAttributes = forwardRef<{ save: () => void }, CoreAttributesProps>(({ 
           <div className="flex items-center gap-2 z-60">
             <fieldset className="fieldset w-full">
               <label className="input w-full">
-                <Icon icon={"academicons:orcid"} width={24} />
-                <ORCiDAutocomplete
-                    value={inputs.user_orcid}
-                    displayValue={inputs.user_orcid_display}
-                    onChange={(value) => {
-                      // Parse the value to extract name and ID if it's in format "name (id)"
-                      if (value && value.includes(' (')) {
-                        const parts = value.split(' (');
-                        const name = parts[0];
-                        const id = parts[1].replace(')', '');
-                        setInputs(prev => ({
-                          ...prev,
-                          user_orcid: id,
-                          user_orcid_name: name,
-                          user_orcid_display: `${name} (${id})`
-                        }));
-                      } else {
-                        setInputs(prev => ({
-                          ...prev,
-                          user_orcid: value,
-                          user_orcid_name: '',
-                          user_orcid_display: value
-                        }));
-                      }
-                    }}
-                    onSelect={handleORCiDSelect}
+
+                <OwnerIdAutocomplete
+                    value={inputs.owner_id}
+                    displayValue={inputs.owner_display}
+                    idType={inputs.owner_id_type}
+                    onChange={handleOwnerIdChange}
+                    onSelect={handleOwnerIdSelect}
+                    onTypeChange={handleTypeChange}
                 />
               </label>
-              <p className="label">The ORCiD identifier of the owner.</p>
-            </fieldset>
-          </div>
-          <div className="flex items-center gap-2 z-50">
-            <fieldset className="fieldset w-full">
-              <label className="input w-full">
-                  <Icon icon={"academicons:ror"} width={24} />
-                <RORAutocomplete
-                    value={inputs.user_ror}
-                    displayValue={inputs.user_ror_display}
-                    onChange={(value) => {
-                        // Parse the value to extract name and ID if it's in format "name (id)"
-                        if (value && value.includes(' (')) {
-                            const parts = value.split(' (');
-                            const name = parts[0];
-                            const id = parts[1].replace(')', '');
-                            setInputs(prev => ({
-                                ...prev,
-                                user_ror: id,
-                                user_ror_name: name,
-                                user_ror_display: `${name} (${id})`
-                            }));
-                        } else {
-                            setInputs(prev => ({
-                                ...prev,
-                                user_ror: value,
-                                user_ror_name: '',
-                                user_ror_display: value
-                            }));
-                        }
-                    }}
-                    onSelect={handleRORSelect}
-                />
-              </label>
-              <p className="label">The research organization identifier of the owner&apos;s primary affiliation.</p>
+              <p className="label">
+                  {inputs.owner_id_type === 'ORCiD' 
+                    ? 'The ORCiD identifier of the owner.' 
+                    : 'The research organization identifier (ROR) of the owner\'s primary affiliation.'}
+              </p>
             </fieldset>
           </div>
           <div className="flex items-center gap-2">
             <fieldset className="fieldset w-full">
-              <label className="input w-full">
-                <TestTubeDiagonal/>
-                <input
+              <label className="fieldset">
+                <div className="input w-full">
+                  <TestTubeDiagonal/>
+                  <select
                     name="research_field"
                     value={inputs.research_field}
                     onChange={handleChange}
                     className="w-full"
-                    list="fields"
-                />
-                <datalist id="fields">
-                  <option value="Aeronautics, Space, Transport"></option>
-                  <option value="Earth&Environment"></option>
-                  <option value="Energy"></option>
-                  <option value="Health"></option>
-                  <option value="Information"></option>
-                  <option value="Matter"></option>
-                </datalist>
+                  >
+                    <option value="" className="text-neutral">Select a research field</option>
+                    <option value="Aeronautics, Space, Transport" className="text-neutral">Aeronautics, Space, Transport</option>
+                    <option value="Earth&Environment" className="text-neutral">Earth & Environment</option>
+                    <option value="Energy" className="text-neutral">Energy</option>
+                    <option value="Health" className="text-neutral">Health</option>
+                    <option value="Information" className="text-neutral">Information</option>
+                    <option value="Matter" className="text-neutral">Matter</option>
+                  </select>
+                </div>
               </label>
               <p className="label">The research field the FDO is associated with.</p>
             </fieldset>
@@ -261,7 +148,7 @@ const CoreAttributes = forwardRef<{ save: () => void }, CoreAttributesProps>(({ 
         </div>
       </div>
   );
-});
+};
 
 CoreAttributes.displayName = 'CoreAttributes';
 

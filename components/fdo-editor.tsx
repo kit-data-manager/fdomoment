@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useRef, useEffect } from 'react';
-import CoreAttributes from './CoreAttributes';
+import React, { useState, useEffect } from 'react';
+import CoreAttributes, {CoreAttributesModuleData} from './CoreAttributes';
 import DigitalObjectAttributes, {DigitalObjectModuleData} from './DigitalObjectAttributes';
 import AdditionalAttributes from './AdditionalAttributes';
 import SoftwareAttributes from './SoftwareAttributes';
@@ -8,11 +8,8 @@ import { Icon } from '@iconify/react';
 import TypedPropertiesSection from "@/components/TypedPropertiesSection";
 import { AppSidebar } from './app-sidebar';
 
-type ModuleRef = {
-  save: () => void;
-};
-
 type ModuleDataType =
+    | CoreAttributesModuleData
     | DigitalObjectModuleData;
 
 type ModuleType = {
@@ -23,6 +20,9 @@ type ModuleType = {
 export function EditorWithSidebar() {
   // Load saved modules from localStorage on component mount
   const [modules, setModules] = useState((): ModuleType[] => {
+    if (typeof window === 'undefined') {
+      return [{ id: 1, title: 'Core Attributes' }];
+    }
     const savedModules: string = localStorage.getItem('fdoEditorModules') as string;
     if (savedModules) {
       try {
@@ -41,15 +41,14 @@ export function EditorWithSidebar() {
   
   // Load saved open module ID from localStorage on component mount
   const [openModuleId, setOpenModuleId] = useState<number>(() => {
+    if (typeof window === 'undefined') {
+      return 1;
+    }
     const savedOpenModuleId = localStorage.getItem('openModuleId');
     return savedOpenModuleId ? parseInt(savedOpenModuleId) : 1;
   });
-  
-const moduleRefs = useRef<Record<number, React.RefObject<ModuleRef>>>({});
 
-const modulesWithSave = new Set(['Core Attributes', 'Digital Object Attributes', 'Additional Properties']);
-
-const allModuleTypes = ['Core Attributes', 'Digital Object Attributes', 'Software Attributes', 'Typed Properties', 'Additional Properties'];
+  const allModuleTypes = ['Core Attributes', 'Digital Object Attributes', 'Software Attributes', 'Typed Properties', 'Additional Properties'];
 
 const exclusiveGroups = [
   { types: ['Digital Object Attributes', 'Software Attributes'], icon: 'solar:link-round-angle-line-duotone' }
@@ -103,13 +102,6 @@ const moduleStatus = getModuleStatus(modules);
     }
   };
 
-  const handleSaveModule = (id: number) => {
-    const ref = moduleRefs.current[id];
-    if (ref?.current) {
-      ref.current.save();
-    }
-  };
-
   // Save open module ID to localStorage when it changes
   useEffect(() => {
     localStorage.setItem('openModuleId', openModuleId.toString());
@@ -140,26 +132,22 @@ const moduleStatus = getModuleStatus(modules);
   };
 
   const renderModuleContent = (title: string, id: number) => {
-    const hasSave = modulesWithSave.has(title);
-    const ref = hasSave ? (moduleRefs.current[id] = moduleRefs.current[id] || React.createRef<ModuleRef>()) : null;
-    
+
     switch (title) {
       case 'Core Attributes':
-        return <CoreAttributes ref={ref!} onDataChange={(data) => updateModuleData('Core Attributes', data)} />;
+        return <CoreAttributes onDataChange={(data) => updateModuleData('Core Attributes', data)} />;
       case 'Digital Object Attributes':
-        return <DigitalObjectAttributes ref={ref!} onDataChange={(data) => updateModuleData('Digital Object Attributes', data)} />;
+        return <DigitalObjectAttributes onDataChange={(data) => updateModuleData('Digital Object Attributes', data)} />;
       case 'Typed Properties':
         return <TypedPropertiesSection onTypeSelected={(data) => updateModuleData('Typed Properties', data)} />;
       case 'Additional Properties':
-        return <AdditionalAttributes ref={ref!} onDataChange={(data) => updateModuleData('Additional Properties', data)} />;
+        return <AdditionalAttributes onDataChange={(data) => updateModuleData('Additional Properties', data)} />;
       case 'Software Attributes':
         return <SoftwareAttributes onDataChange={(data) => updateModuleData('Software Attributes', data)} />;
       default:
         return null;
     }
   };
-
-  const hasSaveSupport = (title: string) => modulesWithSave.has(title);
 
   return (
     <div className="flex h-screen w-full">
@@ -187,15 +175,6 @@ const moduleStatus = getModuleStatus(modules);
                   <label className="text-lg font-semibold cursor-pointer">{module.title}</label>
                 </div>
                 <div className="absolute right-4 top-4 z-20 flex gap-1">
-                    {hasSaveSupport(module.title) && (
-                    <button
-                      onClick={() => handleSaveModule(module.id)}
-                      className="btn btn-link btn-primary btn-xs"
-                      title="Save module"
-                    >
-                      <Icon icon="mdi:content-save" width="20" height="20" />
-                    </button>
-                  )}
                   {module.title !== 'Core Attributes' && (
                     <button
                       onClick={() => handleRemoveModule(module.id)}
