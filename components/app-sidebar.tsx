@@ -88,7 +88,7 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
                                     <span>U</span>
                                 </div>
                             </div>
-                            <ul tabIndex={0} className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 mb-2 fixed bottom-12 right-0">
+                            <ul tabIndex={0} className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 mb-2 fixed bottom-12 left-0">
                                 <li>
                                     <button onClick={() => setShowSettings(true)}>
                                         Settings

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Icon } from "@iconify/react";
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -9,24 +10,25 @@ interface SettingsModalProps {
 
 const STORAGE_KEY = 'fdo-editor-access-tokens';
 
-interface AccessTokens {
-    GitHub?: string;
-    GitLab?: string;
-    Other?: string;
-}
+export type TokenRepositoryType = 'GitHub' | 'GitLab.com' | 'Codebase@Helmholtz' | 'GitLab@Kit';
 
-type TokenKey = 'GitHub' | 'GitLab' | 'Other';
+const REPOSITORY_TYPES: TokenRepositoryType[] = ['GitHub', 'GitLab.com', 'Codebase@Helmholtz', 'GitLab@Kit'];
+
+interface TokenEntry {
+    repoType: TokenRepositoryType;
+    token: string;
+}
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [activeTab, setActiveTab] = useState<'general' | 'tokens'>('general');
-    const [tokens, setTokens] = useState<AccessTokens>(() => {
+    const [tokens, setTokens] = useState<TokenEntry[]>(() => {
         if (typeof window !== 'undefined') {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) return JSON.parse(stored);
         }
-        return {};
+        return [];
     });
-    const [tempTokens, setTempTokens] = useState<AccessTokens>(tokens);
+    const [tempTokens, setTempTokens] = useState<TokenEntry[]>(tokens);
 
     useEffect(() => {
         setTempTokens(tokens);
@@ -43,9 +45,32 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         onClose();
     };
 
-    const handleTokenChange = (type: TokenKey, value: string) => {
-        setTempTokens(prev => ({ ...prev, [type]: value }));
+    const addToken = () => {
+        const usedTypes = tempTokens.map(t => t.repoType);
+        const availableTypes = REPOSITORY_TYPES.filter(t => !usedTypes.includes(t));
+        if (availableTypes.length > 0) {
+            setTempTokens([...tempTokens, { repoType: availableTypes[0], token: '' }]);
+        }
     };
+
+    const removeToken = (index: number) => {
+        setTempTokens(tempTokens.filter((_, i) => i !== index));
+    };
+
+    const handleRepoTypeChange = (index: number, repoType: TokenRepositoryType) => {
+        const newTokens = [...tempTokens];
+        newTokens[index].repoType = repoType;
+        setTempTokens(newTokens);
+    };
+
+    const handleTokenValueChange = (index: number, token: string) => {
+        const newTokens = [...tempTokens];
+        newTokens[index].token = token;
+        setTempTokens(newTokens);
+    };
+
+    const usedRepoTypes = tempTokens.map(t => t.repoType);
+    const availableRepoTypes = REPOSITORY_TYPES.filter(t => !usedRepoTypes.includes(t));
 
     if (!isOpen) return null;
 
@@ -95,36 +120,45 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         <p className="text-sm text-base-content/70 mb-4">
                             Provide access tokens for private repositories. These tokens will be used when fetching repository information.
                         </p>
-                        <fieldset className="fieldset w-full">
-                            <label className="fieldset-label">GitHub Personal Access Token</label>
-                            <input 
-                                type="password" 
-                                className="input w-full" 
-                                placeholder="ghp_xxxxxxxxxxxx"
-                                value={tempTokens.GitHub || ''}
-                                onChange={(e) => handleTokenChange('GitHub', e.target.value)}
-                            />
-                        </fieldset>
-                        <fieldset className="fieldset w-full">
-                            <label className="fieldset-label">GitLab Personal Access Token</label>
-                            <input 
-                                type="password" 
-                                className="input w-full" 
-                                placeholder="glpat-xxxxxxxxxxxx"
-                                value={tempTokens.GitLab || ''}
-                                onChange={(e) => handleTokenChange('GitLab', e.target.value)}
-                            />
-                        </fieldset>
-                        <fieldset className="fieldset w-full">
-                            <label className="fieldset-label">Other Repository Token</label>
-                            <input 
-                                type="password" 
-                                className="input w-full" 
-                                placeholder="Token for other repositories"
-                                value={tempTokens.Other || ''}
-                                onChange={(e) => handleTokenChange('Other', e.target.value)}
-                            />
-                        </fieldset>
+                        {tempTokens.map((entry, index) => (
+                            <div key={index} className="flex items-start gap-2">
+                                <fieldset className="fieldset w-48">
+                                    <select
+                                        className="select w-full"
+                                        value={entry.repoType}
+                                        onChange={(e) => handleRepoTypeChange(index, e.target.value as TokenRepositoryType)}
+                                    >
+                                        {REPOSITORY_TYPES.map(type => (
+                                            <option key={type} value={type} disabled={tempTokens.some((t, i) => i !== index && t.repoType === type)}>
+                                                {type}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </fieldset>
+                                <fieldset className="fieldset flex-1">
+                                    <input 
+                                        type="password" 
+                                        className="input w-full" 
+                                        placeholder="Access token"
+                                        value={entry.token}
+                                        onChange={(e) => handleTokenValueChange(index, e.target.value)}
+                                    />
+                                </fieldset>
+                                <button
+                                    onClick={() => removeToken(index)}
+                                    className="btn btn-ghost mt-1"
+                                >
+                                    <Icon icon="mdi:delete" width="20" height="20" />
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            onClick={addToken}
+                            disabled={availableRepoTypes.length === 0}
+                            className="btn btn-soft btn-info btn-sm w-full"
+                        >
+                            Add Access Token
+                        </button>
                     </div>
                 )}
 

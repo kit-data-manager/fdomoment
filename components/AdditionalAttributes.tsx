@@ -46,16 +46,11 @@ const AdditionalAttributes = forwardRef<{ save: () => void }, AdditionalAttribut
         <div
           className="absolute -top-15 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
            <span className="text-sm">
-                        This modules contributes additional, custom attributes to the FAIR Digital Object. A digital object can be
-                        for example a dataset, a single file, but also a (metadata) document, schema, and even a stream. The contained
-                        attributes are mainly used to facilitate <span className="text-info">accessibility</span>.
+                        This modules contributes additional, custom attributes to the FAIR Digital Object. These attributes are freely
+                        choosable key-value-pairs that may be used to satisfy special use cases, for customization, or branding.
                         <br/><br/>
-                        <span className="text-info">Digital Object Module</span> and <span className="text-info">Software Module</span> are <span className="text-info">exclusive</span> {" "}
-               and can not be used together.
-                        <br/><br/>
-                        For documents, primarily consumed by humans, i.e., articles, instructions, or protocols, the {" "}
-               <span className="text-info">Document Module</span> can be added for extended {" "}
-               <span className="text-info">findability</span>.
+                        All attributes in this module can be locally persisted to reuse them across all
+                        your FDOs.
            </span>
         </div>
       </figure>
@@ -68,11 +63,11 @@ const AdditionalAttributes = forwardRef<{ save: () => void }, AdditionalAttribut
                 <input
                   value={row.key}
                   onChange={(e) => handleInputChange(index, 'key', e.target.value)}
-                  className="input input-bordered w-full"
+                  className="w-full"
                   placeholder="Attribute key"
                 />
               </label>
-              <p className="label">The custom attribute key.</p>
+              <p className="label">The custom attribute&apos;s key.</p>
             </fieldset>
             <fieldset className="fieldset w-full">
               <label className="input w-full">
@@ -80,11 +75,11 @@ const AdditionalAttributes = forwardRef<{ save: () => void }, AdditionalAttribut
                 <input
                   value={row.value}
                   onChange={(e) => handleInputChange(index, 'value', e.target.value)}
-                  className="input input-bordered w-full"
+                  className="w-full"
                   placeholder="Attribute value"
                 />
               </label>
-              <p className="label">The custom attribute value.</p>
+              <p className="label">The custom attribute&apos;s value.</p>
             </fieldset>
             <button
               onClick={() => removeRow(index)}

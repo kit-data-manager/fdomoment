@@ -3,26 +3,24 @@ import { LicenseId } from './license-client';
 export type RepositoryType =
     | 'GitHub'
     | 'GitLab.com'
-    | "Codebase@Helmholtz"
-    | "GitLab@KIT"
-    | "Other";
+    | 'Codebase@Helmholtz'
+    | 'GitLab@Kit'
+    | 'Other';
 
 const STORAGE_KEY = 'fdo-editor-access-tokens';
 
-interface AccessTokens {
-    GitHub?: string;
-    GitLab?: string;
-    Other?: string;
+interface TokenEntry {
+    repoType: 'GitHub' | 'GitLab.com' | 'Codebase@Helmholtz' | 'GitLab@Kit';
+    token: string;
 }
 
 function getAccessToken(repoType: RepositoryType): string | undefined {
     if (typeof window === 'undefined') return undefined;
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-        const tokens: AccessTokens = JSON.parse(stored);
-        if (repoType === 'GitHub') return tokens.GitHub;
-        if (repoType === 'GitLab.com' || repoType === 'GitLab@KIT' || repoType === 'Codebase@Helmholtz') return tokens.GitLab;
-        return tokens.Other;
+        const tokens: TokenEntry[] = JSON.parse(stored);
+        const entry = tokens.find(t => t.repoType === repoType);
+        return entry?.token;
     }
     return undefined;
 }
@@ -67,7 +65,7 @@ export async function getRepositoryInfo(repoUrl: string): Promise<RepositoryInfo
         repoBase = 'https://gitlab.com';
     } else  if (url.hostname === 'gitlab.kit.edu') {
         isGitLab = true;
-        gitlabName = "GitLab@KIT";
+        gitlabName = "GitLab@Kit";
         apiBase = 'https://gitlab.kit.edu/api/v4';
         repoBase = 'https://gitlab.kit.edu';
     } else  if (url.hostname === 'codebase.helmholtz.cloud') {
