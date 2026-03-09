@@ -128,7 +128,7 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
                 type="text"
                 value={displayValue || value}
                 onChange={handleInput}
-                className="input input-bordered flex-1"
+                className="input-bordered flex-1"
                 list={datalistId}
                 placeholder={effectiveIdType === 'ORCiD' ? 'Search ORCiD...' : 'Search ROR...'}
             />

@@ -1,0 +1,103 @@
+{
+"id": "123.asd/123314",
+"name": "Type",
+"description" "Text",
+"validator": "JSON",
+"validatorInput": {
+			"$schema": "https://json-schema.org/draft/2019-09/schema",
+			"title": "Person",
+			"description": "A simple person schema",
+			"type": "object",
+			"properties": {
+				"givenName": {
+				"description": "The given name of the person",
+				"type": "string"
+			}, 
+			"familyName": {
+				"description": "The family name of the person",
+				"type": "string"
+			}, 
+			"age": {
+				"description": "The (optional) age of the person",
+				"type": "integer"
+			}
+		},
+	"required": [ "givenName", "familyName" ]
+	}
+}
+
+{
+"id": "123.asd/1222",
+"name": "RegEx",
+"description" "abcdef",
+"validator": "JSON",
+"validatorInput": {
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "string",
+  "pattern": "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
+}
+}
+
+{
+"id": "123.asd/1222",
+"name": "RegEx",
+"description" "abcdef",
+"validator": "JSON",
+"validatorInput": {
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "number"
+}
+}
+
+{
+"id": "123.asd/1211233314",
+"name": "Controlled List",
+"description" "abc",
+"validator": "JSON",
+"validatorInput": {
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "type": "object",
+  "oneOf": [
+    {
+      "title": "Test",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "https://iri1",
+          "default": "https://iri1"
+        },
+        "name": {
+          "type": "string",
+          "const": "test",
+          "default": "test"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    {
+      "title": "Test2",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "https://iri2",
+          "default": "https://iri2"
+        },
+        "name": {
+          "type": "string",
+          "const": "test2",
+          "default": "test2"
+        }
+      },
+      "required": ["id", "name"]
+    }
+  ]
+}
+}
+
+{
+  "id": "123.asd/1211233314",
+  "name": "Controlled List",
+  "description": "abc",
+  "validator": "SHACL",
+  "validatorInput": "@prefix dash: <http://datashapes.org/dash#> .\n@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n@prefix schema: <http://schema.org/> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\n@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\nschema:PersonShape\n    a sh:NodeShape ;\n    sh:targetClass schema:Person ;\n    sh:property [\n        sh:path schema:givenName ;\n        sh:datatype xsd:string ;\n        sh:name \"given name\" ;\n    ] ;\n    sh:property [\n        sh:path schema:birthDate ;\n        sh:name \"birth date\" ;\n        sh:lessThan schema:deathDate ;\n        sh:maxCount 1 ;\n    ] ;\n    sh:property [\n        sh:path schema:gender ;\n        sh:name \"gender\" ;\n        sh:in ( \"female\" \"male\" ) ;\n    ] ;\n    sh:property [\n        sh:path schema:address ;\n        sh:name \"address\" ;\n        sh:node schema:AddressShape ;\n    ] .\n\nschema:AddressShape\n    a sh:NodeShape ;\n    sh:closed true ;\n    sh:property [\n        sh:path schema:streetAddress ;\n        sh:datatype xsd:string ;\n    ] ;\n    sh:property [\n        sh:path schema:postalCode ;\n        sh:datatype xsd:integer ;\n        sh:minInclusive 10000 ;\n        sh:maxInclusive 99999 ;\n    ] ."
+}
