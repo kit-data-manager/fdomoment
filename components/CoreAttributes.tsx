@@ -15,7 +15,7 @@ interface CoreAttributesModuleProps {
 }
 
 const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
-  const getInitialState = () => ({
+  const getInitialState = ()  => ({
     owner_id: '',
     owner_name: '',
     owner_display: '',
@@ -23,7 +23,7 @@ const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
     research_field: ''
   });
 
-  const [inputs, setInputs] = useState(() => {
+  const [inputs, setInputs] = useState(() : CoreAttributesModuleData => {
     if (typeof window === 'undefined') {
       return getInitialState();
     }
@@ -38,7 +38,9 @@ const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('coreAttributesInputs', JSON.stringify(inputs));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('coreAttributesInputs', JSON.stringify(inputs));
+    }
   }, [inputs]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -46,6 +48,9 @@ const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
     const newInputs = { ...inputs, [name]: value };
     setInputs(newInputs);
     onDataChange(newInputs);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('coreAttributesInputs', JSON.stringify(newInputs));
+    }
   };
 
   const handleOwnerIdChange = (value: string) => {
@@ -82,7 +87,7 @@ const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
 
   return (
       <div className="card card-side bg-base-100 shadow-sm">
-        <figure className="relative w-72 h-full">
+        <figure className="relative w-72 h-full hidden lg:block">
           <img
               src="./basic_background.png"
               alt="CoreAttributesBackground"
@@ -106,9 +111,9 @@ const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
               <label className="input w-full">
 
                 <OwnerIdAutocomplete
-                    value={inputs.owner_id}
-                    displayValue={inputs.owner_display}
-                    idType={inputs.owner_id_type}
+                    value={inputs.owner_id ?? ''}
+                    displayValue={inputs.owner_display ?? ''}
+                    idType={inputs.owner_id_type ?? 'ORCiD'}
                     onChange={handleOwnerIdChange}
                     onSelect={handleOwnerIdSelect}
                     onTypeChange={handleTypeChange}

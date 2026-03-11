@@ -1,7 +1,7 @@
 {
 "id": "123.asd/123314",
 "name": "Type",
-"description" "Text",
+"description": "Text",
 "validator": "JSON",
 "validatorInput": {
 			"$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -29,7 +29,7 @@
 {
 "id": "123.asd/1222",
 "name": "RegEx",
-"description" "abcdef",
+"description": "abcdef",
 "validator": "JSON",
 "validatorInput": {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -39,20 +39,9 @@
 }
 
 {
-"id": "123.asd/1222",
-"name": "RegEx",
-"description" "abcdef",
-"validator": "JSON",
-"validatorInput": {
-  "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "type": "number"
-}
-}
-
-{
 "id": "123.asd/1211233314",
 "name": "Controlled List",
-"description" "abc",
+"description": "abc",
 "validator": "JSON",
 "validatorInput": {
   "$schema": "https://json-schema.org/draft/2019-09/schema",

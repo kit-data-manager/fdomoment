@@ -15,7 +15,7 @@ interface AppSidebarProps {
     moduleStatus: Record<string, string>;
     getExclusiveInfo: (type: string) => { types: string[]; icon: string } | null;
     onAddModule: (title: string) => void;
-    onCollectData: () => void;
+    onCollectData: () => Record<string, any> | null;
 }
 
 export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onAddModule, onCollectData }: AppSidebarProps) {
@@ -38,7 +38,12 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
                 <ResizablePanel defaultSize="65%">
                     <SidebarMenuItem className="justify-center pl-2 pb-5 pt-5" title="Compile FAIR Digital Object...">
                             <button
-                                onClick={onCollectData}
+                                onClick={() => {
+                                    const data = onCollectData();
+                                    if (data) {
+                                        console.log('Collected FDO data:', data);
+                                    }
+                                }}
                                 className="btn btn-link btn-sm"
                             >
                                 <Boxes size={24}/>

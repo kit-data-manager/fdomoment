@@ -15,12 +15,12 @@ interface DigitalObjectModuleProps {
 }
 
 const DigitalObjectAttributes = ({ onDataChange }: DigitalObjectModuleProps) => {
-        const getInitialState = ()  => ({
+    const getInitialState = ()  => ({
         mimeType: '',
         license_id: '',
         license_name: '',
         contentLocation: ''
-    } );
+    });
 
     const [inputs, setInputs] = useState(() : DigitalObjectModuleData => {
         if (typeof window === 'undefined') {
@@ -44,12 +44,18 @@ const DigitalObjectAttributes = ({ onDataChange }: DigitalObjectModuleProps) => 
         const newInputs = { ...inputs, mimeType: value};
         setInputs(newInputs);
         onDataChange(newInputs);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(newInputs));
+        }
     };
 
     const handleLicenseSelect = (id: string, name: string, url: string) => {
         const newInputs = { ...inputs, license_id: id, license_name: name };
         setInputs(newInputs);
         onDataChange(newInputs);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(newInputs));
+        }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,11 +63,14 @@ const DigitalObjectAttributes = ({ onDataChange }: DigitalObjectModuleProps) => 
       const newInputs = { ...inputs, [name]: value };
       setInputs(newInputs);
       onDataChange(newInputs);
-  };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(newInputs));
+      }
+    };
 
     return (
         <div className="card card-side bg-base-100 shadow-sm">
-            <figure className="relative w-72 h-full">
+            <figure className="relative w-72 h-full hidden lg:block">
                 <img
                     src="./dataset_background.png"
                     alt="DigitalObjectBackground"
