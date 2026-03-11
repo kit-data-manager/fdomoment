@@ -23,9 +23,10 @@ export interface TypedPropertiesModuleData {
 
 interface TypedPropertiesModuleProps {
     onDataChange: (data: TypedPropertiesModuleData) => void;
+    showHelp?: boolean;
 }
 
-const TypedPropertiesSection = ({ onDataChange }: TypedPropertiesModuleProps) => {
+const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropertiesModuleProps) => {
     const [moduleData, setModuleData] = useState<TypedPropertiesModuleData>(() => {
         if (typeof window === 'undefined') {
             return { properties: [] };
@@ -130,58 +131,63 @@ const TypedPropertiesSection = ({ onDataChange }: TypedPropertiesModuleProps) =>
     };
 
     return (
-        <div className="card card-side bg-base-100 shadow-sm">
-            <figure className="relative w-72 h-full hidden lg:block flex-shrink-0">
-                <img
-                    src="./typed_background.png"
-                    alt="TypedPropertiesBackground"
-                    className="opacity-10 logo border-r-2 border-secondary"/>
-                <div
-                    className="absolute -top-15 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
-                    <span className="text-sm">
-                        This module allows adding typed properties to the FAIR Digital Object. Each property has a specific type
-                        with a defined schema that must be followed.
-                        <br/><br/>
-                        <span className="text-info">Typed Properties</span> enable structured data with validation.
-                    </span>
+        <div className="card bg-base-100 shadow-sm">
+            {showHelp ? (
+                <div className="card-body">
+                    <figure className="relative w-full h-64">
+                        <img
+                            src="./typed_background.png"
+                            alt="TypedPropertiesBackground"
+                            className="opacity-10 logo w-full h-full object-contain"/>
+                        <div
+                            className="absolute inset-0 flex flex-col justify-center items-center text-secondary p-4">
+                            <span className="text-base">
+                                This module allows adding typed properties to the FAIR Digital Object. Each property has a specific type
+                                with a defined schema that must be followed.
+                                <br/><br/>
+                                <span className="text-info">Typed Properties</span> enable structured data with validation.
+                            </span>
+                        </div>
+                    </figure>
                 </div>
-            </figure>
-            <div className="card-body min-w-0 flex-1">
-                {moduleData.properties.map((property, index) => (
-                    <div key={index} className="row flex items-center gap-2 mb-2">
-                        <fieldset className="fieldset w-full">
-                            <label className="input w-full min-w-0">
-                                <Tag className="flex-shrink-0"/>
-                                <div className="flex-1 min-w-0 overflow-hidden">
-                                    <span className="font-medium text-ellipsis">{property.typeName}</span>
-                                    <span className="text-sm text-base-content/60 ml-2 text-ellipsis">({property.typeId})</span>
-                                </div>
-                            </label>
-                        </fieldset>
-                        <button
-                            onClick={() => openEditModal(index)}
-                            className="btn btn-ghost btn-xs"
-                            title="Edit property"
-                        >
-                            <Icon icon="mdi:pencil" width="16" height="16" />
-                        </button>
-                        <button
-                            onClick={() => removeProperty(index)}
-                            className="btn btn-ghost btn-xs"
-                            title="Remove property"
-                        >
-                            <Trash2 width="16" height="16" />
-                        </button>
-                    </div>
-                ))}
-                <button
-                    onClick={openAddModal}
-                    className="btn btn-soft btn-info btn-sm w-full"
-                >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Typed Property
-                </button>
-            </div>
+            ) : (
+                <div className="card-body min-w-0 flex-1">
+                    {moduleData.properties.map((property, index) => (
+                        <div key={index} className="row flex items-center gap-2 mb-2">
+                            <fieldset className="fieldset w-full">
+                                <label className="input w-full min-w-0">
+                                    <Tag className="flex-shrink-0"/>
+                                    <div className="flex-1 min-w-0 overflow-hidden">
+                                        <span className="font-medium text-ellipsis">{property.typeName}</span>
+                                        <span className="text-sm text-base-content/60 ml-2 text-ellipsis">({property.typeId})</span>
+                                    </div>
+                                </label>
+                            </fieldset>
+                            <button
+                                onClick={() => openEditModal(index)}
+                                className="btn btn-ghost btn-xs"
+                                title="Edit property"
+                            >
+                                <Icon icon="mdi:pencil" width="16" height="16" />
+                            </button>
+                            <button
+                                onClick={() => removeProperty(index)}
+                                className="btn btn-ghost btn-xs"
+                                title="Remove property"
+                            >
+                                <Trash2 width="16" height="16" />
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        onClick={openAddModal}
+                        className="btn btn-soft btn-info btn-sm w-full"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Typed Property
+                    </button>
+                </div>
+            )}
 
             {/* Modal for adding/editing typed property */}
             <dialog className={`modal ${isModalOpen ? 'modal-open' : ''}`}>

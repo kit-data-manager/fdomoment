@@ -7,7 +7,7 @@ import SoftwareAttributes, {SoftwareModuleData} from './SoftwareAttributes';
 import TypedPropertiesSection, {TypedPropertiesModuleData} from "@/components/TypedPropertiesSection";
 import {Icon} from '@iconify/react';
 import {AppSidebar} from './app-sidebar';
-import {Trash2} from "lucide-react";
+import {Trash2, HelpCircle} from "lucide-react";
 import {validateModulesData, ValidationResponse} from "@/utils/validator-utils";
 
 export type ModuleDataType =
@@ -44,6 +44,7 @@ export function EditorWithSidebar() {
     const [modulesData, setModulesData] = useState<Record<string, ModuleDataType>>({});
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
     const [showValidationModal, setShowValidationModal] = useState(false);
+    const [helpMode, setHelpMode] = useState<Record<string, boolean>>({});
 
     // Load module data from localStorage on mount
     useEffect(() => {
@@ -174,6 +175,13 @@ export function EditorWithSidebar() {
         }
     };
 
+    const toggleHelpMode = (moduleTitle: string) => {
+        setHelpMode(prev => ({
+            ...prev,
+            [moduleTitle]: !prev[moduleTitle]
+        }));
+    };
+
     const addModule = (title: string) => {
         const newId = Math.max(...modules.map((s: { id: number, title: string }) => s.id), 0) + 1;
         const modified_modules = [...modules, {id: newId, title}];
@@ -184,16 +192,17 @@ export function EditorWithSidebar() {
     const renderModuleContent = (title: string, id: number) => {
         switch (title) {
             case 'Core Attributes':
-                return <CoreAttributes onDataChange={(data) => updateModuleData('Core Attributes', data)}/>;
+                return <CoreAttributes onDataChange={(data) => updateModuleData('Core Attributes', data)} showHelp={!!helpMode[title]}/>;
             case 'Digital Object Attributes':
                 return <DigitalObjectAttributes
-                    onDataChange={(data) => updateModuleData('Digital Object Attributes', data)}/>;
+                    onDataChange={(data) => updateModuleData('Digital Object Attributes', data)}
+                    showHelp={!!helpMode[title]}/>;
             case 'Typed Properties':
-                return <TypedPropertiesSection onDataChange={(data) => updateModuleData('Typed Properties', data)}/>;
+                return <TypedPropertiesSection onDataChange={(data) => updateModuleData('Typed Properties', data)} showHelp={!!helpMode[title]}/>;
             case 'Additional Properties':
-                return <AdditionalAttributes onDataChange={(data) => updateModuleData('Additional Properties', data)}/>;
+                return <AdditionalAttributes onDataChange={(data) => updateModuleData('Additional Properties', data)} showHelp={!!helpMode[title]}/>;
             case 'Software Attributes':
-                return <SoftwareAttributes onDataChange={(data) => updateModuleData('Software Attributes', data)}/>;
+                return <SoftwareAttributes onDataChange={(data) => updateModuleData('Software Attributes', data)} showHelp={!!helpMode[title]}/>;
             default:
                 return null;
         }
@@ -322,16 +331,22 @@ export function EditorWithSidebar() {
                                     <label className="text-lg font-semibold cursor-pointer">{module.title}</label>
                                 </div>
                                 <div className="absolute right-4 top-4 z-20 flex gap-1">
-                                    {module.title == 'Core Attributes' && (
-                                        <ul className="steps steps-horizontal h-20 -mt-5 -pr-4 scale-75">
-                                            <li className="step step-primary">Core Attributes</li>
-                                            <li className="step">Metadata</li>
-                                            <li className="step">Review</li>
-                                        </ul>
-                                    )}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleHelpMode(module.title);
+                                        }}
+                                        className={`btn btn-link btn-xs ${helpMode[module.title] ? 'btn-active' : ''}`}
+                                        title={helpMode[module.title] ? "Hide help" : "Show help"}
+                                    >
+                                        <HelpCircle className={`w-4 h-4 ${helpMode[module.title] ? 'text-info' : ''}`} />
+                                    </button>
                                     {module.title !== 'Core Attributes' && (
                                         <button
-                                            onClick={() => handleRemoveModule(module.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleRemoveModule(module.id);
+                                            }}
                                             className="btn btn-link btn-primary btn-xs"
                                             title="Remove module"
                                         >

@@ -5,40 +5,49 @@ import {Rocket} from "lucide-react";
 export default function Home() {
   return (
     <div className="min-h-screen transition-colors duration-200">
-       <header className="py-4 px-6 flex justify-between items-center border-b">
-         <div className="flex-1 flex justify-center items-center">
-           <div className="flex items-center gap-2 logo">
-             <Image
-               src="/logo_full.png"
-               alt="FDO Moment Logo"
-               width={640}
-               height={89}
-               className="justify-self-center"
-             />
-           </div>
-         </div>
-         <ThemeToggle />
-      </header>
-      
-      <main className="max-w-4xl mx-auto py-12 px-6">
+       <header className="py-4 px-6 border-b">
+          <div className="flex justify-between items-center gap-4 mb-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Image
+                src="/logo_small.png"
+                alt="FDO Moment Logo"
+                width={120}
+                height={120}
+                className="logo w-20 h-20 md:w-24 md:h-24"
+              />
+                <div className="flex justify-center">
+                    <h1 className="text-center text-primary">
+                        <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-1 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
+                            <div className="flex gap-1">
+                                <span className="font-mono">F</span><span className="text-neutral-content text-base">AIR</span>{" "}
+                                <span className="font-mono">D</span><span className="text-neutral-content text-base">igital</span>
+                            </div>
+                            <div className="flex gap-1">
+                                <span className="font-mono">O</span><span className="text-neutral-content text-base">bject</span>{" "}
+                                <span className="font-mono">MO</span><span className="text-neutral-content text-base">dular</span>{" "}
+                                <span className="font-mono">M</span><span className="text-neutral-content text-base">inting</span>
+                            </div>
+                            <div className="flex gap-1">
+                                <span className="text-neutral-content text-base">&amp;</span>{" "}
+                            </div>
+                            <div className="flex gap-1">
+                                <span className="font-mono">EN</span><span className="text-neutral-content text-base">ablement</span>{" "}
+                                <span className="font-mono">T</span><span className="text-neutral-content text-base">oolkit</span>
+                            </div>
+                        </div>
+                    </h1>
+                </div>
+
+            </div>
+            <ThemeToggle />
+          </div>
+          
+
+       </header>
+       
+       <main className="max-w-4xl mx-auto py-12 px-6">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-primary">
-            <span className="font-mono">F</span>
-              <span className="text-neutral-content">AIR</span>{" "}
-              <span className="font-mono">D</span>
-              <span className="text-neutral-content">igital</span>{" "}
-              <span className="font-mono">O</span>
-              <span className="text-neutral-content">bject</span>{" "}
-              <span className="font-mono">Mo</span>
-              <span className="text-neutral-content">dular</span>{" "}
-              <span className="font-mono">M</span>
-              <span className="text-neutral-content">inting and</span> {" "}
-              <span className="font-mono">En</span>
-              <span className="text-neutral-content">ablement</span>{" "}
-              <span className="font-mono">T</span>
-              <span className="text-neutral-content">oolkit</span>
-          </h1>
-          <p className="text-xl mb-8">
+          <p className="text-lg sm:text-xl mb-8">
             Create your own FAIR Digital Objects in a modular and easy way. Once created, they can be cited in your publications, processed via available FDO tooling, or just persisted for the future.
           </p>
           <a

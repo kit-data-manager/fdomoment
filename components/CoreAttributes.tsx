@@ -12,9 +12,10 @@ export interface CoreAttributesModuleData {
 
 interface CoreAttributesModuleProps {
   onDataChange: (data: CoreAttributesModuleData) => void;
+  showHelp?: boolean;
 }
 
-const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
+const CoreAttributes = ({ onDataChange, showHelp = false }: CoreAttributesModuleProps) => {
   const getInitialState = ()  => ({
     owner_id: '',
     owner_name: '',
@@ -30,10 +31,10 @@ const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
     
      const coreInput = localStorage.getItem('coreAttributesInputs');
 
-      if (coreInput) {
-        return JSON.parse(coreInput);
-      }
-    
+     if (coreInput) {
+       return JSON.parse(coreInput);
+     }
+   
     return getInitialState();
   });
 
@@ -86,71 +87,76 @@ const CoreAttributes = ({ onDataChange }: CoreAttributesModuleProps) => {
   };
 
   return (
-      <div className="card card-side bg-base-100 shadow-sm">
-        <figure className="relative w-72 h-full hidden lg:block">
-          <img
-              src="./basic_background.png"
-              alt="CoreAttributesBackground"
-              className="opacity-10 logo border-r-2 border-secondary"/>
-          <div
-              className="absolute -top-12 left-0 right-0 bottom-0 flex flex-col justify-center items-center text-secondary p-4">
-              <span className="text-sm">
-                  This module contributes core kernel attributes to define <span className="text-info">ownership and context</span> {" "}
-                  of the FAIR Digital Object. These information can be used to associate an FDO with a user, an organization,
-                  or a research field, which facilitates basic <span className="text-info">findability</span>.
-              </span>
-            <br/>
-              <span className="text-sm">All attributes in this module can be locally persisted to reuse them across all
-                  your FDOs.
-            </span>
+      <div className="card bg-base-100 shadow-sm">
+        {showHelp ? (
+          <div className="card-body">
+            <figure className="relative w-full h-64">
+              <img
+                  src="./basic_background.png"
+                  alt="CoreAttributesBackground"
+                  className="opacity-10 logo w-full h-full object-contain"/>
+              <div
+                  className="absolute inset-0 flex flex-col justify-center items-center text-secondary p-4">
+                  <span className="text-base">
+                      This module contributes core kernel attributes to define <span className="text-info">ownership and context</span> {" "}
+                      of the FAIR Digital Object. These information can be used to associate an FDO with a user, an organization,
+                      or a research field, which facilitates basic <span className="text-info">findability</span>.
+                  </span>
+                <br/>
+                  <span className="text-lg">All attributes in this module can be locally persisted to reuse them across all
+                      your FDOs.
+                </span>
+              </div>
+            </figure>
           </div>
-        </figure>
-        <div className="card-body">
-          <div className="flex items-center gap-2 z-60">
-            <fieldset className="fieldset w-full">
-              <label className="input w-full">
+        ) : (
+          <div className="card-body">
+            <div className="flex items-center gap-2 z-60">
+              <fieldset className="fieldset w-full">
+                <label className="input w-full">
 
-                <OwnerIdAutocomplete
-                    value={inputs.owner_id ?? ''}
-                    displayValue={inputs.owner_display ?? ''}
-                    idType={inputs.owner_id_type ?? 'ORCiD'}
-                    onChange={handleOwnerIdChange}
-                    onSelect={handleOwnerIdSelect}
-                    onTypeChange={handleTypeChange}
-                />
-              </label>
-              <p className="label">
-                  {inputs.owner_id_type === 'ORCiD' 
-                    ? 'The ORCiD identifier of the owner.' 
-                    : 'The research organization identifier (ROR) of the owner\'s primary affiliation.'}
-              </p>
-            </fieldset>
+                  <OwnerIdAutocomplete
+                      value={inputs.owner_id ?? ''}
+                      displayValue={inputs.owner_display ?? ''}
+                      idType={inputs.owner_id_type ?? 'ORCiD'}
+                      onChange={handleOwnerIdChange}
+                      onSelect={handleOwnerIdSelect}
+                      onTypeChange={handleTypeChange}
+                  />
+                </label>
+                <p className="label">
+                    {inputs.owner_id_type === 'ORCiD' 
+                      ? 'The ORCiD identifier of the owner.' 
+                      : 'The research organization identifier (ROR) of the owner\'s primary affiliation.'}
+                </p>
+              </fieldset>
+            </div>
+            <div className="flex items-center gap-2">
+              <fieldset className="fieldset w-full">
+                <label className="fieldset">
+                  <div className="input w-full">
+                    <TestTubeDiagonal/>
+                    <select
+                      name="research_field"
+                      value={inputs.research_field}
+                      onChange={handleChange}
+                      className="w-full"
+                    >
+                      <option value="" className="text-neutral">Select a research field</option>
+                      <option value="Aeronautics, Space, Transport" className="text-neutral">Aeronautics, Space, Transport</option>
+                      <option value="Earth&Environment" className="text-neutral">Earth & Environment</option>
+                      <option value="Energy" className="text-neutral">Energy</option>
+                      <option value="Health" className="text-neutral">Health</option>
+                      <option value="Information" className="text-neutral">Information</option>
+                      <option value="Matter" className="text-neutral">Matter</option>
+                    </select>
+                  </div>
+                </label>
+                <p className="label">The research field the FDO is associated with.</p>
+              </fieldset>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <fieldset className="fieldset w-full">
-              <label className="fieldset">
-                <div className="input w-full">
-                  <TestTubeDiagonal/>
-                  <select
-                    name="research_field"
-                    value={inputs.research_field}
-                    onChange={handleChange}
-                    className="w-full"
-                  >
-                    <option value="" className="text-neutral">Select a research field</option>
-                    <option value="Aeronautics, Space, Transport" className="text-neutral">Aeronautics, Space, Transport</option>
-                    <option value="Earth&Environment" className="text-neutral">Earth & Environment</option>
-                    <option value="Energy" className="text-neutral">Energy</option>
-                    <option value="Health" className="text-neutral">Health</option>
-                    <option value="Information" className="text-neutral">Information</option>
-                    <option value="Matter" className="text-neutral">Matter</option>
-                  </select>
-                </div>
-              </label>
-              <p className="label">The research field the FDO is associated with.</p>
-            </fieldset>
-          </div>
-        </div>
+        )}
       </div>
   );
 };
