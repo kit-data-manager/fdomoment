@@ -188,7 +188,7 @@ const SoftwareAttributes = ({ onDataChange, showHelp = false }: SoftwareModulePr
                             <label className="input w-full">
                                 <Icon icon={"fa7-brands:git"} width={24} />
                                 <select
-                                    className="w-full"
+                                    className="w-full bg-transparent"
                                     value={repositoryType}
                                     onChange={(e) => setRepositoryType(e.target.value as RepositoryType)}
                                 >
@@ -206,7 +206,6 @@ const SoftwareAttributes = ({ onDataChange, showHelp = false }: SoftwareModulePr
                                 <Copyright/>
                                  <LicenseAutocomplete
                                      value={inputs.license_id ?? ''}
-                                     displayValue={inputs.license_name ? `${inputs.license_name} (${inputs.license_id})` : ''}
                                      onChange={(value) => {
                                          if (value && value.includes(' (')) {
                                              const parts = value.split(' (');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Search, Trash2} from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Form } from "@rjsf/daisyui";
 import validator from "@rjsf/validator-ajv8";
 import {Icon} from "@iconify/react";
@@ -294,7 +294,13 @@ const SimpleTypeRegistryComponent = ({
                 arguments={selectedType.validatorArguments || []}
                 initialValue={formValue}
                 onSelect={(value) => {
-                  handleFormChange({ formData: value });
+                  setFormValue(value);
+                  if (onValueChange) {
+                    onValueChange(value);
+                  }
+                  if (selectedType) {
+                    onTypeSelect(selectedType, value);
+                  }
                 }}
               />
             </div>
@@ -321,8 +327,6 @@ const SparqlValidator = ({ query, endpoint, arguments: validatorArgs = [], onSel
   const [selected, setSelected] = useState<any>(initialValue || null);
 
   const handleSelect = (result: any) => {
-    console.log('SparqlValidator handleSelect - result:', result);
-    console.log('SparqlValidator handleSelect - result.uri:', result.uri);
     setSelected(result);
     onSelect(result);
   };
@@ -354,13 +358,12 @@ interface SparqlAutocompleteProps {
 }
 
 const SparqlAutocomplete = ({ query, endpoint, arguments: validatorArgs = [], onSelect, onClear, initialSelected }: SparqlAutocompleteProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(initialSelected?.label || "");
   const [options, setOptions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
   const [selected, setSelected] = useState<any>(initialSelected || null);
 
   useEffect(() => {
-    if (initialSelected) {
+    if (initialSelected && initialSelected.label && initialSelected.uri) {
       setSelected(initialSelected);
       setSearchTerm(initialSelected.label || "");
     }
@@ -373,7 +376,6 @@ const SparqlAutocomplete = ({ query, endpoint, arguments: validatorArgs = [], on
         return;
       }
 
-      setLoading(true);
       try {
         const res = await fetch('/api/sparql', {
           method: 'POST',
@@ -395,8 +397,6 @@ const SparqlAutocomplete = ({ query, endpoint, arguments: validatorArgs = [], on
       } catch (error) {
         console.error("SPARQL search error:", error);
         setOptions([]);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -404,13 +404,16 @@ const SparqlAutocomplete = ({ query, endpoint, arguments: validatorArgs = [], on
     return () => clearTimeout(debounce);
   }, [searchTerm, query, endpoint, validatorArgs]);
 
-  const handleSelect = (result: any) => {
-    console.log('SparqlAutocomplete handleSelect - result:', result);
-    console.log('SparqlAutocomplete handleSelect - result.uri:', result.uri);
-    setSelected(result);
-    setSearchTerm(result.label);
-    setOptions([]);
-    onSelect(result);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    
+    const matchedOption = options.find(opt => opt.label === value);
+    if (matchedOption) {
+      setSelected(matchedOption);
+      setOptions([]);
+      onSelect(matchedOption);
+    }
   };
 
   const handleClear = () => {
@@ -420,60 +423,33 @@ const SparqlAutocomplete = ({ query, endpoint, arguments: validatorArgs = [], on
     onClear?.();
   };
 
-  if (selected) {
-    return (
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <div className="font-medium">{selected.label}</div>
-          <div className="text-xs text-base-content/40 truncate">{selected.uri}</div>
-        </div>
+  return (
+    <div className="w-full flex items-center gap-2">
+      <input
+        value={searchTerm}
+        onChange={handleChange}
+        className="flex-1 input"
+        placeholder="Search..."
+        list="sparql-suggestions"
+      />
+      {selected && selected.label && selected.uri && (
         <button
           type="button"
           onClick={handleClear}
           className="btn btn-ghost btn-sm"
           title="Clear selection"
         >
-            <Trash2 width="16" height="16" />
+          <Trash2 width="16" height="16" />
         </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative">
-      <fieldset className="fieldset w-full">
-        <label className="input w-full">
-          <Search />
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full"
-            placeholder="Search..."
+      )}
+      <datalist id="sparql-suggestions">
+        {options.map((option, index) => (
+          <option 
+            key={index} 
+            value={option.label}
           />
-        </label>
-      </fieldset>
-
-      {loading && (
-        <div className="absolute z-50 w-full bg-base-100 border rounded-md shadow-lg mt-1 p-4">
-          <span className="loading loading-spinner loading-sm"></span>
-        </div>
-      )}
-
-      {options.length > 0 && (
-        <div className="absolute z-50 w-full bg-base-100 border rounded-md shadow-lg mt-1 max-h-60 overflow-auto">
-          {options.map((option, index) => (
-            <button
-              key={index}
-              type="button"
-              className="w-full text-left px-4 py-2 hover:bg-base-200 border-b border-base-200 last:border-0"
-              onClick={() => handleSelect(option)}
-            >
-              <div className="font-medium">{option.label}</div>
-              <div className="text-xs text-base-content/40 truncate">{option.uri}</div>
-            </button>
-          ))}
-        </div>
-      )}
+        ))}
+      </datalist>
     </div>
   );
 };

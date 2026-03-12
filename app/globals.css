@@ -86,3 +86,10 @@
 .dark .logo {
     filter: invert(1)!important;
 }
+
+/* Modal overlay fix - ensure modals render above all content */
+.modal-overlay-fixed {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+}

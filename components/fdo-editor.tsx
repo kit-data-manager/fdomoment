@@ -5,7 +5,6 @@ import DigitalObjectAttributes, {DigitalObjectModuleData} from './DigitalObjectA
 import AdditionalAttributes from './AdditionalAttributes';
 import SoftwareAttributes, {SoftwareModuleData} from './SoftwareAttributes';
 import TypedPropertiesSection, {TypedPropertiesModuleData} from "@/components/TypedPropertiesSection";
-import {Icon} from '@iconify/react';
 import {AppSidebar} from './app-sidebar';
 import {Trash2, HelpCircle} from "lucide-react";
 import {validateModulesData, ValidationResponse} from "@/utils/validator-utils";
@@ -282,7 +281,9 @@ export function EditorWithSidebar() {
                 const typedStored = localStorage.getItem('typedProperties');
                 if (typedStored) {
                     try {
-                        data = JSON.parse(typedStored);
+                        const parsed = JSON.parse(typedStored);
+                        // Wrap in object structure if it's an array
+                        data = Array.isArray(parsed) ? { properties: parsed } : parsed;
                     } catch (e) {
                         console.error('Error parsing typed properties', e);
                     }

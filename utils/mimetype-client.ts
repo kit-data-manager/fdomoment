@@ -1,4 +1,4 @@
-interface MimeType {
+export interface MimeType {
   type: string;
   description: string;
 }

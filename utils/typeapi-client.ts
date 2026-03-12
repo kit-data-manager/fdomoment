@@ -198,7 +198,6 @@ export class TypeAPIClient {
           }
         }
       };
-      console.log(res);
       return res;
     }
 

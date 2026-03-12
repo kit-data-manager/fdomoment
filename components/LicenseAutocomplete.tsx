@@ -1,85 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { searchSPDXLicenses } from '../utils/license-client';
+import { X } from 'lucide-react';
+import { getSPDXLicenses, SPDXLicense } from '../utils/license-client';
 
 interface LicenseAutocompleteProps {
   value: string;
-  displayValue: string;
   onChange: (value: string) => void;
   onSelect: (id: string, name: string, url: string) => void;
 }
 
-const LicenseAutocomplete: React.FC<LicenseAutocompleteProps> = ({ value, displayValue, onChange, onSelect }) => {
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  
-  // Fetch license suggestions when input changes
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (value.length >= 1) {
-        try {
-          const results = await searchSPDXLicenses(value);
-          if (results && results.length > 0) {
-            setSuggestions(results);
-            setShowSuggestions(true);
-          } else {
-            setSuggestions([]);
-            setShowSuggestions(false);
-          }
-        } catch (error) {
-          console.error('Error fetching license suggestions:', error);
-          setSuggestions([]);
-          setShowSuggestions(false);
-        }
-      } else {
-        setSuggestions([]);
-        setShowSuggestions(false);
-      }
-    };
-    
-    const debounce = setTimeout(() => {
-      fetchSuggestions();
-    }, 300);
-    
-    return () => clearTimeout(debounce);
-  }, [value]);
+const LicenseAutocomplete: React.FC<LicenseAutocompleteProps> = ({ value, onChange, onSelect }) => {
+  const [licenses, setLicenses] = useState<SPDXLicense[]>([]);
 
-    const handleSelect = (item: any) => {
-        // Extract license ID, name, and URL from the result
-        const licenseId = item.id || '';
-        const licenseName = item.name || '';
-        const licenseUrl = item.url || '';
-        onSelect(licenseId, licenseName, licenseUrl);
-        setSuggestions([]);
-        setShowSuggestions(false);
-    };
+  useEffect(() => {
+    getSPDXLicenses().then(setLicenses);
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value;
+    if (selectedValue) {
+      const selectedItem = licenses.find(item => item.id === selectedValue);
+      if (selectedItem) {
+        onSelect(selectedItem.id, selectedItem.name, selectedItem.url);
+      }
+    }
+  };
 
   return (
-    <div className="w-full">
-      <input
-        value={displayValue || value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full"
-        list="licenseSuggestions"
-        onInput={(e) => {
-          // Find the selected item from suggestions
-          const selectedValue = (e.target as HTMLInputElement).value;
-          const selectedItem = suggestions.find(item => 
-            `${item.name} (${item.id})` === selectedValue ||
-            item.id === selectedValue
-          );
-          if (selectedItem) {
-            handleSelect(selectedItem);
-          }
-        }}
-      />
-      <datalist id="licenseSuggestions">
-        {suggestions.map((item, index) => (
-          <option 
-            key={index} 
-            value={`${item.name} (${item.id})`}
-          />
+    <div className="w-full flex items-center gap-2">
+      <select
+        value={value}
+        onChange={handleChange}
+        className="select select-ghost flex-1"
+      >
+        <option value="">Select license...</option>
+        {licenses.map((item, index) => (
+          <option key={index} value={item.id}>
+            {item.name} ({item.id})
+          </option>
         ))}
-      </datalist>
+      </select>
+      {value && (
+        <button
+          type="button"
+          onClick={() => {
+            onChange('');
+            onSelect('', '', '');
+          }}
+          className="btn btn-ghost btn-sm"
+          title="Clear selection"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 };

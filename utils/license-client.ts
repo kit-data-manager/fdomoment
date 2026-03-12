@@ -10,7 +10,7 @@ export type LicenseId =
   | 'CC-BY-SA-4.0'
   | 'Unlicense';
 
-interface SPDXLicense {
+export interface SPDXLicense {
   id: LicenseId;
   name: string;
   isOsiApproved: boolean;

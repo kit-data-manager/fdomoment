@@ -102,7 +102,6 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
                                 <FileType/>
                                 <MimeTypeAutocomplete
                                     value={inputs.mimeType ?? ''}
-                                    displayValue={inputs.mimeType ?? ''}
                                     onChange={(value) => setInputs(inputs => ({...inputs, mimeType: value}))}
                                     onSelect={handleMimetypeSelect}
                                 />
@@ -114,28 +113,14 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
                         <fieldset className="fieldset w-full">
                             <label className="input w-full">
                                 <Copyright/>
-                                 <LicenseAutocomplete
-                                     value={inputs.license_id ?? ''}
-                                     displayValue={inputs.license_name ? `${inputs.license_name} (${inputs.license_id})` : ''}
-                                     onChange={(value) => {
-                                         // Parse the value to extract name and ID if it's in format "name (id)"
-                                         if (value && value.includes(' (')) {
-                                             const parts = value.split(' (');
-                                             const name = parts[0];
-                                             const id = parts[1].replace(')', '');
-                                             setInputs(prev => ({
-                                                 ...prev,
-                                                 license_id: id,
-                                                 license_name: name,
-                                             }));
-                                         } else {
-                                             setInputs(prev => ({
-                                                 ...prev,
-                                                 license_id: value,
-                                                 license_name: '',
-                                             }));
-                                         }
-                                     }}
+                                  <LicenseAutocomplete
+                                      value={inputs.license_id ?? ''}
+                                      onChange={(value) => {
+                                          setInputs(prev => ({
+                                              ...prev,
+                                              license_id: value,
+                                          }));
+                                      }}
                                       onSelect={handleLicenseSelect}
                                   />
                              </label>

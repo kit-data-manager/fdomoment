@@ -111,9 +111,9 @@ const CoreAttributes = ({ onDataChange, showHelp = false }: CoreAttributesModule
           </div>
         ) : (
           <div className="card-body">
-            <div className="flex items-center gap-2 z-60">
-              <fieldset className="fieldset w-full">
-                <label className="input w-full">
+            <div className="flex items-center gap-2">
+              <fieldset className="fieldset w-full relative">
+                <label className="input w-full relative z-60">
 
                   <OwnerIdAutocomplete
                       value={inputs.owner_id ?? ''}
@@ -133,24 +133,22 @@ const CoreAttributes = ({ onDataChange, showHelp = false }: CoreAttributesModule
             </div>
             <div className="flex items-center gap-2">
               <fieldset className="fieldset w-full">
-                <label className="fieldset">
-                  <div className="input w-full">
-                    <TestTubeDiagonal/>
-                    <select
-                      name="research_field"
-                      value={inputs.research_field}
-                      onChange={handleChange}
-                      className="w-full"
-                    >
-                      <option value="" className="text-neutral">Select a research field</option>
-                      <option value="Aeronautics, Space, Transport" className="text-neutral">Aeronautics, Space, Transport</option>
-                      <option value="Earth&Environment" className="text-neutral">Earth & Environment</option>
-                      <option value="Energy" className="text-neutral">Energy</option>
-                      <option value="Health" className="text-neutral">Health</option>
-                      <option value="Information" className="text-neutral">Information</option>
-                      <option value="Matter" className="text-neutral">Matter</option>
-                    </select>
-                  </div>
+                <label className="input w-full">
+                  <TestTubeDiagonal/>
+                  <select
+                    name="research_field"
+                    value={inputs.research_field}
+                    onChange={handleChange}
+                    className="select select-ghost w-full"
+                  >
+                    <option value="">Select a research field</option>
+                    <option value="Aeronautics, Space, Transport">Aeronautics, Space, Transport</option>
+                    <option value="Earth&Environment">Earth & Environment</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Health">Health</option>
+                    <option value="Information" >Information</option>
+                    <option value="Matter">Matter</option>
+                  </select>
                 </label>
                 <p className="label">The research field the FDO is associated with.</p>
               </fieldset>

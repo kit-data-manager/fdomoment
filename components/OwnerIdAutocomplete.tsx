@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Icon } from "@iconify/react";
+import { X } from 'lucide-react';
 import { searchORCiD, formatORCiDDisplay, ORCiDResult } from '@/utils/orcid-client';
 import { searchROR, formatRORDisplay, RORResult } from '@/utils/ror-client';
 import {parseNameAndId} from "@/utils/parse-utils";
@@ -27,23 +28,23 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
 }) => {
     const [suggestions, setSuggestions] = useState<Array<ORCiDResult | RORResult>>([]);
     const [mounted, setMounted] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
     const effectiveIdType = mounted ? idType : 'ORCiD';
-    const datalistId = `ownerIdSuggestions-${effectiveIdType}`;
 
     useEffect(() => {
         const fetchSuggestions = async () => {
-            if (value.length >= 5) {
+            if (searchTerm.length >= 2) {
                 let results: Array<ORCiDResult | RORResult> = [];
                 
                 if (effectiveIdType === 'ORCiD') {
-                    results = await searchORCiD(value);
+                    results = await searchORCiD(searchTerm);
                 } else {
-                    results = await searchROR(value);
+                    results = await searchROR(searchTerm);
                 }
                 
                 setSuggestions(results);
@@ -57,10 +58,11 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
         }, 300);
         
         return () => clearTimeout(debounce);
-    }, [value, effectiveIdType]);
+    }, [searchTerm, effectiveIdType]);
 
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
+        setSearchTerm(inputValue);
         onChange(inputValue);
         
         const selectedValue = inputValue;
@@ -86,27 +88,21 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
             const id = orcidItem['orcid-id'];
             const name = `${orcidItem['family-names']}, ${orcidItem['given-names']}`;
             onSelect(id, name, 'ORCiD');
+            setSearchTerm('');
         } else {
             const rorItem = item as RORResult;
             const displayName = rorItem.names.find(
                 name => name.types && name.types.includes('ror_display')
             )?.value || rorItem.names[0].value;
             onSelect(rorItem.id, displayName, 'ROR');
+            setSearchTerm('');
         }
         setSuggestions([]);
     };
 
-    const formatDisplay = (item: ORCiDResult | RORResult): string => {
-        if (effectiveIdType === 'ORCiD') {
-            return formatORCiDDisplay(item as ORCiDResult);
-        } else {
-            return formatRORDisplay(item as RORResult);
-        }
-    };
-
     return (
         <div className="w-full flex items-center gap-2">
-            <div className="join">
+            <div className="join shrink-0">
                 <button
                     type="button"
                     className={`join-item btn btn-sm ${effectiveIdType === 'ORCiD' ? 'btn-primary' : 'btn-ghost'}`}
@@ -127,16 +123,31 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
             <input
                 type="text"
                 value={displayValue || value}
-                onChange={handleInput}
-                className="input-bordered flex-1"
-                list={datalistId}
+                onChange={handleInputChange}
+                className="input flex-1"
                 placeholder={effectiveIdType === 'ORCiD' ? 'Search ORCiD...' : 'Search ROR...'}
+                list="ownerIdSuggestions"
             />
-            <datalist id={datalistId}>
+            {displayValue && (
+                <button
+                    type="button"
+                    onClick={() => {
+                        onChange('');
+                        onSelect('', '', effectiveIdType);
+                        setSearchTerm('');
+                    }}
+                    className="btn btn-ghost btn-sm"
+                    title="Clear selection"
+                >
+                    <X className="w-4 h-4" />
+                </button>
+            )}
+            <datalist id="ownerIdSuggestions">
                 {suggestions.map((item, index) => (
                     <option 
                         key={index} 
-                        value={formatDisplay(item)}
+                        value={effectiveIdType === 'ORCiD' ? formatORCiDDisplay(item as ORCiDResult) : formatRORDisplay(item as RORResult)}
+                        onClick={() => handleSelect(item)}
                     />
                 ))}
             </datalist>

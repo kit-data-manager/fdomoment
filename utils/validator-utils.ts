@@ -81,7 +81,9 @@ const collectData = (
             const typedStored = localStorage.getItem('typedProperties');
             if (typedStored) {
                 try {
-                    data = JSON.parse(typedStored) as any;
+                    const parsed = JSON.parse(typedStored);
+                    // Wrap in object structure if it's an array (backward compatibility)
+                    data = Array.isArray(parsed) ? { properties: parsed } : parsed;
                 } catch (e) {
                     console.error('Error parsing typed properties', e);
                 }
@@ -101,7 +103,6 @@ const checkPropertySet = (
     keys: string[],
     errors: string[]
 ) => {
-console.log("DATA", data);
     if(!data){
         errors.push(`${moduleName}: No data provided`);
     }else {
@@ -137,13 +138,14 @@ export const validateModulesData = (
     // Validate Typed Properties
     const typedPropertiesData = visibleData['Typed Properties'] as any;
     if (typedPropertiesData) {
-        // Check if it's wrapped or direct array
-        const typedProps = Array.isArray(typedPropertiesData) ? typedPropertiesData : (typedPropertiesData['Typed Properties'] || []);
+        // Data structure is { properties: TypedPropertyItem[] }
+        const typedProps = typedPropertiesData.properties || (Array.isArray(typedPropertiesData) ? typedPropertiesData : []);
 
-        if (typedProps.length === 0) {
+        if (!typedProps || typedProps.length === 0) {
             errors.push('Typed Properties: At least one typed property is required');
         } else {
             typedProps.forEach((prop: any, index: number) => {
+                console.log("PROP ", prop);
                 if (prop.typeId === '0.SIMPLE/UNESCO_THESAURUS_CONCEPT') {
                     if (!prop.value || !prop.value.uri || prop.value.uri.trim() === '') {
                         errors.push(`Typed Properties: UNESCO Thesaurus Concept at index ${index} is missing URI`);

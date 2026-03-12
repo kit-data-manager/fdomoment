@@ -39,10 +39,7 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
                     <SidebarMenuItem className="justify-center pl-2 pb-5 pt-5" title="Compile FAIR Digital Object...">
                             <button
                                 onClick={() => {
-                                    const data = onCollectData();
-                                    if (data) {
-                                        console.log('Collected FDO data:', data);
-                                    }
+                                    onCollectData();
                                 }}
                                 className="btn btn-link btn-sm"
                             >
@@ -81,7 +78,7 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
                         )}
                     </SidebarMenuItem>
                     <SidebarMenuItem className="justify-center pl-2" title="Toggle dark/light mode">
-                        <ThemeToggle  />
+                        <ThemeToggle />
                     </SidebarMenuItem>
                 </ResizablePanel>
                 <ResizableHandle />
@@ -100,7 +97,7 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
                                     </button>
                                 </li>
                                 <li>
-                                    <button onClick={() => console.log('Logout clicked')}>
+                                    <button onClick={() => {}}>
                                         Logout
                                     </button>
                                 </li>
