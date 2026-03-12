@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Copyright, FileQuestionMark,  Link} from "lucide-react";
 import {Icon} from '@iconify/react';
-import LicenseAutocomplete from './LicenseAutocomplete';
+import LicenseAutocomplete from '@/components/LicenseAutocomplete';
 import {getRepositoryInfo, RepositoryType} from '@/utils/git-client';
 import {searchSPDXLicenses} from "@/utils/license-client";
 
@@ -188,15 +188,15 @@ const SoftwareAttributes = ({ onDataChange, showHelp = false }: SoftwareModulePr
                             <label className="input w-full">
                                 <Icon icon={"fa7-brands:git"} width={24} />
                                 <select
-                                    className="w-full bg-transparent"
+                                    className="w-full select select-ghost"
                                     value={repositoryType}
                                     onChange={(e) => setRepositoryType(e.target.value as RepositoryType)}
                                 >
-                                    <option value="GitHub" className="text-neutral">GitHub</option>
-                                    <option value="GitLab.com" className="text-neutral">GitLab.com</option>
-                                    <option value="Codebase@Helmholtz" className="text-neutral">Codebase@Helmholtz</option>
-                                    <option value="GitLab@KIT" className="text-neutral">GitLab@KIT</option>
-                                    <option value="Other" className="text-neutral">Other</option>
+                                    <option value="GitHub" >GitHub</option>
+                                    <option value="GitLab.com">GitLab.com</option>
+                                    <option value="Codebase@Helmholtz" >Codebase@Helmholtz</option>
+                                    <option value="GitLab@KIT">GitLab@KIT</option>
+                                    <option value="Other" >Other</option>
                                 </select>
                             </label>
                             <p className="label">The detected Git platform.</p>

@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { getMimeTypes, MimeType } from '../utils/mimetype-client';
+import { getSPDXLicenses, SPDXLicense } from '@/utils/license-client';
 
-interface MimeTypeAutocompleteProps {
+interface LicenseAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect: (type: string, description: string) => void;
+  onSelect: (id: string, name: string, url: string) => void;
 }
 
-const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onChange, onSelect }) => {
-  const [mimeTypes, setMimeTypes] = useState<MimeType[]>([]);
+const LicenseAutocomplete: React.FC<LicenseAutocompleteProps> = ({ value, onChange, onSelect }) => {
+  const [licenses, setLicenses] = useState<SPDXLicense[]>([]);
 
   useEffect(() => {
-    getMimeTypes().then(setMimeTypes);
+    getSPDXLicenses().then(setLicenses);
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
     if (selectedValue) {
-      const selectedItem = mimeTypes.find(item => item.type === selectedValue);
+      const selectedItem = licenses.find(item => item.id === selectedValue);
       if (selectedItem) {
-        onSelect(selectedItem.type, selectedItem.description);
+        onSelect(selectedItem.id, selectedItem.name, selectedItem.url);
       }
     }
   };
@@ -32,10 +32,10 @@ const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onCh
         onChange={handleChange}
         className="select select-ghost flex-1"
       >
-        <option value="">Select MIME type...</option>
-        {mimeTypes.map((item, index) => (
-          <option key={index} value={item.type}>
-            {item.description} ({item.type})
+        <option value="">Select license...</option>
+        {licenses.map((item, index) => (
+          <option key={index} value={item.id}>
+            {item.name} ({item.id})
           </option>
         ))}
       </select>
@@ -44,7 +44,7 @@ const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onCh
           type="button"
           onClick={() => {
             onChange('');
-            onSelect('', '');
+            onSelect('', '', '');
           }}
           className="btn btn-ghost btn-sm"
           title="Clear selection"
@@ -56,4 +56,4 @@ const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onCh
   );
 };
 
-export default MimeTypeAutocomplete;
+export default LicenseAutocomplete;

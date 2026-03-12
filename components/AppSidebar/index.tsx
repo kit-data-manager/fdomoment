@@ -8,7 +8,7 @@ import {Icon} from "@iconify/react";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
-import SettingsModal from "./SettingsModal";
+import SettingsModal from "@/components/SettingsModal";
 
 interface AppSidebarProps {
     allModuleTypes: string[];

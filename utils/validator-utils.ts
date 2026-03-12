@@ -1,4 +1,4 @@
-import {ModuleDataType, ModuleType} from "@/components/fdo-editor";
+import {ModuleDataType, ModuleType} from "@/components/fdo-editor/types";
 
 export type ValidationResponse = {
     errors: string[];

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Copyright, FileType, Link} from "lucide-react";
-import MimeTypeAutocomplete from './MimeTypeAutocomplete';
-import LicenseAutocomplete from './LicenseAutocomplete';
+import MimeTypeAutocomplete from "@/components/MimeTypeAutocomplete";
+import LicenseAutocomplete from "@/components/LicenseAutocomplete";
 
 export interface DigitalObjectModuleData {
     mimeType?:string;

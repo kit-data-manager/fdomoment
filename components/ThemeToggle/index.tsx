@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { Icon } from '@iconify/react';
-import { useTheme } from '@/context/ThemeContext';
-import {Blocks} from "lucide-react";
+import {useTheme} from "@/context/ThemeContext";
 
 const ThemeToggle: React.FC = () => {
   const { darkMode, toggleTheme } = useTheme();
