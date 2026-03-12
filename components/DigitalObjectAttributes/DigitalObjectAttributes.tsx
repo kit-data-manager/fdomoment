@@ -150,3 +150,7 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
 DigitalObjectAttributes.displayName = 'DigitalObjectAttributes';
 
 export default DigitalObjectAttributes;
+
+
+export { DigitalObjectAttributes };
+

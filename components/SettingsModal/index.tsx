@@ -19,7 +19,7 @@ interface TokenEntry {
     token: string;
 }
 
-export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export const SettingsModal = function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [activeTab, setActiveTab] = useState<'general' | 'tokens'>('general');
     const [tokens, setTokens] = useState<TokenEntry[]>(() => {
         if (typeof window !== 'undefined') {
@@ -173,3 +173,5 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </dialog>
     );
 }
+
+export default SettingsModal;

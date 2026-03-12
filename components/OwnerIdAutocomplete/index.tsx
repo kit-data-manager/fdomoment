@@ -155,4 +155,4 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
     );
 };
 
-export default OwnerIdAutocomplete;
+export { OwnerIdAutocomplete };

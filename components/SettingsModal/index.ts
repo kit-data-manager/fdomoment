@@ -1,1 +1,1 @@
-export * from '.';
+export { SettingsModal } from './index';

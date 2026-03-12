@@ -3,12 +3,13 @@ import {
     SidebarHeader,
     SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { Boxes, Blocks} from "lucide-react";
+import { Boxes, Blocks, LogIn, LogOut, User} from "lucide-react";
 import {Icon} from "@iconify/react";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
-import SettingsModal from "@/components/SettingsModal";
+import { SettingsModal } from "@/components/SettingsModal";
+import { useKeycloak } from '@/context/KeycloakContext';
 
 interface AppSidebarProps {
     allModuleTypes: string[];
@@ -21,6 +22,7 @@ interface AppSidebarProps {
 export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onAddModule, onCollectData }: AppSidebarProps) {
     const hasAvailableModules = allModuleTypes.some(type => !moduleStatus[type]);
     const [showSettings, setShowSettings] = useState(false);
+    const { authenticated, login, logout, userName } = useKeycloak();
 
     return (
         <div className="h-screen w-16 flex flex-col">
@@ -91,16 +93,34 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
                                 </div>
                             </div>
                             <ul tabIndex={0} className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 mb-2 fixed bottom-12 left-0">
-                                <li>
-                                    <button onClick={() => setShowSettings(true)}>
-                                        Settings
-                                    </button>
-                                </li>
-                                <li>
-                                    <button onClick={() => {}}>
-                                        Logout
-                                    </button>
-                                </li>
+                                {authenticated ? (
+                                    <>
+                                        <li className="px-4 py-2 text-sm border-b border-base-200">
+                                            <div className="flex items-center gap-2">
+                                                <User className="w-4 h-4" />
+                                                <span className="truncate">{userName || 'User'}</span>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <button onClick={() => setShowSettings(true)}>
+                                                Settings
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button onClick={logout} className="text-error">
+                                                <LogOut className="w-4 h-4 mr-2" />
+                                                Logout
+                                            </button>
+                                        </li>
+                                    </>
+                                ) : (
+                                    <li>
+                                        <button onClick={login} className="text-success">
+                                            <LogIn className="w-4 h-4 mr-2" />
+                                            Login
+                                        </button>
+                                    </li>
+                                )}
                             </ul>
                         </div>
                     </div>
@@ -110,3 +130,5 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
         </div>
         )
 }
+
+export default AppSidebar;

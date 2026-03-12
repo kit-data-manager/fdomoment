@@ -1,6 +1,6 @@
 import React from 'react';
 import CoreAttributes, { CoreAttributesModuleData } from '../CoreAttributes';
-import DigitalObjectAttributes, { DigitalObjectModuleData } from '../DigitalObjectAttributes';
+import { DigitalObjectAttributes, DigitalObjectModuleData } from '../DigitalObjectAttributes';
 import SoftwareAttributes, { SoftwareModuleData } from '../SoftwareAttributes';
 import TypedPropertiesSection, { TypedAttributesModuleData } from '@/components/TypedAttributes/index';
 import AdditionalAttributes from '../AdditionalAttributes';

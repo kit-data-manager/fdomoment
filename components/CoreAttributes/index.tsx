@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {TestTubeDiagonal} from "lucide-react";
-import OwnerIdAutocomplete, { OwnerIdType } from '@/components/OwnerIdAutocomplete';
+import { OwnerIdAutocomplete, OwnerIdType } from '@/components/OwnerIdAutocomplete';
 
 export interface CoreAttributesModuleData {
     owner_id?: string,
