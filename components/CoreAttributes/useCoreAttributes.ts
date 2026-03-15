@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react';
 import { OwnerIdType } from '@/components/OwnerIdAutocomplete';
-
-export interface CoreAttributesModuleData {
-  owner_id?: string,
-  owner_name?: string,
-  owner_display?: string,
-  owner_id_type?: OwnerIdType,
-  research_field?: string
-}
+import {CoreAttributesModuleData} from "@/components/CoreAttributes/types";
 
 export const useCoreAttributes = () => {
   const getInitialState = () => ({
@@ -90,7 +83,6 @@ export const useCoreAttributes = () => {
     handleChange,
     handleOwnerIdChange,
     handleOwnerIdSelect,
-    handleTypeChange,
-    updateInputs
+    handleTypeChange
   };
 };

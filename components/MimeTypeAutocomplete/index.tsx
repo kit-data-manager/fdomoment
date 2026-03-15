@@ -56,4 +56,4 @@ const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onCh
   );
 };
 
-export default MimeTypeAutocomplete;
+export {MimeTypeAutocomplete};

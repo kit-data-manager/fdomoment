@@ -8,16 +8,20 @@ export const useFdoEditor = () => {
   const [helpMode, setHelpMode] = useState<Record<string, boolean>>({});
   const [initialized, setInitialized] = useState(false);
 
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const savedModules = localStorage.getItem('fdoEditorModules');
+    const openModule = localStorage.getItem('openModuleId');
     if (savedModules) {
       try {
         const parsed = JSON.parse(savedModules);
         setModules(parsed);
-        if (parsed.length > 0) {
-          setOpenModuleId(parsed[0].id);
+        if (openModule) {
+          setOpenModuleId(Number.parseInt(openModule, 16));
         }
       } catch (error) {
         console.error('Error parsing saved modules:', error);

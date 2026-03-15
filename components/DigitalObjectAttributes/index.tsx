@@ -1,19 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Copyright, FileType, Link} from "lucide-react";
-import MimeTypeAutocomplete from "@/components/MimeTypeAutocomplete";
-import LicenseAutocomplete from "@/components/LicenseAutocomplete";
-
-export interface DigitalObjectModuleData {
-    mimeType?:string;
-    license_id?: string;
-    license_name?: string;
-    contentLocation?: string;
-}
-
-interface DigitalObjectModuleProps {
-  onDataChange: (data: DigitalObjectModuleData) => void;
-  showHelp?: boolean;
-}
+import {MimeTypeAutocomplete} from "@/components/MimeTypeAutocomplete";
+import {LicenseAutocomplete} from "@/components/LicenseAutocomplete";
+import {DigitalObjectModuleData, DigitalObjectModuleProps} from "@/components/DigitalObjectAttributes/types";
 
 const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObjectModuleProps) => {
     const getInitialState = ()  => ({
@@ -148,9 +137,6 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
 };
 
 DigitalObjectAttributes.displayName = 'DigitalObjectAttributes';
-
-export default DigitalObjectAttributes;
-
 
 export { DigitalObjectAttributes };
 

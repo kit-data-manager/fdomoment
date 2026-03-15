@@ -1,90 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {TestTubeDiagonal} from "lucide-react";
-import { OwnerIdAutocomplete, OwnerIdType } from '@/components/OwnerIdAutocomplete';
+import { OwnerIdAutocomplete } from '@/components/OwnerIdAutocomplete';
+import {CoreAttributesModuleProps} from "@/components/CoreAttributes/types";
+import {useCoreAttributes} from "@/components/CoreAttributes/useCoreAttributes";
 
-export interface CoreAttributesModuleData {
-    owner_id?: string,
-    owner_name?: string,
-    owner_display?: string,
-    owner_id_type?: OwnerIdType,
-    research_field?: string
-}
+const CoreAttributes = ({ showHelp = false }: CoreAttributesModuleProps) => {
 
-interface CoreAttributesModuleProps {
-  onDataChange: (data: CoreAttributesModuleData) => void;
-  showHelp?: boolean;
-}
-
-const CoreAttributes = ({ onDataChange, showHelp = false }: CoreAttributesModuleProps) => {
-  const getInitialState = ()  => ({
-    owner_id: '',
-    owner_name: '',
-    owner_display: '',
-    owner_id_type: 'ORCiD' as OwnerIdType,
-    research_field: ''
-  });
-
-  const [inputs, setInputs] = useState(() : CoreAttributesModuleData => {
-    if (typeof window === 'undefined') {
-      return getInitialState();
-    }
-    
-     const coreInput = localStorage.getItem('coreAttributesInputs');
-
-     if (coreInput) {
-       return JSON.parse(coreInput);
-     }
-   
-    return getInitialState();
-  });
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('coreAttributesInputs', JSON.stringify(inputs));
-    }
-  }, [inputs]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    const newInputs = { ...inputs, [name]: value };
-    setInputs(newInputs);
-    onDataChange(newInputs);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('coreAttributesInputs', JSON.stringify(newInputs));
-    }
-  };
-
-  const handleOwnerIdChange = (value: string) => {
-    const newInputs = { 
-      ...inputs, 
-      owner_id: value,
-      owner_display: value
-    };
-    setInputs(newInputs);
-  };
-
-  const handleOwnerIdSelect = (id: string, name: string, type: OwnerIdType) => {
-    const newInputs = { 
-      ...inputs, 
-      owner_id: id, 
-      owner_name: name,
-      owner_display: `${name} (${id})`,
-      owner_id_type: type
-    };
-    setInputs(newInputs);
-    onDataChange(newInputs);
-  };
-
-  const handleTypeChange = (type: OwnerIdType) => {
-    const newInputs = { 
-      ...inputs, 
-      owner_id_type: type,
-      owner_id: '',
-      owner_name: '',
-      owner_display: ''
-    };
-    setInputs(newInputs);
-  };
+const {
+    inputs,
+    handleChange,
+    handleOwnerIdChange,
+    handleOwnerIdSelect,
+    handleTypeChange
+} = useCoreAttributes();
 
   return (
       <div className="card bg-base-100 shadow-sm">

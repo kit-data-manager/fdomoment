@@ -1,11 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {KeyRound, Trash2} from "lucide-react";
 import {Icon} from "@iconify/react";
-
-interface AdditionalAttributesProps {
-    onDataChange: (data: any) => void;
-    showHelp?: boolean;
-}
+import {AdditionalAttributesProps} from "@/components/AdditionalAttributes/types";
 
 const AdditionalAttributes = ({onDataChange, showHelp = false}: AdditionalAttributesProps) => {
     const [rows, setRows] = useState<{ key: string, value: string }[]>(() => {
@@ -133,4 +129,4 @@ const AdditionalAttributes = ({onDataChange, showHelp = false}: AdditionalAttrib
 
 AdditionalAttributes.displayName = 'AdditionalAttributes';
 
-export default AdditionalAttributes;
+export {AdditionalAttributes};

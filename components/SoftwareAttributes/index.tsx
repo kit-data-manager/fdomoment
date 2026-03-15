@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Copyright, FileQuestionMark,  Link} from "lucide-react";
 import {Icon} from '@iconify/react';
-import LicenseAutocomplete from '@/components/LicenseAutocomplete';
 import {getRepositoryInfo, RepositoryType} from '@/utils/git-client';
 import {searchSPDXLicenses} from "@/utils/license-client";
+import {LicenseAutocomplete} from "@/components/LicenseAutocomplete";
 
 export interface SoftwareModuleData {
     repositoryType?: RepositoryType,
@@ -252,4 +252,4 @@ const SoftwareAttributes = ({ onDataChange, showHelp = false }: SoftwareModulePr
 
 SoftwareAttributes.displayName = 'SoftwareAttributes';
 
-export default SoftwareAttributes;
+export {SoftwareAttributes};

@@ -1,12 +1,11 @@
 "use client";
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { HelpCircle, Trash2 } from "lucide-react";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useFdoEditor } from './useFdoEditor';
 import ModuleRenderer from './ModuleRenderer';
 import ValidationModal from './ValidationModal';
 import { validateModulesData } from "@/utils/validator-utils";
-import { ModuleDataType } from './types';
 
 const allModuleTypes = ['Core Attributes', 'Digital Object Attributes', 'Software Attributes', 'Typed Properties', 'Additional Properties'];
 
@@ -24,8 +23,7 @@ const FdoEditor = () => {
     addModule,
     removeModule,
     toggleHelpMode,
-    setOpenModule,
-    setModulesData
+    setOpenModule
   } = useFdoEditor();
 
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -75,7 +73,7 @@ const FdoEditor = () => {
 
     const key = storageMap[module.title] || `${module.title.replace(' ', '').toLowerCase()}Data`;
     const stored = localStorage.getItem(key);
-    
+
     if (stored) {
       try {
         let data = JSON.parse(stored);
@@ -92,31 +90,32 @@ const FdoEditor = () => {
 
   const handleCollectData = async () => {
     const visibleData: Record<string, any> = {};
-    
-    for (const module of modules) {
-      let data = modulesData[module.title];
-      
+
+    for (const mod of modules) {
+      let data = modulesData[mod.title];
+
       if (!data) {
-        data = await getModuleData(module);
+        data = await getModuleData(mod);
       }
-      
+
       if (data) {
-        visibleData[module.title] = data;
+        visibleData[mod.title] = data;
       }
     }
 
     const result = validateModulesData(modules, visibleData);
-    
+
     if (result.errors.length > 0) {
       setValidationErrors(result.errors);
       setShowValidationModal(true);
       return null;
     }
-    
+
     return result.validData;
   };
 
   const moduleStatus = getModuleStatus();
+  const defaultCheckedModule = modules.find((mod) => mod.id == openModuleId);
 
   return (
     <div className="flex h-screen w-full">
@@ -135,7 +134,7 @@ const FdoEditor = () => {
                 <input
                   type="radio"
                   name="accordion"
-                  defaultChecked={module.title === 'Core Attributes'}
+                  defaultChecked={defaultCheckedModule ? module.title === defaultCheckedModule.title : module.title == "Core Attributes"}
                   onChange={() => {
                     setOpenModule(module.id);
                   }}
@@ -170,8 +169,7 @@ const FdoEditor = () => {
                 <div className="collapse-content">
                   <ModuleRenderer
                     title={module.title}
-                    id={module.id}
-                    showHelp={!!helpMode[module.title]}
+                    showHelp={helpMode[module.title]}
                     onDataChange={(data) => updateModuleData(module.title, data)}
                   />
                 </div>

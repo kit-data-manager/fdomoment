@@ -56,4 +56,4 @@ const LicenseAutocomplete: React.FC<LicenseAutocompleteProps> = ({ value, onChan
   );
 };
 
-export default LicenseAutocomplete;
+export {LicenseAutocomplete};

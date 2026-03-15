@@ -1,19 +1,20 @@
 import React from 'react';
-import CoreAttributes, { CoreAttributesModuleData } from '../CoreAttributes';
-import { DigitalObjectAttributes, DigitalObjectModuleData } from '../DigitalObjectAttributes';
-import SoftwareAttributes, { SoftwareModuleData } from '../SoftwareAttributes';
+import CoreAttributes from '@/components/CoreAttributes';
 import TypedPropertiesSection, { TypedAttributesModuleData } from '@/components/TypedAttributes/index';
-import AdditionalAttributes from '../AdditionalAttributes';
 import { ModuleDataType } from './types';
+import {AdditionalAttributes} from "@/components/AdditionalAttributes";
+import {SoftwareAttributes, SoftwareModuleData} from "@/components/SoftwareAttributes";
+import {DigitalObjectAttributes} from "@/components/DigitalObjectAttributes";
+import {CoreAttributesModuleData} from "@/components/CoreAttributes/types";
+import {DigitalObjectModuleData} from "@/components/DigitalObjectAttributes/types";
 
 interface ModuleRendererProps {
   title: string;
-  id: number;
   showHelp: boolean;
   onDataChange: (data: ModuleDataType) => void;
 }
 
-const ModuleRenderer = ({ title, id, showHelp, onDataChange }: ModuleRendererProps) => {
+const ModuleRenderer = ({ title, showHelp, onDataChange }: ModuleRendererProps) => {
   switch (title) {
     case 'Core Attributes':
       return <CoreAttributes onDataChange={(data) => onDataChange(data as CoreAttributesModuleData)} showHelp={showHelp} />;
