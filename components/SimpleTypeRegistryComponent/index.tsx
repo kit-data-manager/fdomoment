@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { TypeDefinition } from "./types";
-import { useTypeRegistry } from "./useTypeRegistry";
-import TypeSelector from "./TypeSelector";
-import JsonValidatorForm from "./JsonValidatorForm";
-import SparqlValidatorForm from "./SparqlValidatorForm";
-
-const TYPE_REGISTRY_BASE = "https://raw.githubusercontent.com/ThomasJejkal/simple-type-registry/main/types";
+import React from "react";
+import { TypeDefinition } from "@/components/SimpleTypeRegistryComponent/types";
+import { useSimpleTypeRegistry } from "@/components/SimpleTypeRegistryComponent/useSimpleTypeRegistry";
+import TypeSelector from "@/components/SimpleTypeRegistryComponent/TypeSelector";
+import JsonValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/JsonValidatorForm";
+import SparqlValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/SparqlValidatorForm";
 
 interface SimpleTypeRegistryComponentProps {
   onTypeSelect: (type: TypeDefinition, value: any) => void;
@@ -20,88 +18,17 @@ const SimpleTypeRegistryComponent = ({
   initialType,
   initialValue 
 }: SimpleTypeRegistryComponentProps) => {
-  const { typeOptions } = useTypeRegistry();
-  const [selectedType, setSelectedType] = useState<TypeDefinition | null>(initialType || null);
-  const [formValue, setFormValue] = useState<any>(initialValue || {});
-  const [jsonSchema, setJsonSchema] = useState<any>(null);
-  const [sparqlQuery, setSparqlQuery] = useState<string>("");
-
-  const loadValidatorConfig = useCallback(async (type: TypeDefinition) => {
-    if (!type.validatorInput) return;
-
-    if (type.validator === "JSON") {
-      try {
-        const schemaUrl = `${TYPE_REGISTRY_BASE}/${type.validatorInput}`;
-        const res = await fetch(schemaUrl);
-        if (res.ok) {
-          const schema = await res.json();
-          setJsonSchema(schema);
-          setSparqlQuery("");
-        }
-      } catch (error) {
-        console.error("Error loading JSON schema:", error);
-      }
-    } else if (type.validator === "SPARQL") {
-      try {
-        const queryUrl = `${TYPE_REGISTRY_BASE}/${type.validatorInput}`;
-        const res = await fetch(queryUrl);
-        if (res.ok) {
-          const query = await res.text();
-          setSparqlQuery(query);
-          setJsonSchema(null);
-        }
-      } catch (error) {
-        console.error("Error loading SPARQL query:", error);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (initialType) {
-      setSelectedType(initialType);
-      setFormValue(initialValue || {});
-      loadValidatorConfig(initialType);
-    }
-  }, [initialType]);
-
-  useEffect(() => {
-    if (selectedType?.validatorInput) {
-      loadValidatorConfig(selectedType);
-    }
-  }, [selectedType?.validatorInput, selectedType?.validator, loadValidatorConfig]);
-
-  const handleTypeSelect = (type: TypeDefinition) => {
-    setSelectedType(type);
-    setFormValue({});
-    onTypeSelect(type, {});
-  };
-
-  const handleFormChange = (data: any) => {
-    setFormValue(data.formData);
-    if (onValueChange) {
-      onValueChange(data.formData);
-    }
-    if (selectedType) {
-      onTypeSelect(selectedType, data.formData);
-    }
-  };
-
-  const handleSparqlSelect = (value: any) => {
-    setFormValue(value);
-    if (onValueChange) {
-      onValueChange(value);
-    }
-    if (selectedType) {
-      onTypeSelect(selectedType, value);
-    }
-  };
-
-  const resetSelection = () => {
-    setSelectedType(null);
-    setFormValue({});
-    setJsonSchema(null);
-    setSparqlQuery("");
-  };
+  const {
+    typeOptions,
+    selectedType,
+    formValue,
+    jsonSchema,
+    sparqlQuery,
+    handleTypeSelect,
+    handleFormChange,
+    handleSparqlSelect,
+    resetSelection
+  } = useSimpleTypeRegistry(initialType, initialValue, onValueChange, onTypeSelect);
 
   return (
     <div className="w-full">
@@ -143,4 +70,3 @@ const SimpleTypeRegistryComponent = ({
 
 export { SimpleTypeRegistryComponent };
 export default SimpleTypeRegistryComponent;
-export type { TypeDefinition } from './types';

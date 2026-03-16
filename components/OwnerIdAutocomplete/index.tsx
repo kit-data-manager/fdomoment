@@ -1,22 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Icon } from "@iconify/react";
 import { X } from 'lucide-react';
-import { searchORCiD, formatORCiDDisplay, ORCiDResult } from '@/utils/orcid-client';
-import { searchROR, formatRORDisplay, RORResult } from '@/utils/ror-client';
-import {parseNameAndId} from "@/utils/parse-utils";
-
-export type OwnerIdType = 'ORCiD' | 'ROR';
-
-interface OwnerIdAutocompleteProps {
-    value: string;
-    displayValue: string;
-    idType: OwnerIdType;
-    onChange: (value: string) => void;
-    onSelect: (id: string, name: string, type: OwnerIdType) => void;
-    onTypeChange: (type: OwnerIdType) => void;
-}
+import { ORCiDResult, formatORCiDDisplay } from '@/utils/orcid-client';
+import { RORResult, formatRORDisplay } from '@/utils/ror-client';
+import { OwnerIdAutocompleteProps } from './types';
+import { useOwnerIdAutocomplete } from './useOwnerIdAutocomplete';
 
 const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
     value,
@@ -26,79 +16,13 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
     onSelect,
     onTypeChange
 }) => {
-    const [suggestions, setSuggestions] = useState<Array<ORCiDResult | RORResult>>([]);
-    const [mounted, setMounted] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    const effectiveIdType = mounted ? idType : 'ORCiD';
-
-    useEffect(() => {
-        const fetchSuggestions = async () => {
-            if (searchTerm.length >= 2) {
-                let results: Array<ORCiDResult | RORResult> = [];
-                
-                if (effectiveIdType === 'ORCiD') {
-                    results = await searchORCiD(searchTerm);
-                } else {
-                    results = await searchROR(searchTerm);
-                }
-                
-                setSuggestions(results);
-            } else {
-                setSuggestions([]);
-            }
-        };
-        
-        const debounce = setTimeout(() => {
-            fetchSuggestions();
-        }, 300);
-        
-        return () => clearTimeout(debounce);
-    }, [searchTerm, effectiveIdType]);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const inputValue = e.target.value;
-        setSearchTerm(inputValue);
-        onChange(inputValue);
-        
-        const selectedValue = inputValue;
-        
-        if (effectiveIdType === 'ORCiD') {
-            const parsed = parseNameAndId(selectedValue);
-            if (parsed) {
-                onSelect(parsed.id, parsed.name, 'ORCiD');
-                setSuggestions([]);
-            }
-        } else {
-            const parsed = parseNameAndId(selectedValue);
-            if (parsed) {
-                onSelect(parsed.id, parsed.name, 'ROR');
-                setSuggestions([]);
-            }
-        }
-    };
-
-    const handleSelect = (item: ORCiDResult | RORResult) => {
-        if (effectiveIdType === 'ORCiD') {
-            const orcidItem = item as ORCiDResult;
-            const id = orcidItem['orcid-id'];
-            const name = `${orcidItem['family-names']}, ${orcidItem['given-names']}`;
-            onSelect(id, name, 'ORCiD');
-            setSearchTerm('');
-        } else {
-            const rorItem = item as RORResult;
-            const displayName = rorItem.names.find(
-                name => name.types && name.types.includes('ror_display')
-            )?.value || rorItem.names[0].value;
-            onSelect(rorItem.id, displayName, 'ROR');
-            setSearchTerm('');
-        }
-        setSuggestions([]);
-    };
+    const {
+        suggestions,
+        effectiveIdType,
+        handleInputChange,
+        handleSelect,
+        clearSelection
+    } = useOwnerIdAutocomplete(idType);
 
     return (
         <div className="w-full flex items-center gap-2">
@@ -123,7 +47,7 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
             <input
                 type="text"
                 value={displayValue || value}
-                onChange={handleInputChange}
+                onChange={(e) => handleInputChange(e.target.value, onChange, onSelect)}
                 className="input flex-1"
                 placeholder={effectiveIdType === 'ORCiD' ? 'Search ORCiD...' : 'Search ROR...'}
                 list="ownerIdSuggestions"
@@ -131,11 +55,7 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
             {displayValue && (
                 <button
                     type="button"
-                    onClick={() => {
-                        onChange('');
-                        onSelect('', '', effectiveIdType);
-                        setSearchTerm('');
-                    }}
+                    onClick={() => clearSelection(onChange, onSelect)}
                     className="btn btn-ghost btn-sm"
                     title="Clear selection"
                 >
@@ -147,7 +67,7 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
                     <option 
                         key={index} 
                         value={effectiveIdType === 'ORCiD' ? formatORCiDDisplay(item as ORCiDResult) : formatRORDisplay(item as RORResult)}
-                        onClick={() => handleSelect(item)}
+                        onClick={() => handleSelect(item, onSelect)}
                     />
                 ))}
             </datalist>
@@ -156,3 +76,4 @@ const OwnerIdAutocomplete: React.FC<OwnerIdAutocompleteProps> = ({
 };
 
 export { OwnerIdAutocomplete };
+export type { OwnerIdType } from './types';

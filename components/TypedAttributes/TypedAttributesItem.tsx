@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon } from "@iconify/react";
-import { Tag, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { TypedAttributesItem } from './types';
 
 interface TypedPropertyItemComponentProps {
@@ -10,11 +10,24 @@ interface TypedPropertyItemComponentProps {
   onRemove: (index: number) => void;
 }
 
-const TypedPropertyItemComponent = ({ property, index, onEdit, onRemove }: TypedPropertyItemComponentProps) => (
+const getValidatorIcon = (validator?: string) => {
+  if (validator === "SPARQL") {
+    return "file-icons:json-ld2";
+  }
+  if (validator === "JSON") {
+    return "tabler:json";
+  }
+  return "carbon:ibm-watsonx-code-assistant-for-z-validation-assistant";
+};
+
+const TypedPropertyItemComponent = ({ property, index, onEdit, onRemove }: TypedPropertyItemComponentProps) => {
+  const validatorIcon = getValidatorIcon(property.validator);
+
+  return (
   <div className="row flex items-center gap-2 mb-2">
     <fieldset className="fieldset w-full">
       <label className="input w-full min-w-0">
-        <Tag className="flex-shrink-0" />
+        <Icon icon={validatorIcon} className="flex-shrink-0" width="20" height="20" />
         <div className="flex-1 min-w-0 overflow-hidden">
           <span className="font-medium text-ellipsis">{property.typeName}</span>
           <span className="text-sm text-base-content/60 ml-2 text-ellipsis">({property.typeId})</span>
@@ -36,6 +49,7 @@ const TypedPropertyItemComponent = ({ property, index, onEdit, onRemove }: Typed
       <Trash2 width="16" height="16" />
     </button>
   </div>
-);
+  );
+};
 
 export default TypedPropertyItemComponent;

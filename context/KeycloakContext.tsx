@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import Keycloak, { KeycloakConfig } from 'keycloak-js';
+import Keycloak, { KeycloakConfig, KeycloakInitOptions } from 'keycloak-js';
 
 interface KeycloakContextType {
   keycloak: Keycloak | null;
@@ -28,11 +28,13 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const kc = new Keycloak(keycloakConfig);
     
-    kc.init({
+    const initOptions: KeycloakInitOptions = {
       onLoad: 'check-sso',
-      silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+      checkLoginIframe: false,
       pkceMethod: 'S256',
-    }).then((auth) => {
+    };
+    
+    kc.init(initOptions).then((auth) => {
       setKeycloak(kc);
       setAuthenticated(auth);
       if (auth && kc.tokenParsed) {
@@ -40,6 +42,8 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
       }
     }).catch((error) => {
       console.error('Keycloak initialization error:', error);
+      setKeycloak(kc);
+      setAuthenticated(false);
     });
   }, []);
 
@@ -51,7 +55,6 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     if (keycloak) {
-      // Federated logout - redirects to Keycloak and logs out from all applications
       keycloak.logout({
         redirectUri: window.location.origin,
       });

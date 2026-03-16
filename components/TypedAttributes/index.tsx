@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Plus } from "lucide-react";
-import { TypeDefinition } from '@/components/SimpleTypeRegistryComponent';
-import { useTypedAttributes } from './useTypedAttributes';
-import TypedPropertyItemComponent from './TypedAttributesItem';
-import TypedAttributesModal from './TypedAttributesModal';
-import { TypedAttributesItem, TypedAttributesModuleData } from './types';
+import { useTypedAttributes } from '@/components/TypedAttributes/useTypedAttributes';
+import TypedPropertyItemComponent from '@/components/TypedAttributes/TypedAttributesItem';
+import TypedAttributesModal from '@/components/TypedAttributes/TypedAttributesModal';
+import { TypedAttributesItem, TypedAttributesModuleData } from '@/components/TypedAttributes/types';
+import {TypeDefinition} from "@/components/SimpleTypeRegistryComponent/types";
 
 interface TypedPropertiesModuleProps {
   onDataChange: (data: TypedAttributesModuleData) => void;
@@ -14,7 +14,7 @@ interface TypedPropertiesModuleProps {
 }
 
 const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropertiesModuleProps) => {
-  const { properties, addProperty, updateProperty, removeProperty, updateModuleData } = useTypedAttributes();
+  const { properties, addAttribute, updateAttribute, removeAttribute } = useTypedAttributes();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<TypeDefinition | null>(null);
@@ -48,9 +48,9 @@ const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropert
 
   const handleSaveProperty = (property: TypedAttributesItem) => {
     if (editingIndex !== null) {
-      updateProperty(editingIndex, property);
+      updateAttribute(editingIndex, property);
     } else {
-      addProperty(property);
+      addAttribute(property);
     }
     setIsModalOpen(false);
     setSelectedType(null);
@@ -65,7 +65,7 @@ const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropert
   };
 
   const handleRemoveProperty = (index: number) => {
-    removeProperty(index);
+    removeAttribute(index);
     const newData = { properties: properties.filter((_, i) => i !== index) };
     onDataChange(newData);
   };

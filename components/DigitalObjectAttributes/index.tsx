@@ -1,62 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Copyright, FileType, Link} from "lucide-react";
 import {MimeTypeAutocomplete} from "@/components/MimeTypeAutocomplete";
 import {LicenseAutocomplete} from "@/components/LicenseAutocomplete";
-import {DigitalObjectModuleData, DigitalObjectModuleProps} from "@/components/DigitalObjectAttributes/types";
+import {DigitalObjectModuleProps} from "@/components/DigitalObjectAttributes/types";
+import {useDigitalObjectAttributes} from "@/components/DigitalObjectAttributes/useDigitalObjectAttributes";
 
 const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObjectModuleProps) => {
-    const getInitialState = ()  => ({
-        mimeType: '',
-        license_id: '',
-        license_name: '',
-        contentLocation: ''
-    });
-
-    const [inputs, setInputs] = useState(() : DigitalObjectModuleData => {
-        if (typeof window === 'undefined') {
-            return getInitialState();
-        }
-
-        const digitalObjectInput = localStorage.getItem('digitalObjectAttributesInputs');
-
-        if (digitalObjectInput) {
-            return JSON.parse(digitalObjectInput);
-        }
-
-        return getInitialState();
-    });
-
-    useEffect(() => {
-        localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(inputs));
-    }, [inputs]);
-
-    const handleMimetypeSelect = (value: string) => {
-        const newInputs = { ...inputs, mimeType: value};
-        setInputs(newInputs);
-        onDataChange(newInputs);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(newInputs));
-        }
-    };
-
-    const handleLicenseSelect = (id: string, name: string, url: string) => {
-        const newInputs = { ...inputs, license_id: id, license_name: name };
-        setInputs(newInputs);
-        onDataChange(newInputs);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(newInputs));
-        }
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      const newInputs = { ...inputs, [name]: value };
-      setInputs(newInputs);
-      onDataChange(newInputs);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(newInputs));
-      }
-    };
+    const {
+        inputs,
+        handleMimetypeSelect,
+        handleLicenseSelect,
+        handleInputChange,
+        setInputs
+    } = useDigitalObjectAttributes();
 
     return (
         <div className="card bg-base-100 shadow-sm">
@@ -89,11 +45,11 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
                         <fieldset className="fieldset w-full">
                             <label className="input w-full">
                                 <FileType/>
-                                <MimeTypeAutocomplete
-                                    value={inputs.mimeType ?? ''}
-                                    onChange={(value) => setInputs(inputs => ({...inputs, mimeType: value}))}
-                                    onSelect={handleMimetypeSelect}
-                                />
+                                    <MimeTypeAutocomplete
+                                        value={inputs.mimeType ?? ''}
+                                        onChange={(value) => setInputs(prev => ({...prev, mimeType: value}))}
+                                        onSelect={handleMimetypeSelect}
+                                    />
                             </label>
                             <p className="label">The mime type of the digital object.</p>
                         </fieldset>

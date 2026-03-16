@@ -1,35 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
-import { getMimeTypes, MimeType } from '@/utils/mimetype-client';
-
-interface MimeTypeAutocompleteProps {
-  value: string;
-  onChange: (value: string) => void;
-  onSelect: (type: string, description: string) => void;
-}
+import { MimeTypeAutocompleteProps } from '@/components/MimeTypeAutocomplete/types';
+import { useMimeTypeAutocomplete } from '@/components/MimeTypeAutocomplete/useMimeTypeAutocomplete';
 
 const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onChange, onSelect }) => {
-  const [mimeTypes, setMimeTypes] = useState<MimeType[]>([]);
-
-  useEffect(() => {
-    getMimeTypes().then(setMimeTypes);
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = e.target.value;
-    if (selectedValue) {
-      const selectedItem = mimeTypes.find(item => item.type === selectedValue);
-      if (selectedItem) {
-        onSelect(selectedItem.type, selectedItem.description);
-      }
-    }
-  };
+  const { mimeTypes, handleChange, clearSelection } = useMimeTypeAutocomplete();
 
   return (
     <div className="w-full flex items-center gap-2">
       <select
         value={value}
-        onChange={handleChange}
+        onChange={(e) => handleChange(e.target.value, mimeTypes, onSelect)}
         className="select select-ghost flex-1"
       >
         <option value="">Select MIME type...</option>
@@ -42,10 +23,7 @@ const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onCh
       {value && (
         <button
           type="button"
-          onClick={() => {
-            onChange('');
-            onSelect('', '');
-          }}
+          onClick={() => clearSelection(onChange, onSelect)}
           className="btn btn-ghost btn-sm"
           title="Clear selection"
         >
@@ -56,4 +34,4 @@ const MimeTypeAutocomplete: React.FC<MimeTypeAutocompleteProps> = ({ value, onCh
   );
 };
 
-export {MimeTypeAutocomplete};
+export { MimeTypeAutocomplete };

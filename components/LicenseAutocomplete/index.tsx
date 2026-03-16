@@ -1,35 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { X } from 'lucide-react';
-import { getSPDXLicenses, SPDXLicense } from '@/utils/license-client';
-
-interface LicenseAutocompleteProps {
-  value: string;
-  onChange: (value: string) => void;
-  onSelect: (id: string, name: string, url: string) => void;
-}
+import { LicenseAutocompleteProps } from './types';
+import { useLicenseAutocomplete } from './useLicenseAutocomplete';
 
 const LicenseAutocomplete: React.FC<LicenseAutocompleteProps> = ({ value, onChange, onSelect }) => {
-  const [licenses, setLicenses] = useState<SPDXLicense[]>([]);
-
-  useEffect(() => {
-    getSPDXLicenses().then(setLicenses);
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = e.target.value;
-    if (selectedValue) {
-      const selectedItem = licenses.find(item => item.id === selectedValue);
-      if (selectedItem) {
-        onSelect(selectedItem.id, selectedItem.name, selectedItem.url);
-      }
-    }
-  };
+  const { licenses, handleChange, clearSelection } = useLicenseAutocomplete();
 
   return (
     <div className="w-full flex items-center gap-2">
       <select
         value={value}
-        onChange={handleChange}
+        onChange={(e) => handleChange(e.target.value, licenses, onSelect)}
         className="select select-ghost flex-1"
       >
         <option value="">Select license...</option>
@@ -42,10 +23,7 @@ const LicenseAutocomplete: React.FC<LicenseAutocompleteProps> = ({ value, onChan
       {value && (
         <button
           type="button"
-          onClick={() => {
-            onChange('');
-            onSelect('', '', '');
-          }}
+          onClick={() => clearSelection(onChange, onSelect)}
           className="btn btn-ghost btn-sm"
           title="Clear selection"
         >
@@ -56,4 +34,4 @@ const LicenseAutocomplete: React.FC<LicenseAutocompleteProps> = ({ value, onChan
   );
 };
 
-export {LicenseAutocomplete};
+export { LicenseAutocomplete };

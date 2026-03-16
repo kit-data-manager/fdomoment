@@ -1,136 +1,24 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Copyright, FileQuestionMark,  Link} from "lucide-react";
 import {Icon} from '@iconify/react';
-import {getRepositoryInfo, RepositoryType} from '@/utils/git-client';
-import {searchSPDXLicenses} from "@/utils/license-client";
+import {RepositoryType} from '@/utils/git-client';
 import {LicenseAutocomplete} from "@/components/LicenseAutocomplete";
-
-export interface SoftwareModuleData {
-    repositoryType?: RepositoryType,
-    softwareLocation?: string,
-    license_id?: string,
-    license_name?: string,
-    readmeLocation?: string
-}
-
-interface SoftwareModuleProps {
-  onDataChange: (data: SoftwareModuleData) => void;
-  showHelp?: boolean;
-}
+import {SoftwareModuleProps} from "@/components/SoftwareAttributes/types";
+import {useSoftwareAttributes} from "@/components/SoftwareAttributes/useSoftwareAttributes";
 
 const SoftwareAttributes = ({ onDataChange, showHelp = false }: SoftwareModuleProps) => {
-    const getInitialState = ()  => ({
-        repositoryType: "GitHub" as RepositoryType,
-        softwareLocation: '',
-        license_id: '',
-        license_name: '',
-        readmeLocation: ''
-    });
-
-    const [inputs, setInputs] = useState(() : SoftwareModuleData => {
-        if (typeof window === 'undefined') {
-            return getInitialState();
-        }
-
-        const softwareInputs = localStorage.getItem('softwareAttributesInputs');
-
-        if (softwareInputs) {
-            return JSON.parse(softwareInputs);
-        }
-
-        return getInitialState();
-    });
-
-    const [repositoryType, setRepositoryType] = useState<RepositoryType>('GitHub');
-    const [showError, setShowError] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        // Load from localStorage on mount
-        if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('softwareAttributesInputs');
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    setInputs(parsed);
-                    onDataChange(parsed);
-                } catch (e) {
-                    console.error('Error loading software attributes from localStorage:', e);
-                }
-            }
-        }
-    }, []);
-
-    const handleLicenseSelect = (id: string, name: string, url: string) => {
-        const newInputs = { ...inputs, license_id: id, license_name: name };
-        setInputs(newInputs);
-        onDataChange(newInputs);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('softwareAttributesInputs', JSON.stringify(newInputs));
-        }
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-      const newInputs = { ...inputs, [name]: value };
-      setInputs(newInputs);
-      onDataChange(newInputs);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('softwareAttributesInputs', JSON.stringify(newInputs));
-      }
-    };
-
-    const handleAutoDetect = async () => {
-        if (!inputs.softwareLocation) return;
-        setShowError(false);
-        setIsLoading(true);
-        
-        try {
-            const info = await getRepositoryInfo(inputs.softwareLocation);
-            let newInputs = {...inputs};
-
-            if (info.repositoryType) {
-                setRepositoryType(info.repositoryType);
-                newInputs = {
-                    ...newInputs,
-                    repositoryType: info.repositoryType
-                };
-            }
-
-
-            if (info.license) {
-               await searchSPDXLicenses(info.license).then(license => {
-                    if(license.length > 0){
-                    newInputs = {
-                        ...newInputs,
-                        license_id: license[0].id,
-                        license_name: license[0].name
-                    };
-                    }
-                });
-            }
-
-            if (info.readmeUrl) {
-                newInputs = {
-                    ...newInputs,
-                    readmeLocation: info.readmeUrl
-                };
-            }
-            setInputs(newInputs);
-            onDataChange(newInputs);
-        } catch (error) {
-            console.error('Error fetching repository info:', error);
-            setShowError(true);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('softwareAttributesInputs', JSON.stringify(inputs));
-        }
-    }, [inputs]);
+    const {
+        inputs,
+        setInputs,
+        updateInputs,
+        repositoryType,
+        setRepositoryType,
+        showError,
+        isLoading,
+        handleLicenseSelect,
+        handleInputChange,
+        handleAutoDetect
+    } = useSoftwareAttributes();
 
     return (
         <div className="card bg-base-100 shadow-sm">

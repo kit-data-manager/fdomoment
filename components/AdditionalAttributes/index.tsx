@@ -1,62 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {KeyRound, Trash2} from "lucide-react";
 import {Icon} from "@iconify/react";
 import {AdditionalAttributesProps} from "@/components/AdditionalAttributes/types";
+import {useAdditionalAttributes} from "@/components/AdditionalAttributes/useAdditionalAttributes";
 
 const AdditionalAttributes = ({onDataChange, showHelp = false}: AdditionalAttributesProps) => {
-    const [rows, setRows] = useState<{ key: string, value: string }[]>(() => {
-        if (typeof window === 'undefined') {
-            return [];
-        }
-        const stored = localStorage.getItem('additionalAttributesRows');
-        return stored ? JSON.parse(stored) : [];
-    });
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('additionalAttributesRows', JSON.stringify(rows));
-        }
-    }, [rows]);
-
-    useEffect(() => {
-        // Notify parent with initial data on mount
-        if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('additionalAttributesRows');
-            if (stored) {
-                try {
-                    onDataChange(JSON.parse(stored));
-                } catch (e) {
-                    console.error('Error loading additional attributes from localStorage:', e);
-                }
-            }
-        }
-    }, []);
-
-    const handleInputChange = (index: number, field: 'key' | 'value', value: string) => {
-        const newRows = [...rows];
-        newRows[index][field] = value;
-        setRows(newRows);
-        onDataChange(newRows);
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('additionalAttributesRows', JSON.stringify(newRows));
-        }
-    };
-
-    const addRow = () => {
-        setRows([...rows, {key: '', value: ''}]);
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('additionalAttributesRows', JSON.stringify([...rows, {key: '', value: ''}]));
-        }
-    };
-
-    const removeRow = (index: number) => {
-        const newRows = rows.filter((_, i) => i !== index);
-        setRows(newRows);
-        onDataChange(newRows);
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('additionalAttributesRows', JSON.stringify(newRows));
-        }
-    };
+    const {
+        rows,
+        setRows,
+        handleInputChange,
+        addRow,
+        removeRow
+    } = useAdditionalAttributes();
 
     return (
         <div className="card bg-base-100 shadow-sm">

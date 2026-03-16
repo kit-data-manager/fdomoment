@@ -1,4 +1,4 @@
-import { TypeDefinition } from '@/components/SimpleTypeRegistryComponent';
+import {TypeDefinition} from "@/components/SimpleTypeRegistryComponent/types";
 
 export interface TypedAttributesItem {
   typeId: string;

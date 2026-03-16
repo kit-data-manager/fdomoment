@@ -1,7 +1,8 @@
 export interface MimeType {
-  type: string;
-  description: string;
+    type: string;
+    description: string;
 }
+
 // Function to get MIME types with caching
 export const getMimeTypes = async (): Promise<MimeType[]> => {
     return [

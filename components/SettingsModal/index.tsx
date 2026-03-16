@@ -1,76 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Icon } from "@iconify/react";
-
-interface SettingsModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-}
-
-const STORAGE_KEY = 'fdo-editor-access-tokens';
-
-export type TokenRepositoryType = 'GitHub' | 'GitLab.com' | 'Codebase@Helmholtz' | 'GitLab@Kit';
-
-const REPOSITORY_TYPES: TokenRepositoryType[] = ['GitHub', 'GitLab.com', 'Codebase@Helmholtz', 'GitLab@Kit'];
-
-interface TokenEntry {
-    repoType: TokenRepositoryType;
-    token: string;
-}
+import { SettingsModalProps, TokenRepositoryType } from '@/components/SettingsModal/types';
+import { useSettingsModal } from '@/components/SettingsModal/useSettingsModal';
 
 export const SettingsModal = function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-    const [activeTab, setActiveTab] = useState<'general' | 'tokens'>('general');
-    const [tokens, setTokens] = useState<TokenEntry[]>(() => {
-        if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) return JSON.parse(stored);
-        }
-        return [];
-    });
-    const [tempTokens, setTempTokens] = useState<TokenEntry[]>(tokens);
-
-    useEffect(() => {
-        setTempTokens(tokens);
-    }, [isOpen]);
-
-    const handleSave = () => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(tempTokens));
-        setTokens(tempTokens);
-        onClose();
-    };
-
-    const handleCancel = () => {
-        setTempTokens(tokens);
-        onClose();
-    };
-
-    const addToken = () => {
-        const usedTypes = tempTokens.map(t => t.repoType);
-        const availableTypes = REPOSITORY_TYPES.filter(t => !usedTypes.includes(t));
-        if (availableTypes.length > 0) {
-            setTempTokens([...tempTokens, { repoType: availableTypes[0], token: '' }]);
-        }
-    };
-
-    const removeToken = (index: number) => {
-        setTempTokens(tempTokens.filter((_, i) => i !== index));
-    };
-
-    const handleRepoTypeChange = (index: number, repoType: TokenRepositoryType) => {
-        const newTokens = [...tempTokens];
-        newTokens[index].repoType = repoType;
-        setTempTokens(newTokens);
-    };
-
-    const handleTokenValueChange = (index: number, token: string) => {
-        const newTokens = [...tempTokens];
-        newTokens[index].token = token;
-        setTempTokens(newTokens);
-    };
-
-    const usedRepoTypes = tempTokens.map(t => t.repoType);
-    const availableRepoTypes = REPOSITORY_TYPES.filter(t => !usedRepoTypes.includes(t));
+    const {
+        activeTab,
+        setActiveTab,
+        tempTokens,
+        handleSave,
+        handleCancel,
+        addToken,
+        removeToken,
+        handleRepoTypeChange,
+        handleTokenValueChange,
+        availableRepoTypes,
+        REPOSITORY_TYPES
+    } = useSettingsModal(onClose);
 
     if (!isOpen) return null;
 

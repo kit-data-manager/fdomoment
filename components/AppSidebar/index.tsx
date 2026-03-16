@@ -3,26 +3,26 @@ import {
     SidebarHeader,
     SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { Boxes, Blocks, LogIn, LogOut, User} from "lucide-react";
+import { Boxes, Blocks, LogIn, LogOut, Settings, User} from "lucide-react";
 import {Icon} from "@iconify/react";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
 import { SettingsModal } from "@/components/SettingsModal";
 import { useKeycloak } from '@/context/KeycloakContext';
-
-interface AppSidebarProps {
-    allModuleTypes: string[];
-    moduleStatus: Record<string, string>;
-    getExclusiveInfo: (type: string) => { types: string[]; icon: string } | null;
-    onAddModule: (title: string) => void;
-    onCollectData: () => Record<string, any> | null;
-}
+import { AppSidebarProps } from "@/components/AppSidebar/types";
 
 export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onAddModule, onCollectData }: AppSidebarProps) {
     const hasAvailableModules = allModuleTypes.some(type => !moduleStatus[type]);
     const [showSettings, setShowSettings] = useState(false);
     const { authenticated, login, logout, userName } = useKeycloak();
+
+    const getUserInitial = () => {
+        if (userName) {
+            return userName.charAt(0).toUpperCase();
+        }
+        return 'U';
+    };
 
     return (
         <div className="h-screen w-16 flex flex-col">
@@ -86,42 +86,42 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
                 <ResizableHandle />
                 <ResizablePanel defaultSize="35%">
                     <div className="flex h-full items-end justify-center p-4 pb-6">
-                        <div className="dropdown dropdown-top dropdown-end">
-                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
-                                <div className="bg-neutral text-neutral-content rounded-full w-8">
-                                    <span>U</span>
+                        <div 
+                            className="tooltip tooltip-right z-50" 
+                            data-tip={authenticated && userName ? `Logged in as ${userName}` : ''}
+                        >
+                            <div className="dropdown dropdown-top dropdown-end">
+                                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
+                                    <div className="bg-neutral text-neutral-content rounded-full w-8 text-xl">
+                                        <span>{getUserInitial()}</span>
+                                    </div>
                                 </div>
+                                <ul tabIndex={0} className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 mb-2 fixed bottom-12 left-0">
+                                    {authenticated ? (
+                                        <>
+                                            <li>
+                                                <button onClick={() => setShowSettings(true)}>
+                                                    <Settings className="w-4 h-4" />
+                                                    Settings
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button onClick={logout} className="text-error">
+                                                    <LogOut className="w-4 h-4" />
+                                                    Logout
+                                                </button>
+                                            </li>
+                                        </>
+                                    ) : (
+                                        <li>
+                                            <button onClick={login} className="text-success">
+                                                <LogIn className="w-4 h-4" />
+                                                Login
+                                            </button>
+                                        </li>
+                                    )}
+                                </ul>
                             </div>
-                            <ul tabIndex={0} className="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-52 mb-2 fixed bottom-12 left-0">
-                                {authenticated ? (
-                                    <>
-                                        <li className="px-4 py-2 text-sm border-b border-base-200">
-                                            <div className="flex items-center gap-2">
-                                                <User className="w-4 h-4" />
-                                                <span className="truncate">{userName || 'User'}</span>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <button onClick={() => setShowSettings(true)}>
-                                                Settings
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button onClick={logout} className="text-error">
-                                                <LogOut className="w-4 h-4 mr-2" />
-                                                Logout
-                                            </button>
-                                        </li>
-                                    </>
-                                ) : (
-                                    <li>
-                                        <button onClick={login} className="text-success">
-                                            <LogIn className="w-4 h-4 mr-2" />
-                                            Login
-                                        </button>
-                                    </li>
-                                )}
-                            </ul>
                         </div>
                     </div>
                 </ResizablePanel>

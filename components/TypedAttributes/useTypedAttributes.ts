@@ -21,15 +21,7 @@ export const useTypedAttributes = () => {
     return { properties: [] };
   });
 
-  const updateModuleData = useCallback((newData: TypedAttributesModuleData) => {
-    setModuleData(newData);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('typedAttributes', JSON.stringify(newData));
-    }
-    return newData;
-  }, []);
-
-  const addAttribute = useCallback((property: TypedAttributesItem) => {
+ const addAttribute = useCallback((property: TypedAttributesItem) => {
     setModuleData(prev => {
       const newData = { properties: [...prev.properties, property] };
       if (typeof window !== 'undefined') {
@@ -63,10 +55,9 @@ export const useTypedAttributes = () => {
 
   return {
     properties: moduleData.properties,
-    addProperty: addAttribute,
-    updateProperty: updateAttribute,
-    removeProperty: removeAttribute,
-    updateModuleData
+    addAttribute,
+    updateAttribute,
+    removeAttribute,
   };
 };
 

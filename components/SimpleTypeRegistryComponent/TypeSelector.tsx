@@ -1,5 +1,5 @@
 import React from "react";
-import { TypeDefinition } from "./types";
+import { TypeDefinition } from "@/components/SimpleTypeRegistryComponent/types";
 
 interface TypeSelectorProps {
   typeOptions: TypeDefinition[];
