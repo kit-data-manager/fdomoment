@@ -9,6 +9,5 @@ export interface SoftwareModuleData {
 }
 
 export interface SoftwareModuleProps {
-    onDataChange: (data: SoftwareModuleData) => void;
     showHelp?: boolean;
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ThemeToggle from '@/components/ThemeToggle';
 import {Rocket} from "lucide-react";
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -83,9 +84,7 @@ export default function Home() {
               </div>
       </main>
 
-        <footer className="py-6 px-6 text-center border-t">
-        © {new Date().getFullYear()} Karlsruhe Institute of Technology (KIT)
-      </footer>
-    </div>
+        <Footer />
+      </div>
   );
 }

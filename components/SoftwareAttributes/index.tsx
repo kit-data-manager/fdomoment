@@ -6,11 +6,10 @@ import {LicenseAutocomplete} from "@/components/LicenseAutocomplete";
 import {SoftwareModuleProps} from "@/components/SoftwareAttributes/types";
 import {useSoftwareAttributes} from "@/components/SoftwareAttributes/useSoftwareAttributes";
 
-const SoftwareAttributes = ({ onDataChange, showHelp = false }: SoftwareModuleProps) => {
+const SoftwareAttributes = ({ showHelp = false }: SoftwareModuleProps) => {
     const {
         inputs,
         setInputs,
-        updateInputs,
         repositoryType,
         setRepositoryType,
         showError,
@@ -140,4 +139,6 @@ const SoftwareAttributes = ({ onDataChange, showHelp = false }: SoftwareModulePr
 
 SoftwareAttributes.displayName = 'SoftwareAttributes';
 
-export {SoftwareAttributes};
+
+export { SoftwareAttributes };
+export default SoftwareAttributes;
