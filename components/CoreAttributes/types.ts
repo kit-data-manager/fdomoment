@@ -9,6 +9,5 @@ export interface CoreAttributesModuleData {
 }
 
 export interface CoreAttributesModuleProps {
-  onDataChange: (data: CoreAttributesModuleData) => void;
   showHelp?: boolean;
 }

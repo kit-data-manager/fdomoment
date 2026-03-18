@@ -1,7 +1,6 @@
 import React from 'react';
 import {Copyright, FileQuestionMark,  Link} from "lucide-react";
 import {Icon} from '@iconify/react';
-import {RepositoryType} from '@/utils/git-client';
 import {LicenseAutocomplete} from "@/components/LicenseAutocomplete";
 import {SoftwareModuleProps} from "@/components/SoftwareAttributes/types";
 import {useSoftwareAttributes} from "@/components/SoftwareAttributes/useSoftwareAttributes";
@@ -9,8 +8,7 @@ import {useSoftwareAttributes} from "@/components/SoftwareAttributes/useSoftware
 const SoftwareAttributes = ({ showHelp = false }: SoftwareModuleProps) => {
     const {
         inputs,
-        setInputs,
-        repositoryType,
+        updateInputs,
         setRepositoryType,
         showError,
         isLoading,
@@ -35,7 +33,7 @@ const SoftwareAttributes = ({ showHelp = false }: SoftwareModuleProps) => {
                                 software is defined as code or binary to execute specific tasks. When associated with another FDO, it may
                             facilitate <span className="text-info">reproducibility</span> and <span className="text-info">reusability</span>.
                                 <br/><br/>
-                                <span className="text-info">Digital Object Module</span> and <span className="text-info">Software Module</span> are <span className="text-info">exclusive</span> {" "}
+                                <span className="text-info">Data Object Module</span> and <span className="text-info">Software Module</span> are <span className="text-info">exclusive</span> {" "}
                                 and can not be used together.
                             </span>
                         </div>
@@ -76,8 +74,8 @@ const SoftwareAttributes = ({ showHelp = false }: SoftwareModuleProps) => {
                                 <Icon icon={"fa7-brands:git"} width={24} />
                                 <select
                                     className="w-full select select-ghost"
-                                    value={repositoryType}
-                                    onChange={(e) => setRepositoryType(e.target.value as RepositoryType)}
+                                    value={inputs.repositoryType || 'GitHub'}
+                                    onChange={(e) => setRepositoryType(e.target.value as any)}
                                 >
                                     <option value="GitHub" >GitHub</option>
                                     <option value="GitLab.com">GitLab.com</option>
@@ -98,17 +96,17 @@ const SoftwareAttributes = ({ showHelp = false }: SoftwareModuleProps) => {
                                              const parts = value.split(' (');
                                              const name = parts[0];
                                              const id = parts[1].replace(')', '');
-                                             setInputs(prev => ({
-                                                 ...prev,
+                                             updateInputs({
+                                                 ...inputs,
                                                  license_id: id,
                                                  license_name: name,
-                                             }));
+                                             });
                                          } else {
-                                             setInputs(prev => ({
-                                                 ...prev,
+                                             updateInputs({
+                                                 ...inputs,
                                                  license_id: value,
                                                  license_name: '',
-                                             }));
+                                             });
                                          }
                                      }}
                                      onSelect={handleLicenseSelect}
@@ -139,6 +137,6 @@ const SoftwareAttributes = ({ showHelp = false }: SoftwareModuleProps) => {
 
 SoftwareAttributes.displayName = 'SoftwareAttributes';
 
-
-export { SoftwareAttributes };
 export default SoftwareAttributes;
+export { SoftwareAttributes };
+export type { SoftwareModuleData } from './types';

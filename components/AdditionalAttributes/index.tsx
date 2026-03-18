@@ -4,10 +4,9 @@ import {Icon} from "@iconify/react";
 import {AdditionalAttributesProps} from "@/components/AdditionalAttributes/types";
 import {useAdditionalAttributes} from "@/components/AdditionalAttributes/useAdditionalAttributes";
 
-const AdditionalAttributes = ({onDataChange, showHelp = false}: AdditionalAttributesProps) => {
+const AdditionalAttributes = ({showHelp = false}: AdditionalAttributesProps) => {
     const {
         rows,
-        setRows,
         handleInputChange,
         addRow,
         removeRow
@@ -74,7 +73,7 @@ const AdditionalAttributes = ({onDataChange, showHelp = false}: AdditionalAttrib
                         onClick={addRow}
                         className="btn btn-soft btn-info btn-sm w-full"
                     >
-                        Add Additional Property
+                        Add Additional Attribute
                     </button>
                 </div>
             )}

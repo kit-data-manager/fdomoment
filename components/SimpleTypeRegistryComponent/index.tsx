@@ -70,3 +70,4 @@ const SimpleTypeRegistryComponent = ({
 
 export { SimpleTypeRegistryComponent };
 export default SimpleTypeRegistryComponent;
+export type { TypeDefinition } from './types';

@@ -5,21 +5,32 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { useFdoEditor } from './useFdoEditor';
 import ModuleRenderer from './ModuleRenderer';
 import ValidationModal from './ValidationModal';
-import { validateModulesData } from "@/utils/validator-utils";
+import ExportDataModal from '@/components/ExportDataModal';
+import {finalizeModulesData, validateModulesData} from "@/utils/validator-utils";
+import {MODULE_MAP} from './types';
+import {RecordData} from "@/utils/recordBuilder";
 
-const allModuleTypes = ['Core Attributes', 'Digital Object Attributes', 'Software Attributes', 'Typed Properties', 'Additional Properties'];
+const allModuleTypes = ['Core Attributes', 'Data Object Attributes', 'Software Attributes', 'Typed Attributes', 'Additional Attributes'];
 
 const exclusiveGroups = [
-  { types: ['Digital Object Attributes', 'Software Attributes'], icon: 'solar:link-round-angle-line-duotone' }
+  { types: ['Data Object Attributes', 'Software Attributes'], icon: 'solar:link-round-angle-line-duotone' }
 ];
+
+export const getExclusiveInfo = (type: string) => {
+  for (const group of exclusiveGroups) {
+    if (group.types.includes(type)) {
+      return group;
+    }
+  }
+  return null;
+};
 
 const FdoEditor = () => {
   const {
     modules,
-    modulesData,
     openModuleId,
     helpMode,
-    updateModuleData,
+    doExport,
     addModule,
     removeModule,
     toggleHelpMode,
@@ -28,6 +39,8 @@ const FdoEditor = () => {
 
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [showValidationModal, setShowValidationModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportData, setExportData] = useState<RecordData | null>(null);
 
   const getModuleStatus = useCallback(() => {
     const addedTypes = new Set(modules.map(s => s.title));
@@ -53,31 +66,14 @@ const FdoEditor = () => {
     return disabledReasons;
   }, [modules]);
 
-  const getExclusiveInfo = (type: string) => {
-    for (const group of exclusiveGroups) {
-      if (group.types.includes(type)) {
-        return group;
-      }
-    }
-    return null;
-  };
-
   const getModuleData = async (module: { title: string }) => {
-    const storageMap: Record<string, string> = {
-      'Core Attributes': 'coreAttributesInputs',
-      'Digital Object Attributes': 'digitalObjectAttributesInputs',
-      'Software Attributes': 'softwareAttributesInputs',
-      'Additional Properties': 'additionalAttributesRows',
-      'Typed Properties': 'typedProperties'
-    };
-
-    const key = storageMap[module.title] || `${module.title.replace(' ', '').toLowerCase()}Data`;
+    const key = MODULE_MAP[module.title];
     const stored = localStorage.getItem(key);
 
     if (stored) {
       try {
         let data = JSON.parse(stored);
-        if (module.title === 'Typed Properties' && Array.isArray(data)) {
+        if (module.title === 'Typed Attributes' && Array.isArray(data)) {
           data = { properties: data };
         }
         return data;
@@ -88,16 +84,12 @@ const FdoEditor = () => {
     return null;
   };
 
-  const handleCollectData = async () => {
+  const handleExportData = async () => {
     const visibleData: Record<string, any> = {};
 
+    // Always read fresh data from localStorage, not from stale modulesData state
     for (const mod of modules) {
-      let data = modulesData[mod.title];
-
-      if (!data) {
-        data = await getModuleData(mod);
-      }
-
+      const data = await getModuleData(mod);
       if (data) {
         visibleData[mod.title] = data;
       }
@@ -108,10 +100,11 @@ const FdoEditor = () => {
     if (result.errors.length > 0) {
       setValidationErrors(result.errors);
       setShowValidationModal(true);
-      return null;
+      return;
     }
 
-    return result.validData;
+    setExportData(finalizeModulesData(result.validData));
+    setShowExportModal(true);
   };
 
   const moduleStatus = getModuleStatus();
@@ -124,7 +117,7 @@ const FdoEditor = () => {
         moduleStatus={moduleStatus}
         getExclusiveInfo={getExclusiveInfo}
         onAddModule={addModule}
-        onCollectData={handleCollectData}
+        onExportData={handleExportData}
       />
       <main className="flex-1 p-6 overflow-auto">
         <div className="p-4 rounded-lg shadow-md">
@@ -170,7 +163,7 @@ const FdoEditor = () => {
                   <ModuleRenderer
                     title={module.title}
                     showHelp={helpMode[module.title]}
-                    onDataChange={(data) => updateModuleData(module.title, data)}
+                    onDataChange={() => {}}
                   />
                 </div>
               </div>
@@ -184,10 +177,26 @@ const FdoEditor = () => {
         onClose={() => setShowValidationModal(false)}
         errors={validationErrors}
       />
+      
+      <ExportDataModal
+        isOpen={showExportModal}
+        onClose={() => {
+          setShowExportModal(false);
+          setExportData(null);
+        }}
+        onSubmit={() => {
+          setShowExportModal(false);
+          if (exportData) {
+            doExport(exportData);
+          }
+          setExportData(null);
+        }}
+        data={exportData}
+      />
     </div>
   );
 };
 
-export { FdoEditor };
+export { FdoEditor, allModuleTypes };
 export default FdoEditor;
 export type { ModuleDataType, ModuleType } from './types';

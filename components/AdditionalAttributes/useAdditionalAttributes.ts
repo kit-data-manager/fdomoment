@@ -1,46 +1,48 @@
 import { useState, useEffect } from 'react';
-import { AdditionalAttributeRow } from './types';
+import { AdditionalAttribute, AdditionalAttributeModuleData } from './types';
 
 export const useAdditionalAttributes = () => {
-  const [rows, setRows] = useState<AdditionalAttributeRow[]>(() => {
+  const [rows, setRows] = useState<AdditionalAttributeModuleData>(() => {
     if (typeof window === 'undefined') {
-      return [];
+      return { rows: [] };
     }
-    const stored = localStorage.getItem('additionalAttributesRows');
-    return stored ? JSON.parse(stored) : [];
+    const stored = localStorage.getItem('additionalAttributes');
+    const parsed = stored ? JSON.parse(stored) : { rows: [] };
+    return {
+      rows: Array.isArray(parsed) ? parsed : (parsed.rows || [])
+    };
   });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('additionalAttributesRows', JSON.stringify(rows));
+      localStorage.setItem('additionalAttributes', JSON.stringify(rows));
     }
   }, [rows]);
 
-  const updateRows = (newRows: AdditionalAttributeRow[]) => {
+  const updateRows = (newRows: AdditionalAttributeModuleData) => {
     setRows(newRows);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('additionalAttributesRows', JSON.stringify(newRows));
+      localStorage.setItem('additionalAttributes', JSON.stringify(newRows));
     }
   };
 
   const handleInputChange = (index: number, field: 'key' | 'value', value: string) => {
-    const newRows = [...rows];
-    newRows[index][field] = value;
-    updateRows(newRows);
+    const newRowsData = [...(rows.rows || [])];
+    newRowsData[index][field] = value;
+    updateRows({ rows: newRowsData });
   };
 
   const addRow = () => {
-    updateRows([...rows, { key: '', value: '' }]);
+    updateRows({ rows: [...(rows.rows || []), { key: '', value: '' }] });
   };
 
   const removeRow = (index: number) => {
-    const newRows = rows.filter((_, i) => i !== index);
-    updateRows(newRows);
+    const newRowsData = (rows.rows || []).filter((_: AdditionalAttribute, i: number) => i !== index);
+    updateRows({ rows: newRowsData });
   };
 
   return {
-    rows,
-    setRows,
+    rows: rows.rows || [],
     handleInputChange,
     addRow,
     removeRow

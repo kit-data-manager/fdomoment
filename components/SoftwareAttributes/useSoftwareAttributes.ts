@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { getRepositoryInfo } from '@/utils/git-client';
 import { searchSPDXLicenses } from '@/utils/license-client';
 import { SoftwareModuleData } from './types';
@@ -18,11 +18,11 @@ export const useSoftwareAttributes = () => {
       return getInitialState();
     }
 
-    const softwareInputs = localStorage.getItem('softwareAttributesInputs');
+    const softwareAttributes = localStorage.getItem('softwareAttributes');
 
-    if (softwareInputs) {
+    if (softwareAttributes) {
       try {
-        return JSON.parse(softwareInputs);
+        return JSON.parse(softwareAttributes);
       } catch (e) {
         console.error('Error parsing software attributes from localStorage:', e);
       }
@@ -31,21 +31,18 @@ export const useSoftwareAttributes = () => {
     return getInitialState();
   });
 
-  const [repositoryType, setRepositoryType] = useState<RepositoryType>('GitHub');
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('softwareAttributesInputs', JSON.stringify(inputs));
-    }
-  }, [inputs]);
 
   const updateInputs = (newInputs: SoftwareModuleData) => {
     setInputs(newInputs);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('softwareAttributesInputs', JSON.stringify(newInputs));
+      localStorage.setItem('softwareAttributes', JSON.stringify(newInputs));
     }
+  };
+
+  const setRepositoryType = (type: RepositoryType) => {
+    setInputs(prev => ({ ...prev, repositoryType: type }));
   };
 
   const handleLicenseSelect = (id: string, name: string, url: string) => {
@@ -93,7 +90,7 @@ export const useSoftwareAttributes = () => {
           readmeLocation: info.readmeUrl
         };
       }
-      setInputs(newInputs);
+      updateInputs(newInputs);
     } catch (error) {
       console.error('Error fetching repository info:', error);
       setShowError(true);
@@ -106,13 +103,13 @@ export const useSoftwareAttributes = () => {
     inputs,
     setInputs,
     updateInputs,
-    repositoryType,
     setRepositoryType,
     showError,
     setShowError,
     isLoading,
     handleLicenseSelect,
     handleInputChange,
-    handleAutoDetect
+    handleAutoDetect,
+    repositoryType: inputs.repositoryType || 'GitHub'
   };
 };

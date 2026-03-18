@@ -1,5 +1,10 @@
 import {TypeDefinition} from "@/components/SimpleTypeRegistryComponent/types";
 
+export interface TypeAttributesModuleProps {
+    onDataChange: (data: TypedAttributesModuleData) => void;
+    showHelp?: boolean;
+}
+
 export interface TypedAttributesItem {
   typeId: string;
   typeName: string;

@@ -1,10 +1,20 @@
-import {ModuleDataType, ModuleType} from "@/components/fdo-editor/types";
+import {MODULE_MAP, ModuleDataType, ModuleType} from "@/components/fdo-editor/types";
+import {CoreAttributesModuleData} from "@/components/CoreAttributes/types";
+import {TypedAttributesModuleData} from "@/components/TypedAttributes/types";
+import {createRecordData} from "@/utils/recordBuilder";
+import {AdditionalAttributeModuleData} from "@/components/AdditionalAttributes/types";
+import {DataObjectModuleData} from "@/components/DataObjectAttributes/types";
+import {getSPDXLicenses, SPDXLicense} from "@/utils/license-client";
+import {SoftwareModuleData} from "@/components";
 
 export type ValidationResponse = {
     errors: string[];
     validData:Record<string, ModuleDataType>;
 }
 
+/**
+ * Collect all module data from localStorage and return it as record.
+ */
 const collectData = (
     modules: ModuleType[],
     modulesData: Record<string, ModuleDataType>
@@ -15,78 +25,19 @@ const collectData = (
     modules.forEach((module: { id: number, title: string }) => {
         let data = modulesData[module.title];
 
-        // If not in state, try localStorage
         if (!data && typeof window !== 'undefined') {
-            const storageKey = module.title.replace(' ', '').toLowerCase();
-            const stored = localStorage.getItem(`${storageKey}Data`);
+            const storageKey = MODULE_MAP[module.title];
+            const stored = localStorage.getItem(storageKey);
+
             if (stored) {
                 try {
                     data = JSON.parse(stored);
+                    console.log(`[Validator] Loaded ${module.title} from ${storageKey}:`, data);
                 } catch (e) {
                     console.error('Error parsing stored data for', module.title, e);
                 }
-            }
-        }
-
-        // Special handling for Core Attributes
-        if (module.title === 'Core Attributes' && !data && typeof window !== 'undefined') {
-            const coreStored = localStorage.getItem('coreAttributesInputs');
-            if (coreStored) {
-                try {
-                    data = JSON.parse(coreStored);
-                } catch (e) {
-                    console.error('Error parsing core attributes', e);
-                }
-            }
-        }
-
-        // Special handling for Digital Object Attributes
-        if (module.title === 'Digital Object Attributes' && !data && typeof window !== 'undefined') {
-            const digitalObjectStored = localStorage.getItem('digitalObjectAttributesInputs');
-            if (digitalObjectStored) {
-                try {
-                    data = JSON.parse(digitalObjectStored);
-                } catch (e) {
-                    console.error('Error parsing digital object attributes', e);
-                }
-            }
-        }
-
-        // Special handling for Software Attributes
-        if (module.title === 'Software Attributes' && !data && typeof window !== 'undefined') {
-            const softwareStored = localStorage.getItem('softwareAttributesInputs');
-            if (softwareStored) {
-                try {
-                    data = JSON.parse(softwareStored);
-                } catch (e) {
-                    console.error('Error parsing software attributes', e);
-                }
-            }
-        }
-
-        // Special handling for Additional Properties
-        if (module.title === 'Additional Properties' && !data && typeof window !== 'undefined') {
-            const additionalStored = localStorage.getItem('additionalAttributesRows');
-            if (additionalStored) {
-                try {
-                    data = additionalStored as any;
-                } catch (e) {
-                    console.error('Error parsing additional attributes', e);
-                }
-            }
-        }
-
-        // Special handling for Typed Properties
-        if (module.title === 'Typed Properties' && !data && typeof window !== 'undefined') {
-            const typedStored = localStorage.getItem('typedProperties');
-            if (typedStored) {
-                try {
-                    const parsed = JSON.parse(typedStored);
-                    // Wrap in object structure if it's an array (backward compatibility)
-                    data = Array.isArray(parsed) ? { properties: parsed } : parsed;
-                } catch (e) {
-                    console.error('Error parsing typed properties', e);
-                }
+            } else {
+                console.log(`[Validator] No data found for ${module.title}`);
             }
         }
 
@@ -97,24 +48,31 @@ const collectData = (
     return collectedData;
 }
 
+/**
+ * Check if all required properties of a certain module are set. If not, add an error.
+ */
 const checkPropertySet = (
     moduleName: string,
     data: any,
     keys: string[],
     errors: string[]
 ) => {
+    console.log(`[Validator] Checking ${moduleName}:`, data);
     if(!data){
         errors.push(`${moduleName}: No data provided`);
     }else {
         keys.forEach(key => {
-            if (!data[key] || data[key].trim() === '') {
+            if (!data[key] || data[key]?.toString().trim() === '') {
                 errors.push(`${moduleName}: Attribute ${key} is required.`);
             }
         })
     }
 }
 
-
+/**
+ * Validate the module data of all modules. Therefor, collect all data and validated them one by one, either by using
+ * checkPropertySet or with a custom validation, i.e., for array-based modules.
+ */
 export const validateModulesData = (
     modules: ModuleType[],
     modulesData: Record<string, ModuleDataType>):ValidationResponse => {
@@ -125,45 +83,132 @@ export const validateModulesData = (
     // Validate Core Attributes
     checkPropertySet('Core Attributes', visibleData['Core Attributes'], ['owner_id', 'research_field'], errors);
 
-    // Validate Digital Object Attributes or Software Attributes (they are exclusive)
-    const digitalObjectData = visibleData['Digital Object Attributes'];
+    // Validate Data Object Attributes or Software Attributes (they are exclusive)
+    const dataObjectData = visibleData['Data Object Attributes'];
     const softwareData = visibleData['Software Attributes'];
 
-    if(digitalObjectData){
-        checkPropertySet('Digital Object Attributes', digitalObjectData, ['mimeType', 'contentLocation', 'license_id'], errors);
+    if(dataObjectData){
+        checkPropertySet('Data Object Attributes', dataObjectData, ['mimeType', 'dataObjectLocation', 'license_id'], errors);
     }else if(softwareData){
         checkPropertySet('Software Attributes', softwareData, ['repositoryType', 'softwareLocation', 'readmeLocation', 'license_id'], errors);
     }
 
-    // Validate Typed Properties
-    const typedPropertiesData = visibleData['Typed Properties'] as any;
-    if (typedPropertiesData) {
-        // Data structure is { properties: TypedPropertyItem[] }
-        const typedProps = typedPropertiesData.properties || (Array.isArray(typedPropertiesData) ? typedPropertiesData : []);
+    // Validate Typed Attributes
+    const typedAttributesData = visibleData['Typed Attributes'] as any;
+    if (typedAttributesData) {
+        const typedProps = typedAttributesData.properties || (Array.isArray(typedAttributesData) ? typedAttributesData : []);
 
         if (!typedProps || typedProps.length === 0) {
-            errors.push('Typed Properties: At least one typed property is required');
+            errors.push('Typed Attributes: At least one typed attribute is required');
         } else {
             typedProps.forEach((prop: any, index: number) => {
-                console.log("PROP ", prop);
                 if (prop.typeId === '0.SIMPLE/UNESCO_THESAURUS_CONCEPT') {
                     if (!prop.value || !prop.value.uri || prop.value.uri.trim() === '') {
-                        errors.push(`Typed Properties: UNESCO Thesaurus Concept at index ${index} is missing URI`);
+                        errors.push(`Typed Attributes: UNESCO Thesaurus Concept at index ${index} is missing URI`);
                     }
                 }
                 if (prop.typeId === '0.SIMPLE/RELATED_IDENTIFIER') {
                     if (!prop.value || !prop.value.relatedIdentifier || prop.value.relatedIdentifier.trim() === '') {
-                        errors.push(`Typed Properties: Related Identifier at index ${index} is missing identifier`);
+                        errors.push(`Typed Attributes: Related Identifier at index ${index} is missing identifier`);
                     }
                 }
-                if (prop.typeId === 'https://w3id.org/astro/GeoLocation') {
+                if (prop.typeId === '0.SIMPLE/GEO_LOCATION') {
                     if (!prop.value || Object.keys(prop.value).length === 0) {
-                        errors.push(`Typed Properties: GeoLocation at index ${index} has no data`);
+                        errors.push(`Typed Attributes: GeoLocation at index ${index} has no data`);
                     }
                 }
             });
         }
     }
 
-        return {errors:errors, validData: errors.length > 0 ? null : visibleData } as ValidationResponse;
+    return {errors:errors, validData: errors.length > 0 ? null : visibleData } as ValidationResponse;
+}
+
+/**
+ * Finalize all modules data, i.e., remove all irrelevant attributes and prepare the module data for being stored as FDO.
+ * Transforms module data into RecordData structure with pid and record array.
+ */
+export const finalizeModulesData = (modulesData: Record<string, ModuleDataType>, pid: string = '') => {
+    const recordData = createRecordData(pid || '');
+
+    for (const key of Object.keys(modulesData)) {
+        if(key === "Core Attributes") {
+            const moduleData: CoreAttributesModuleData = modulesData[key] as CoreAttributesModuleData;
+
+            if(moduleData.owner_id_type === "ROR"){
+                recordData.record.push({ key: '0.SIMPLE/OWNER', value: moduleData.owner_id as string });
+            }else{
+                recordData.record.push({ key: '0.SIMPLE/OWNER', value: `https://orcid.org/${moduleData.owner_id as string}`});
+            }
+
+            recordData.record.push({ key: '0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD', value: moduleData.research_field as string });
+            recordData.record.push({key: "0.SIMPLE/PROFILE", value:"0.SIMPLE/CORE"});
+        }
+
+        if(key === "Data Object Attributes") {
+            const moduleData: DataObjectModuleData = modulesData[key] as DataObjectModuleData;
+            const allLicenses = getSPDXLicenses();
+            const license:SPDXLicense | undefined = allLicenses.find((value) => {
+                return value.id === moduleData.license_id
+            });
+
+            recordData.record.push({ key: '0.SIMPLE/DATA_OBJECT_LOCATION', value: moduleData.dataObjectLocation as string});
+            recordData.record.push({ key: '0.SIMPLE/MIME_TYPE', value: moduleData.mimeType as string});
+            recordData.record.push({ key: '0.SIMPLE/DATA_OBJECT_LICENSE', value: license?.url || moduleData.license_id as string});
+            recordData.record.push({key: "0.SIMPLE/PROFILE", value:"0.SIMPLE/DATA_OBJECT"});
+        }
+
+        if(key === "Software Attributes") {
+            const moduleData: SoftwareModuleData = modulesData[key] as SoftwareModuleData;
+            const allLicenses = getSPDXLicenses();
+            const license:SPDXLicense | undefined = allLicenses.find((value) => {
+                return value.id === moduleData.license_id
+            });
+
+            recordData.record.push({ key: '0.SIMPLE/SOFTWARE_REPOSITORY_TYPE', value: moduleData.repositoryType as string});
+            recordData.record.push({ key: '0.SIMPLE/SOFTWARE_LOCATION', value: moduleData.softwareLocation as string});
+            recordData.record.push({ key: '0.SIMPLE/README_LOCATION', value: moduleData.readmeLocation as string});
+            recordData.record.push({ key: '0.SIMPLE/SOFTWARE_LICENSE', value: license?.url || moduleData.license_id as string});
+            recordData.record.push({key: "0.SIMPLE/PROFILE", value:"0.SIMPLE/SOFTWARE"});
+        }
+
+        if(key === "Typed Attributes") {
+            const moduleData: TypedAttributesModuleData = modulesData[key] as unknown as TypedAttributesModuleData;
+
+            // Add each typed property as a record entry
+            if (moduleData.properties) {
+                moduleData.properties.forEach((prop) => {
+                    if (prop.typeId === '0.SIMPLE/UNESCO_THESAURUS_CONCEPT') {
+                        recordData.record.push({
+                            key: prop.typeId,
+                            value: JSON.stringify(prop.value.uri)
+                        });
+                    }else{
+                        recordData.record.push({
+                            key: prop.typeId,
+                            value: JSON.stringify(prop.value)
+                        });
+                    }
+                });
+            }
+        }
+
+        if(key === "Additional Attributes") {
+            const moduleData: AdditionalAttributeModuleData = modulesData[key] as unknown as AdditionalAttributeModuleData;
+
+            // Add each additional attribute as a record entry
+            if (moduleData.rows) {
+                moduleData.rows.forEach((prop) => {
+                    if(prop.key && prop.value && prop.key.trim() != '' && prop.key.trim() != '') {
+                    recordData.record.push({
+                        key: prop.key,
+                        value: prop.value
+                    });
+                    }
+                });
+            }
+        }
+    }
+
+    return recordData;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { OwnerIdType } from '@/components/OwnerIdAutocomplete';
 import {CoreAttributesModuleData} from "@/components/CoreAttributes/types";
 
@@ -16,10 +16,10 @@ export const useCoreAttributes = () => {
       return getInitialState();
     }
     
-    const coreInput = localStorage.getItem('coreAttributesInputs');
-    if (coreInput) {
+    const coreAttributes = localStorage.getItem('coreAttributes');
+    if (coreAttributes) {
       try {
-        return JSON.parse(coreInput);
+        return JSON.parse(coreAttributes);
       } catch (e) {
         console.error('Error parsing core attributes from localStorage:', e);
       }
@@ -28,16 +28,10 @@ export const useCoreAttributes = () => {
     return getInitialState();
   });
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('coreAttributesInputs', JSON.stringify(inputs));
-    }
-  }, [inputs]);
-
   const updateInputs = (newInputs: CoreAttributesModuleData) => {
     setInputs(newInputs);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('coreAttributesInputs', JSON.stringify(newInputs));
+      localStorage.setItem('coreAttributes', JSON.stringify(newInputs));
     }
   };
 

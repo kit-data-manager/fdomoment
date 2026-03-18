@@ -70,7 +70,7 @@ const TypedAttributesModal = ({
     <dialog className="modal modal-open" open>
       <div className="modal-box max-w-2xl">
         <h3 className="font-bold text-lg mb-4">
-          {editingIndex !== null ? 'Edit' : 'Add'} Typed Property
+          {editingIndex !== null ? 'Edit' : 'Add'} Typed Attribute
         </h3>
 
         <SimpleTypeRegistryComponent

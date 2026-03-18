@@ -5,7 +5,7 @@ export const useLicenseAutocomplete = () => {
   const [licenses, setLicenses] = useState<SPDXLicense[]>([]);
 
   useEffect(() => {
-    getSPDXLicenses().then(setLicenses);
+    setLicenses(getSPDXLicenses());
   }, []);
 
   const handleChange = (

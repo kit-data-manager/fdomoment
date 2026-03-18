@@ -2,17 +2,17 @@ import React from 'react';
 import {Copyright, FileType, Link} from "lucide-react";
 import {MimeTypeAutocomplete} from "@/components/MimeTypeAutocomplete";
 import {LicenseAutocomplete} from "@/components/LicenseAutocomplete";
-import {DigitalObjectModuleProps} from "@/components/DigitalObjectAttributes/types";
-import {useDigitalObjectAttributes} from "@/components/DigitalObjectAttributes/useDigitalObjectAttributes";
+import {DataObjectModuleProps} from "@/components/DataObjectAttributes/types";
+import {useDataObjectAttributes} from "@/components/DataObjectAttributes/useDataObjectAttributes";
 
-const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObjectModuleProps) => {
+const DataObjectAttributes = ({ showHelp = false }: DataObjectModuleProps) => {
     const {
         inputs,
         handleMimetypeSelect,
         handleLicenseSelect,
         handleInputChange,
         setInputs
-    } = useDigitalObjectAttributes();
+    } = useDataObjectAttributes();
 
     return (
         <div className="card bg-base-100 shadow-sm">
@@ -25,11 +25,11 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
                             className="opacity-10 logo w-full h-full object-contain"/>
                         <div className="absolute inset-0 flex flex-col justify-center items-center text-secondary p-4">
                             <span className="text-base">
-                                This modules contributes digital object-related attributes to the FAIR Digital Object. A digital object can be
+                                This modules contributes data object-related attributes to the FAIR Digital Object. A data object can be
                                 for example a dataset, a single file, but also a (metadata) document, schema, and even a stream. The contained
                                 attributes are mainly used to facilitate <span className="text-info">accessibility</span>.
                                 <br/><br/>
-                                <span className="text-info">Digital Object Module</span> and <span className="text-info">Software Module</span> are <span className="text-info">exclusive</span> {" "}
+                                <span className="text-info">Data Object Module</span> and <span className="text-info">Software Module</span> are <span className="text-info">exclusive</span> {" "}
                                 and can not be used together.
                                 <br/><br/>
                                 For documents, primarily consumed by humans, i.e., articles, instructions, or protocols, the {" "}
@@ -51,7 +51,7 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
                                         onSelect={handleMimetypeSelect}
                                     />
                             </label>
-                            <p className="label">The mime type of the digital object.</p>
+                            <p className="label">The mime type of the data object.</p>
                         </fieldset>
                     </div>
                     <div className="flex items-center gap-2">
@@ -69,7 +69,7 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
                                       onSelect={handleLicenseSelect}
                                   />
                              </label>
-                            <p className="label">The license under which the digital object is published.</p>
+                            <p className="label">The license under which the data object is published.</p>
                         </fieldset>
                     </div>
                     <div className="flex items-center gap-2">
@@ -77,13 +77,13 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
                             <label className="input w-full">
                                 <Link/>
                                 <input
-                                    name="contentLocation"
-                                    value={inputs.contentLocation}
+                                    name="dataObjectLocation"
+                                    value={inputs.dataObjectLocation}
                                     onChange={handleInputChange}
                                     className="w-full"
                                 />
                             </label>
-                            <p className="label">The digital object&ampos;s URL, preferably directly accessible via HTTP.</p>
+                            <p className="label">The data object&apos;s URL, preferably directly accessible via HTTP.</p>
                         </fieldset>
                     </div>
                 </div>
@@ -92,7 +92,7 @@ const DigitalObjectAttributes = ({ onDataChange, showHelp = false }: DigitalObje
     );
 };
 
-DigitalObjectAttributes.displayName = 'DigitalObjectAttributes';
+DataObjectAttributes.displayName = 'DataObjectAttributes';
 
-export { DigitalObjectAttributes };
+export { DataObjectAttributes };
 

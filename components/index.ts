@@ -1,5 +1,5 @@
 export * from './CoreAttributes/index';
-export * from './DigitalObjectAttributes/index';
+export * from '@/components/DataObjectAttributes/index';
 export * from './SoftwareAttributes/index';
 export * from './AdditionalAttributes/index';
 export * from './LicenseAutocomplete/index';

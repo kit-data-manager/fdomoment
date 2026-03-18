@@ -7,10 +7,11 @@ export const useTypedAttributes = () => {
       return { properties: [] };
     }
     
-    const stored = localStorage.getItem('typedAttributes');
-    if (stored) {
+    const typedAttribues = localStorage.getItem('typedAttributes');
+
+    if (typedAttribues) {
       try {
-        const parsed = JSON.parse(stored);
+        const parsed = JSON.parse(typedAttribues);
         return {
           properties: Array.isArray(parsed) ? parsed : (parsed.properties || [])
         };

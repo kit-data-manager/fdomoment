@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ModuleDataType, ModuleType } from './types';
+import {MODULE_MAP, ModuleDataType, ModuleType} from './types';
+import {finalizeModulesData} from "@/utils/validator-utils";
+import {RecordData} from "@/utils/recordBuilder";
 
 export const useFdoEditor = () => {
   const [modules, setModules] = useState<ModuleType[]>([]);
@@ -44,16 +46,18 @@ export const useFdoEditor = () => {
   const loadModuleData = () => {
     if (typeof window === 'undefined') return;
 
-    const moduleMap: Record<string, string> = {
-      'Core Attributes': 'coreAttributesInputs',
-      'Digital Object Attributes': 'digitalObjectAttributesInputs',
-      'Software Attributes': 'softwareAttributesInputs',
-      'Additional Properties': 'additionalAttributesRows',
-      'Typed Properties': 'typedProperties'
-    };
-
-    Object.entries(moduleMap).forEach(([title, key]) => {
-      const data = localStorage.getItem(key);
+    Object.entries(MODULE_MAP).forEach(([title, key]) => {
+      let data = localStorage.getItem(key);
+      
+      if (!data) {
+        const oldKey = `${title.replace(' ', '').toLowerCase()}Data`;
+        data = localStorage.getItem(oldKey);
+        if (data) {
+          localStorage.setItem(key, data);
+          localStorage.removeItem(oldKey);
+        }
+      }
+      
       if (data) {
         try {
           setModulesData(prev => ({ ...prev, [title]: JSON.parse(data) }));
@@ -63,22 +67,6 @@ export const useFdoEditor = () => {
       }
     });
   };
-
-  const updateModuleData = useCallback((moduleTitle: string, data: ModuleDataType) => {
-    setModulesData(prev => ({
-      ...prev,
-      [moduleTitle]: data
-    }));
-
-    if (typeof window !== 'undefined') {
-      try {
-        const storageKey = `${moduleTitle.replace(' ', '').toLowerCase()}Data`;
-        localStorage.setItem(storageKey, JSON.stringify(data));
-      } catch (e) {
-        console.error('Error saving module data:', e);
-      }
-    }
-  }, []);
 
   const addModule = useCallback((title: string) => {
     const newId = Math.max(...modules.map(m => m.id), 0) + 1;
@@ -112,14 +100,19 @@ export const useFdoEditor = () => {
     }
   }, []);
 
+  const doExport = (data: RecordData) => {
+      console.log("Doing export of ", data);
+
+  }
+
   return {
     modules,
     modulesData,
     openModuleId,
     helpMode,
     initialized,
-    updateModuleData,
-    addModule,
+      doExport,
+      addModule,
     removeModule,
     toggleHelpMode,
     setOpenModule,

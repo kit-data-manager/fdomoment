@@ -5,15 +5,10 @@ import { Plus } from "lucide-react";
 import { useTypedAttributes } from '@/components/TypedAttributes/useTypedAttributes';
 import TypedPropertyItemComponent from '@/components/TypedAttributes/TypedAttributesItem';
 import TypedAttributesModal from '@/components/TypedAttributes/TypedAttributesModal';
-import { TypedAttributesItem, TypedAttributesModuleData } from '@/components/TypedAttributes/types';
+import {TypeAttributesModuleProps, TypedAttributesItem} from '@/components/TypedAttributes/types';
 import {TypeDefinition} from "@/components/SimpleTypeRegistryComponent/types";
 
-interface TypedPropertiesModuleProps {
-  onDataChange: (data: TypedAttributesModuleData) => void;
-  showHelp?: boolean;
-}
-
-const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropertiesModuleProps) => {
+const TypedAttributes = ({ onDataChange, showHelp = false }: TypeAttributesModuleProps) => {
   const { properties, addAttribute, updateAttribute, removeAttribute } = useTypedAttributes();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -82,10 +77,10 @@ const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropert
             />
             <div className="absolute inset-0 flex flex-col justify-center items-center text-secondary p-4">
               <span className="text-base">
-                This module allows adding typed properties to the FAIR Digital Object. Each property has a specific type
+                This module allows adding typed attributes to the FAIR Digital Object. Each property has a specific type
                 with a defined schema that must be followed.
                 <br /><br />
-                <span className="text-info">Typed Properties</span> enable structured data with validation.
+                <span className="text-info">Typed Attributes</span> enable structured data with validation.
               </span>
             </div>
           </figure>
@@ -112,7 +107,7 @@ const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropert
             className="btn btn-soft btn-info btn-sm w-full"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Add Typed Property
+            Add Typed Attribute
           </button>
         </div>
       </div>
@@ -129,6 +124,6 @@ const TypedPropertiesSection = ({ onDataChange, showHelp = false }: TypedPropert
   );
 };
 
-export { TypedPropertiesSection };
-export default TypedPropertiesSection;
+export { TypedAttributes };
+export default TypedAttributes;
 export type { TypedAttributesItem, TypedAttributesModuleData } from './types';

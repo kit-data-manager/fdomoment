@@ -1,9 +1,13 @@
-export interface AdditionalAttributeRow {
+export interface AdditionalAttributeModuleData {
+    rows?: AdditionalAttribute[]
+}
+
+export interface AdditionalAttribute {
     key: string;
     value: string;
 }
 
 export interface AdditionalAttributesProps {
-    onDataChange: (data: AdditionalAttributeRow[]) => void;
+    onDataChange: (data: AdditionalAttributeModuleData) => void;
     showHelp?: boolean;
 }

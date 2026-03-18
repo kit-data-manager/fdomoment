@@ -1,42 +1,36 @@
-import { useState, useEffect } from 'react';
-import { DigitalObjectModuleData } from './types';
+import { useState } from 'react';
+import { DataObjectModuleData } from './types';
 
-export const useDigitalObjectAttributes = () => {
+export const useDataObjectAttributes = () => {
   const getInitialState = () => ({
     mimeType: '',
     license_id: '',
     license_name: '',
-    contentLocation: ''
+    dataObjectLocation: ''
   });
 
-  const [inputs, setInputs] = useState<DigitalObjectModuleData>(() => {
+  const [inputs, setInputs] = useState<DataObjectModuleData>(() => {
     if (typeof window === 'undefined') {
       return getInitialState();
     }
 
-    const digitalObjectInput = localStorage.getItem('digitalObjectAttributesInputs');
+    const dataObjectAttributes = localStorage.getItem('dataObjectAttributes');
 
-    if (digitalObjectInput) {
+    if (dataObjectAttributes) {
       try {
-        return JSON.parse(digitalObjectInput);
+        return JSON.parse(dataObjectAttributes);
       } catch (e) {
-        console.error('Error parsing digital object attributes from localStorage:', e);
+        console.error('Error parsing data object attributes from localStorage:', e);
       }
     }
 
     return getInitialState();
   });
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(inputs));
-    }
-  }, [inputs]);
-
-  const updateInputs = (newInputs: DigitalObjectModuleData) => {
+  const updateInputs = (newInputs: DataObjectModuleData) => {
     setInputs(newInputs);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('digitalObjectAttributesInputs', JSON.stringify(newInputs));
+      localStorage.setItem('dataObjectAttributes', JSON.stringify(newInputs));
     }
   };
 
@@ -46,7 +40,7 @@ export const useDigitalObjectAttributes = () => {
   };
 
   const handleLicenseSelect = (id: string, name: string, url: string) => {
-    const newInputs = { ...inputs, license_id: id, license_name: name };
+    const newInputs = { ...inputs, license_id: id, license_name: name, url: url };
     updateInputs(newInputs);
   };
 

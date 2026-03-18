@@ -3,7 +3,7 @@ import {
     SidebarHeader,
     SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { Boxes, Blocks, LogIn, LogOut, Settings} from "lucide-react";
+import { Blocks, FileJson, LogIn, LogOut, Settings} from "lucide-react";
 import {Icon} from "@iconify/react";
 import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components/ui/resizable";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import { SettingsModal } from "@/components/SettingsModal";
 import { useKeycloak } from '@/context/KeycloakContext';
 import { AppSidebarProps } from "@/components/AppSidebar/types";
 
-export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onAddModule, onCollectData }: AppSidebarProps) {
+export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onAddModule, onExportData }: AppSidebarProps) {
     const hasAvailableModules = allModuleTypes.some(type => !moduleStatus[type]);
     const [showSettings, setShowSettings] = useState(false);
     const { authenticated, login, logout } = useKeycloak();
@@ -31,15 +31,15 @@ export function AppSidebar({ allModuleTypes, moduleStatus, getExclusiveInfo, onA
             </SidebarHeader>
             <ResizablePanelGroup orientation="vertical" className="flex-1 max-w-[64px]">
                 <ResizablePanel defaultSize="65%">
-                    <SidebarMenuItem className="justify-center pl-2 pb-5 pt-5" title="Compile FAIR Digital Object...">
-                            <button
-                                onClick={() => {
-                                    onCollectData();
-                                }}
-                                className="btn btn-link btn-sm"
-                            >
-                                <Boxes size={24}/>
-                            </button>
+                     <SidebarMenuItem className="justify-center pl-2 pb-5" title="Export FDO Data...">
+                        <button
+                            onClick={() => {
+                                onExportData?.();
+                            }}
+                            className="btn btn-link btn-sm"
+                        >
+                            <FileJson size={24}/>
+                        </button>
                     </SidebarMenuItem>
                     <SidebarMenuItem className="justify-center pl-2 pb-5" title="Add an additional Module">
                         {hasAvailableModules ? (
