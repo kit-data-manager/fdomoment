@@ -8,6 +8,5 @@ export interface AdditionalAttribute {
 }
 
 export interface AdditionalAttributesProps {
-    onDataChange: (data: AdditionalAttributeModuleData) => void;
     showHelp?: boolean;
 }

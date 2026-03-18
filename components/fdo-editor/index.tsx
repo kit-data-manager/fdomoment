@@ -10,7 +10,7 @@ import {finalizeModulesData, validateModulesData} from "@/utils/validator-utils"
 import {MODULE_MAP} from './types';
 import {RecordData} from "@/utils/recordBuilder";
 
-const allModuleTypes = ['Core Attributes', 'Data Object Attributes', 'Software Attributes', 'Typed Attributes', 'Additional Attributes'];
+const allModuleTypes = ['Core Attributes', 'Data Object Attributes', 'Software Attributes', 'Typed Attributes', 'Additional Attributes', 'Publication Attributes'];
 
 const exclusiveGroups = [
   { types: ['Data Object Attributes', 'Software Attributes'], icon: 'solar:link-round-angle-line-duotone' }

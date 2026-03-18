@@ -1,11 +1,12 @@
 import {MODULE_MAP, ModuleDataType, ModuleType} from "@/components/fdo-editor/types";
 import {CoreAttributesModuleData} from "@/components/CoreAttributes/types";
 import {TypedAttributesModuleData} from "@/components/TypedAttributes/types";
-import {createRecordData} from "@/utils/recordBuilder";
+import {createRecordData, RecordData} from "@/utils/recordBuilder";
 import {AdditionalAttributeModuleData} from "@/components/AdditionalAttributes/types";
 import {DataObjectModuleData} from "@/components/DataObjectAttributes/types";
 import {getSPDXLicenses, SPDXLicense} from "@/utils/license-client";
 import {SoftwareModuleData} from "@/components";
+import {PublicationAttributesModuleData} from "@/components/PublicationAttributes/types";
 
 export type ValidationResponse = {
     errors: string[];
@@ -121,6 +122,12 @@ export const validateModulesData = (
         }
     }
 
+    // Validate Publication Attributes
+    const publicationData = visibleData['Publication Attributes'];
+    if (publicationData) {
+        checkPropertySet('Publication Attributes', publicationData, ['doi', 'publicationType', 'title', 'publisher', 'publicationYear'], errors);
+    }
+
     return {errors:errors, validData: errors.length > 0 ? null : visibleData } as ValidationResponse;
 }
 
@@ -199,13 +206,34 @@ export const finalizeModulesData = (modulesData: Record<string, ModuleDataType>,
             // Add each additional attribute as a record entry
             if (moduleData.rows) {
                 moduleData.rows.forEach((prop) => {
-                    if(prop.key && prop.value && prop.key.trim() != '' && prop.key.trim() != '') {
                     recordData.record.push({
                         key: prop.key,
                         value: prop.value
                     });
-                    }
                 });
+            }
+        }
+
+        if(key === "Publication Attributes") {
+            const moduleData: PublicationAttributesModuleData = modulesData[key] as unknown as PublicationAttributesModuleData;
+
+            if (moduleData.doi) {
+                recordData.record.push({ key: 'doi', value: moduleData.doi as string });
+            }
+            if (moduleData.publicationType) {
+                recordData.record.push({ key: 'publicationType', value: moduleData.publicationType as string });
+            }
+            if (moduleData.title) {
+                recordData.record.push({ key: 'title', value: moduleData.title as string });
+            }
+            if (moduleData.publisher) {
+                recordData.record.push({ key: 'publisher', value: moduleData.publisher as string });
+            }
+            if (moduleData.publicationYear) {
+                recordData.record.push({ key: 'publicationYear', value: moduleData.publicationYear as string });
+            }
+            if (moduleData.creator) {
+                recordData.record.push({ key: 'creator', value: moduleData.creator as string });
             }
         }
     }
