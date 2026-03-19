@@ -3,20 +3,36 @@ import { DoiMetadata } from '@/utils/doi-utils';
 
 interface CrossrefResponse {
   message: {
-    total_results: number;
     items: Array<{
       title?: string[];
       publisher?: string;
-      publication_type?: string;
-      published_online?: { date_parts: number[][] };
-      created?: { date_parts: number[][] };
+      type?: string;
+      published?: { 'date-parts': number[][] };
+      'published-online'?: { 'date-parts': number[][] };
+      created?: { 'date-parts': number[][] };
       author?: Array<{
         given?: string;
         family?: string;
+        ORCID?: string;
         orcid?: string;
       }>;
     }>;
   };
+}
+
+interface ZenodoResponse {
+      metadata: {
+        title?: string;
+        creators?: Array<{
+          name?: string;
+          orcid?: string;
+        }>;
+        publisher?: string;
+        publication_date?: string;
+        resource_type?: {
+          type?: string;
+        };
+      };
 }
 
 const extractMetaTag = (html: string, attrName: string): string | null => {
@@ -132,7 +148,7 @@ const fallbackResolveDoi = async (doi: string): Promise<DoiMetadata | null> => {
     if (pubType) metadata.publicationType = pubType;
     
     return Object.keys(metadata).length > 0 ? metadata : null;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -141,6 +157,189 @@ const extractDoiFromUrl = (url: string): string | null => {
   const doiPattern = /10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i;
   const match = url.match(doiPattern);
   return match ? match[0] : null;
+};
+
+const extractZenodoRecordId = (doi: string): string | null => {
+  const zenodoPattern = /^10\.5281\/zenodo\.(\d+)$/i;
+  const match = doi.match(zenodoPattern);
+  return match ? match[1] : null;
+};
+
+const resolveZenodo = async (doi: string): Promise<DoiMetadata | null> => {
+  const recordId = extractZenodoRecordId(doi);
+  
+  if (!recordId) {
+    return null;
+  }
+  
+  const apiUrl = `https://zenodo.org/api/records/${recordId}`;
+  console.log("Getting Zenodo record from ", apiUrl);
+  try {
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      return null;
+    }
+    
+    const data = (await response.json()) as ZenodoResponse;
+    
+
+    const metadata = data.metadata;
+    console.log("Metadata", metadata);
+    const result: DoiMetadata = {};
+    
+    if (metadata.title) {
+      result.title = metadata.title;
+    }
+    
+    if (metadata.creators && metadata.creators.length > 0) {
+      result.creators = metadata.creators.map(creator => ({
+        givenName: creator.name?.split(' ').slice(0, -1).join(' '),
+        familyName: creator.name?.split(' ').pop(),
+        orcid: creator.orcid?.replace('https://orcid.org/', '')
+      }));
+
+      console.log("Creators ", result.creators);
+
+      const creatorNames = metadata.creators
+        .map(c => c.name)
+        .filter(Boolean)
+        .join(', ');
+      
+      if (creatorNames) {
+        result.creatorsString = creatorNames;
+      }
+    }
+    
+    if (metadata.publisher) {
+      result.publisher = metadata.publisher;
+    }
+    
+    if (metadata.publication_date) {
+      const yearMatch = metadata.publication_date.match(/^(\d{4})/);
+      if (yearMatch) {
+        result.publicationYear = yearMatch[1];
+      }
+    }
+    
+    if (metadata.resource_type?.type) {
+      result.publicationType = metadata.resource_type.type;
+    }
+    
+    return result;
+  } catch {
+    return null;
+  }
+};
+
+const resolveCrossref = async (doi: string): Promise<DoiMetadata | null> => {
+  const apiUrl = `https://api.crossref.org/works/${encodeURIComponent(doi)}`;
+  
+  try {
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      return null;
+    }
+    
+    const data = (await response.json()) as CrossrefResponse;
+    
+    if (!data.message?.items?.[0]) {
+      return null;
+    }
+    
+    const item = data.message.items[0];
+    const metadata: DoiMetadata = {};
+    
+    if (item?.type) {
+      metadata.publicationType = item.type;
+    }
+    
+    if (item?.title && Array.isArray(item.title) && item.title.length > 0) {
+      metadata.title = item.title[0];
+    }
+    
+    if (item?.publisher) {
+      metadata.publisher = item.publisher;
+    }
+    
+    const publishedDate = item['published-online'] || item.published;
+    if (publishedDate && publishedDate['date-parts']?.[0]?.[0]) {
+      metadata.publicationYear = publishedDate['date-parts'][0][0].toString();
+    } else if (item?.created?.['date-parts']?.[0]?.[0]) {
+      metadata.publicationYear = item.created['date-parts'][0][0].toString();
+    }
+    
+    if (item?.author && Array.isArray(item.author)) {
+      type AuthorType = {
+        given?: string;
+        family?: string;
+        ORCID?: string;
+        orcid?: string;
+      };
+      
+      const authors = item.author as AuthorType[];
+      const orcid = authors.find(a => a.orcid || a.ORCID);
+      const orcidValue = orcid ? (orcid.ORCID || orcid.orcid || '').replace('https://orcid.org/', '') : undefined;
+      
+      metadata.creators = authors.map(a => ({
+        givenName: a.given,
+        familyName: a.family,
+        orcid: orcidValue
+      }));
+      
+      const creatorNames = metadata.creators
+        .filter((c): c is NonNullable<typeof c> => Boolean(c))
+        .map(c => `${c.familyName || ''} ${c.givenName || ''}`.trim())
+        .filter(Boolean)
+        .join(', ');
+      
+      if (creatorNames) {
+        metadata.creatorsString = creatorNames;
+      }
+    }
+    
+    return metadata;
+  } catch {
+    return null;
+  }
+};
+
+const extractMetadataFromMetaTags = (html: string): DoiMetadata | null => {
+  const metadata: DoiMetadata = {};
+  
+  const title = extractMetaTag(html, 'og:title') ||
+                extractMetaTag(html, 'dc.title') ||
+                extractMetaTag(html, 'citation_title');
+  if (title) metadata.title = title;
+  
+  const creators = extractCreatorsFromMeta(html);
+  if (creators.length > 0) {
+    const creatorNames = creators
+      .map(c => c.name)
+      .filter((n): n is string => Boolean(n))
+      .join(', ');
+    if (creatorNames) metadata.creatorsString = creatorNames;
+    
+    const orcid = extractCreatorOrcid(html);
+    if (orcid) {
+      metadata.creators = [{ givenName: '', familyName: '', orcid }];
+    }
+  }
+  
+  const publisher = extractMetaTag(html, 'publisher') ||
+                    extractMetaTag(html, 'dc.publisher') ||
+                    extractMetaTag(html, 'citation_publisher');
+  if (publisher) metadata.publisher = publisher;
+  
+  const pubYear = findPublicationYear(html);
+  if (pubYear) metadata.publicationYear = pubYear;
+  
+  const pubType = extractMetaTag(html, 'dc.type') ||
+                 extractMetaTag(html, 'publication_type');
+  if (pubType) metadata.publicationType = pubType;
+  
+  return Object.keys(metadata).length > 0 ? metadata : null;
 };
 
 const fetchWithRedirects = async (url: string, maxRedirects: number = 5): Promise<Response> => {
@@ -156,15 +355,19 @@ const fetchWithRedirects = async (url: string, maxRedirects: number = 5): Promis
       signal: controller.signal
     });
     clearTimeout(timeoutId);
-    
+
+
     if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {
       redirectCount++;
       const location = response.headers.get('location')!;
+      console.log("Following redirect -> ", location);
       const nextUrl = location.startsWith('http') ? location : new URL(location, currentUrl).href;
       currentUrl = nextUrl;
       continue;
+    }else{
+      console.log("No redirect, status and location header not matching.");
     }
-    
+
     return response;
   }
   
@@ -175,7 +378,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { doiInput } = body;
-    
+
+    console.log("Resolving DOI ", doiInput);
+
     if (!doiInput) {
       return NextResponse.json(
         { success: false, error: 'DOI input is required' },
@@ -202,83 +407,62 @@ export async function POST(request: NextRequest) {
       doi = `10.${doi}`;
     }
     
-    const apiUrl = `https://search.crossref.org/dois?q=doi:${doi}`;
-    
+    const landingPageUrl = `https://doi.org/${doi}`;
+    console.log("Accessing landing page ", landingPageUrl);
+
     try {
-      const response = await fetchWithRedirects(apiUrl);
+      const landingResponse = await fetchWithRedirects(landingPageUrl);
       
-      if (!response.ok) {
+      if (!landingResponse.ok) {
+        console.log("Accessing landing page failed. Using fallback.");
+
         const fallbackResult = await fallbackResolveDoi(doi);
+        console.log("Fallback result: ", fallbackResult);
+
         if (fallbackResult) {
           return NextResponse.json({ success: true, metadata: fallbackResult });
         }
         return NextResponse.json(
-          { success: false, error: `Failed to resolve DOI: ${response.statusText}` },
+          { success: false, error: `Failed to resolve DOI: ${landingResponse.statusText}` },
           { status: 500 }
         );
       }
       
-      const data = (await response.json()) as CrossrefResponse;
+      const isZenodoDoi = extractZenodoRecordId(doi) !== null;
       
-      if (data.message?.total_results === 0 || !data.message?.items?.[0]) {
-        const fallbackResult = await fallbackResolveDoi(doi);
-        if (fallbackResult) {
-          return NextResponse.json({ success: true, metadata: fallbackResult });
-        }
-        return NextResponse.json(
-          { success: false, error: 'DOI not found and fallback failed' },
-          { status: 404 }
-        );
-      }
-      
-      const item = data.message.items[0];
-      const metadata: DoiMetadata = {};
-      
-      if (item?.publication_type) {
-        metadata.publicationType = item.publication_type;
-      }
-      
-      if (item?.title && Array.isArray(item.title) && item.title.length > 0) {
-        metadata.title = item.title[0];
-      }
-      
-      if (item?.publisher) {
-        metadata.publisher = item.publisher;
-      }
-      
-      if (item?.published_online?.date_parts) {
-        const year = item.published_online.date_parts[0]?.toString();
-        if (year && year.length === 4) {
-          metadata.publicationYear = year;
-        }
-      } else if (item?.created?.date_parts) {
-        const year = item.created.date_parts[0]?.toString();
-        if (year && year.length === 4) {
-          metadata.publicationYear = year;
+      if (isZenodoDoi) {
+        console.log("Detected Zenodo DOI. Obtaining metadata via API.");
+
+        const zenodoResult = await resolveZenodo(doi);
+        console.log("Zenodo result: ", zenodoResult);
+
+        if (zenodoResult) {
+          return NextResponse.json({ success: true, metadata: zenodoResult });
         }
       }
-      
-      if (item?.author && Array.isArray(item.author)) {
-        const orcid = item.author.find((a: any) => a.orcid)?.orcid?.replace('https://orcid.org/', '');
-        
-        metadata.creators = item.author.map((a: any) => ({
-          givenName: a.given,
-          familyName: a.family,
-          orcid: orcid
-        }));
-        
-        const creatorNames = metadata.creators
-          .filter((c): c is NonNullable<typeof c> => Boolean(c))
-          .map(c => `${c.familyName || ''} ${c.givenName || ''}`.trim())
-          .filter(Boolean)
-          .join(', ');
-        
-        if (creatorNames) {
-          metadata.creatorsString = creatorNames;
-        }
+      console.log("No response, yet. Trying crossref.");
+
+      const crossrefResult = await resolveCrossref(doi);
+      console.log("Crossref result: ", crossrefResult);
+
+      if (crossrefResult) {
+        return NextResponse.json({ success: true, metadata: crossrefResult });
+      }
+
+      console.log("Still no result, trying <meta> tags.");
+
+      const htmlContent = await landingResponse.text();
+      const metaResult = extractMetadataFromMetaTags(htmlContent);
+      console.log("<meta> tags result: ", metaResult);
+
+      if (metaResult && Object.keys(metaResult).length > 0) {
+        return NextResponse.json({ success: true, metadata: metaResult });
       }
       
-      return NextResponse.json({ success: true, metadata });
+      return NextResponse.json(
+        { success: false, error: 'Could not resolve DOI metadata' },
+        { status: 404 }
+      );
     } catch (error) {
       const fallbackResult = await fallbackResolveDoi(doi);
       if (fallbackResult) {

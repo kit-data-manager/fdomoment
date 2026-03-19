@@ -4,6 +4,7 @@ export interface OwnerIdAutocompleteProps {
     value: string;
     displayValue: string;
     idType: OwnerIdType;
+    fixedType?: OwnerIdType;
     onChange: (value: string) => void;
     onSelect: (id: string, name: string, type: OwnerIdType) => void;
     onTypeChange: (type: OwnerIdType) => void;

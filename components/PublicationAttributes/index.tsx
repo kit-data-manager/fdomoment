@@ -1,42 +1,62 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Link, Book, User, Building, Download, Loader2 } from 'lucide-react';
+import { Link, Book } from 'lucide-react';
 import { PublicationAttributesModuleProps } from './types';
 import { usePublicationAttributes } from './usePublicationAttributes';
-import {Icon} from "@iconify/react";
+import { Icon } from "@iconify/react";
+import { OwnerIdAutocomplete } from '@/components/OwnerIdAutocomplete';
 
 const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModuleProps) => {
   const {
     inputs,
     handleInputChange,
+    handleAddCreator,
+    handleRemoveCreator,
     handleCreatorChange,
-    updateInputs,
-    setInputs
+    handleCreatorSelect,
+    handleSetCreatorsFromMetadata,
+    updateInputs
   } = usePublicationAttributes();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    const newInputs = { ...inputs, [name]: value };
-    updateInputs(newInputs);
-  };
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const publicationTypes = [
-    'Article',
-    'Book',
-    'BookChapter',
-    'ConferencePaper',
-    'Dataset',
-    'Dissertation',
-    'Journal',
-    'Map',
-    'Preprint',
-    'Report',
-    'Software',
-    'Thesis',
-    'WorkingPaper',
-    'Other'
+    'audiovisual',
+    'award',
+    'book',
+    'bookchapter',
+    'collection',
+    'computationalnotebook',
+    'conferencepaper',
+    'conferenceproceeding',
+    'datapaper',
+    'dataset',
+    'dissertation',
+    'event',
+    'image',
+    'interactiveresource',
+    'instrument',
+    'journal',
+    'journalarticle',
+    'model',
+    'outputmanagementplan',
+    'peerreview',
+    'physicalobject',
+    'poster',
+    'preprint',
+    'presentation',
+    'project',
+    'report',
+    'service',
+    'software',
+    'sound',
+    'standard',
+    'studyregistration',
+    'text',
+    'workflow',
+    'other'
   ];
 
   const handleResolveDoi = async () => {
@@ -59,16 +79,24 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
 
       if (result.success && result.metadata) {
         const { metadata } = result;
+
+        const publicationType = metadata.publicationType && publicationTypes.includes(metadata.publicationType)
+          ? metadata.publicationType
+          : 'other';
+
         const newInputs = {
           ...inputs,
           doi: inputs.doi,
-          publicationType: metadata.publicationType || inputs.publicationType,
+          publicationType: publicationType,
           title: metadata.title || inputs.title,
-          publisher: metadata.publisher || inputs.publisher,
-          publicationYear: metadata.publicationYear || inputs.publicationYear,
-          creator: metadata?.creators ? metadata?.creators[0].orcid : inputs.creator
+          publicationYear: metadata.publicationYear || inputs.publicationYear
         };
-        setInputs(newInputs);
+
+        if (metadata.creators && metadata.creators.length > 0) {
+          handleSetCreatorsFromMetadata(metadata.creators);
+        } else {
+          updateInputs(newInputs);
+        }
       } else {
         setError(result.error || 'Failed to resolve DOI');
       }
@@ -105,7 +133,7 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
           <div className="flex items-center gap-2">
             <fieldset className="fieldset w-full">
               <label className="input w-full flex-1">
-                <Link />
+                <Icon icon="simple-icons:doi" className="text-xl" />
                 <input
                   name="doi"
                   value={inputs.doi ?? ''}
@@ -124,8 +152,7 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
                 className={`btn btn-ghost -mt-6 justify-self-end ${loading ? 'loading' : ''}`}
                 title={loading ? 'Resolving DOI...' : 'Resolve DOI'}
               >
-
-              <Icon icon="ic:outline-auto-fix-high" className="text-xl" />
+                <Icon icon="ic:outline-auto-fix-high" className="text-xl" />
               </button>
             </div>
           </div>
@@ -138,11 +165,11 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
           <div className="flex items-center gap-2">
             <fieldset className="fieldset w-full">
               <label className="input w-full">
-                <Book />
+                <Icon icon="mdi:category-outline" className="text-xl" />
                 <select
                   name="publicationType"
                   value={inputs.publicationType ?? ''}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
                   className="select select-ghost w-full"
                 >
                   <option value="">Select publication type</option>
@@ -158,10 +185,11 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
           <div className="flex items-center gap-2">
             <fieldset className="fieldset w-full">
               <label className="input w-full">
+                <Icon icon="material-symbols:title-rounded" className="text-xl" />
                 <input
                   name="title"
                   value={inputs.title ?? ''}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
                   className="w-full"
                   placeholder="Publication title"
                 />
@@ -173,26 +201,11 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
           <div className="flex items-center gap-2">
             <fieldset className="fieldset w-full">
               <label className="input w-full">
-                <Building />
-                <input
-                  name="publisher"
-                  value={inputs.publisher ?? ''}
-                  onChange={handleChange}
-                  className="w-full"
-                  placeholder="Publisher name"
-                />
-              </label>
-              <p className="label">The publisher of the publication.</p>
-            </fieldset>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <fieldset className="fieldset w-full">
-              <label className="input w-full">
+                <Icon icon="ep:calendar" className="text-xl" />
                 <input
                   name="publicationYear"
                   value={inputs.publicationYear ?? ''}
-                  onChange={handleChange}
+                  onChange={handleInputChange}
                   className="w-full"
                   placeholder="YYYY"
                   maxLength={4}
@@ -202,20 +215,44 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
             </fieldset>
           </div>
 
-          <div className="flex items-center gap-2">
-            <fieldset className="fieldset w-full">
-              <label className="input w-full">
-                <User />
-                <input
-                  name="creator"
-                  value={inputs.creator ?? ''}
-                  onChange={(e) => handleCreatorChange(e.target.value)}
-                  className="w-full"
-                  placeholder="ORCID or name"
-                />
+          <div className="flex flex-col gap-2 w-full">
+            <div className="flex items-center justify-between">
+              <label className="label">
+                <span className="label-text">Creators</span>
               </label>
-              <p className="label">The creator&apos;s ORCID or name (default from Core Attributes).</p>
-            </fieldset>
+              <button
+                type="button"
+                onClick={handleAddCreator}
+                className="btn btn-sm btn-ghost"
+                title="Add creator"
+              >
+                <Icon icon="ic:outline-add" className="text-xl" />
+              </button>
+            </div>
+            
+            {inputs.creators.map((creator, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <OwnerIdAutocomplete
+                  value={creator.id || ''}
+                  displayValue={creator.name || ''}
+                  idType="ORCiD"
+                  fixedType="ORCiD"
+                  onChange={(value) => handleCreatorChange(index, 'id', value)}
+                  onSelect={(id, name) => handleCreatorSelect(index, id, name)}
+                  onTypeChange={() => {}}
+                />
+                {inputs.creators.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCreator(index)}
+                    className="btn btn-ghost btn-sm"
+                    title="Remove creator"
+                  >
+                    <Icon icon="ic:outline-remove" className="text-xl" />
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}

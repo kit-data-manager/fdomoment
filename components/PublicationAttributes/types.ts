@@ -1,10 +1,15 @@
+export interface Creator {
+  id?: string;
+  name?: string;
+  orcid?: string;
+}
+
 export interface PublicationAttributesModuleData {
   doi?: string;
   publicationType?: string;
   title?: string;
-  publisher?: string;
   publicationYear?: string;
-  creator?: string;
+  creators: Creator[];
 }
 
 export interface PublicationAttributesModuleProps {

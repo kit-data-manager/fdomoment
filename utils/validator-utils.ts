@@ -125,7 +125,7 @@ export const validateModulesData = (
     // Validate Publication Attributes
     const publicationData = visibleData['Publication Attributes'];
     if (publicationData) {
-        checkPropertySet('Publication Attributes', publicationData, ['doi', 'publicationType', 'title', 'publisher', 'publicationYear'], errors);
+        checkPropertySet('Publication Attributes', publicationData, ['doi', 'publicationType', 'title', 'publicationYear'], errors);
     }
 
     return {errors:errors, validData: errors.length > 0 ? null : visibleData } as ValidationResponse;
@@ -226,14 +226,11 @@ export const finalizeModulesData = (modulesData: Record<string, ModuleDataType>,
             if (moduleData.title) {
                 recordData.record.push({ key: 'title', value: moduleData.title as string });
             }
-            if (moduleData.publisher) {
-                recordData.record.push({ key: 'publisher', value: moduleData.publisher as string });
-            }
             if (moduleData.publicationYear) {
                 recordData.record.push({ key: 'publicationYear', value: moduleData.publicationYear as string });
             }
-            if (moduleData.creator) {
-                recordData.record.push({ key: 'creator', value: moduleData.creator as string });
+            if (moduleData.creators && moduleData.creators.length > 0) {
+                recordData.record.push({ key: 'creators', value: JSON.stringify(moduleData.creators) });
             }
         }
     }

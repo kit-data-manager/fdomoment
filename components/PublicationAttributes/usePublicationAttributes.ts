@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { PublicationAttributesModuleData } from './types';
+import { PublicationAttributesModuleData, Creator } from './types';
 
-export const usePublicationAttributes = (initialCreator?: string) => {
-  const getInitialState = () => ({
+export const usePublicationAttributes = () => {
+  const getInitialState = (): PublicationAttributesModuleData => ({
     doi: '',
     publicationType: '',
     title: '',
-    publisher: '',
     publicationYear: '',
-    creator: initialCreator || ''
+    creators: []
   });
 
   const [inputs, setInputs] = useState<PublicationAttributesModuleData>(() => {
@@ -19,7 +18,11 @@ export const usePublicationAttributes = (initialCreator?: string) => {
     const publicationInput = localStorage.getItem('publicationAttributes');
     if (publicationInput) {
       try {
-        return JSON.parse(publicationInput);
+        const parsed = JSON.parse(publicationInput);
+        return {
+          ...parsed,
+          creators: parsed.creators || []
+        };
       } catch (e) {
         console.error('Error parsing publication attributes from localStorage:', e);
       }
@@ -41,15 +44,63 @@ export const usePublicationAttributes = (initialCreator?: string) => {
     updateInputs(newInputs);
   };
 
-  const handleCreatorChange = (value: string) => {
-    const newInputs = { ...inputs, creator: value };
+  const handleAddCreator = () => {
+    const newInputs = {
+      ...inputs,
+      creators: [...inputs.creators, { id: '', name: '', orcid: '' }]
+    };
+    updateInputs(newInputs);
+  };
+
+  const handleRemoveCreator = (index: number) => {
+    const newCreators = inputs.creators.filter((_, i) => i !== index);
+    const newInputs = { ...inputs, creators: newCreators };
+    updateInputs(newInputs);
+  };
+
+  const handleCreatorChange = (index: number, field: keyof Creator, value: string) => {
+    const newCreators = inputs.creators.map((creator, i) => 
+      i === index ? { ...creator, [field]: value } : creator
+    );
+    const newInputs = { ...inputs, creators: newCreators };
+    updateInputs(newInputs);
+  };
+
+  const handleCreatorSelect = (index: number, id: string, name: string) => {
+    const newCreators = inputs.creators.map((creator, i) =>
+      i === index ? { ...creator, id, name } : creator
+    );
+    const newInputs = { ...inputs, creators: newCreators };
+    updateInputs(newInputs);
+  };
+
+  const handleSetCreatorsFromMetadata = (metadataCreators: Array<{ givenName?: string; familyName?: string; orcid?: string }>) => {
+    const creators: Creator[] = metadataCreators.map(creator => {
+      const givenName = creator.givenName || '';
+      const familyName = creator.familyName || '';
+      const name = `${familyName}, ${givenName}`.trim();
+      const orcid = creator.orcid || '';
+      const id = orcid ? `https://orcid.org/${orcid}` : '';
+      
+      return {
+        id,
+        name,
+        orcid
+      };
+    });
+
+    const newInputs = { ...inputs, creators };
     updateInputs(newInputs);
   };
 
   return {
     inputs,
     handleInputChange,
+    handleAddCreator,
+    handleRemoveCreator,
     handleCreatorChange,
+    handleCreatorSelect,
+    handleSetCreatorsFromMetadata,
     updateInputs,
     setInputs
   };

@@ -11,13 +11,16 @@ export interface RORSearchResponse {
 }
 
 export async function searchROR(query: string): Promise<RORResult[]> {
-    if (query.length < 5) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length < 3) {
         return [];
     }
 
+    const cleanQuery = trimmedQuery.replace(/\s*\(.*\)\s*$/, '');
+
     try {
         const response = await fetch(
-            `https://api.ror.org/organizations?query=${encodeURIComponent(query)}`
+            `https://api.ror.org/organizations?query=${encodeURIComponent(cleanQuery)}`
         );
         
         if (!response.ok) {
@@ -38,6 +41,10 @@ export async function searchROR(query: string): Promise<RORResult[]> {
 }
 
 export function formatRORDisplay(item: RORResult): string {
+    if (!item || !item.names || item.names.length === 0) {
+        return '';
+    }
+
     const displayName = item.names.find(
         name => name.types && name.types.includes('ror_display')
     )?.value || item.names[0].value;

@@ -6,16 +6,21 @@ import { RORResult, searchROR } from '@/utils/ror-client';
 import { parseNameAndId } from '@/utils/parse-utils';
 import { OwnerIdType } from '@/components/OwnerIdAutocomplete/types';
 
-export const useOwnerIdAutocomplete = (idType: OwnerIdType) => {
+export const useOwnerIdAutocomplete = (idType: OwnerIdType, fixedType?: OwnerIdType) => {
     const [suggestions, setSuggestions] = useState<Array<ORCiDResult | RORResult>>([]);
-    const [mounted, setMounted] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const effectiveIdType = mounted ? idType : 'ORCiD';
+    useEffect(() => {
+        setSuggestions([]);
+        setSearchTerm('');
+    }, [idType]);
+
+    const effectiveIdType: OwnerIdType = mounted ? (fixedType || idType) : 'ORCiD';
 
     useEffect(() => {
         const fetchSuggestions = async () => {
@@ -27,7 +32,6 @@ export const useOwnerIdAutocomplete = (idType: OwnerIdType) => {
                 } else {
                     results = await searchROR(searchTerm);
                 }
-                
                 setSuggestions(results);
             } else {
                 setSuggestions([]);
