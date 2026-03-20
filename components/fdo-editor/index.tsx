@@ -163,7 +163,6 @@ const FdoEditor = () => {
                   <ModuleRenderer
                     title={module.title}
                     showHelp={helpMode[module.title]}
-                    onDataChange={() => {}}
                   />
                 </div>
               </div>

@@ -2,6 +2,7 @@ export interface TypeDefinition {
   pid: string;
   name: string;
   description: string;
+  category: string;
   validator: "JSON" | "SPARQL";
   validatorInput?: string;
   validatorEndpoint?: string;

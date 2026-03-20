@@ -53,6 +53,7 @@ const TypedAttributesModal = ({
     const newProperty: TypedAttributesItem = {
       typeId: selectedType.pid,
       typeName: selectedType.name,
+      category: selectedType.category,
       value: formValue,
       validator: selectedType.validator,
       validatorInput: selectedType.validatorInput,

@@ -8,6 +8,7 @@ export interface TypeAttributesModuleProps {
 export interface TypedAttributesItem {
   typeId: string;
   typeName: string;
+  category: string;
   value: Record<string, any>;
   validator?: "JSON" | "SPARQL";
   validatorInput?: string;

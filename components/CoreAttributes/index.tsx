@@ -54,7 +54,7 @@ const {
                 </label>
                 <p className="label">
                     {inputs.owner_id_type === 'ORCiD' 
-                      ? 'The ORCiD identifier of the owner.' 
+                      ? 'The ORCiD identifier of the owner entered in \'lastName, firstName\' format.'
                       : 'The research organization identifier (ROR) of the owner\'s primary affiliation.'}
                 </p>
               </fieldset>

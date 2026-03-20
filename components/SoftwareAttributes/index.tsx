@@ -55,10 +55,10 @@ const SoftwareAttributes = ({ showHelp = false }: SoftwareModuleProps) => {
                             <p className="label">The URL of the software, preferably a release.</p>
                         </fieldset>
                         <button
-                            className={`btn btn-ghost -mt-6 justify-self-end ${isLoading ? 'loading' : ''}`}
+                            className={`btn btn-soft btn-primary -mt-6 justify-self-end ${isLoading ? 'loading' : ''}`}
                             onClick={handleAutoDetect}
                             disabled={isLoading || !inputs.softwareLocation}
-                            title="Auto-detect repository info"
+                            title='Repository Resolution Wizard'
                         >
                             <Icon icon="ic:outline-auto-fix-high" className="text-xl" />
                         </button>

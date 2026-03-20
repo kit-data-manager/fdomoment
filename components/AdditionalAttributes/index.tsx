@@ -63,7 +63,7 @@ const AdditionalAttributes = ({showHelp = false}: AdditionalAttributesProps) => 
                             </fieldset>
                             <button
                                 onClick={() => removeRow(index)}
-                                className="btn btn-ghost mt-1 justify-self-end"
+                                className="btn btn-soft btn-primary mt-1 justify-self-end"
                             >
                                 <Trash2 width="16" height="16"/>
                             </button>
@@ -71,7 +71,7 @@ const AdditionalAttributes = ({showHelp = false}: AdditionalAttributesProps) => 
                     ))}
                     <button
                         onClick={addRow}
-                        className="btn btn-soft btn-info btn-sm w-full"
+                        className="btn btn-soft btn-primary btn-sm w-full"
                     >
                         Add Additional Attribute
                     </button>

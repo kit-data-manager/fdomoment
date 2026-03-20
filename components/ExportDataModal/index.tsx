@@ -86,7 +86,7 @@ export function ExportDataModal({ isOpen, onClose, onSubmit, data }: ExportDataM
           </button>
           <button
             onClick={onSubmit}
-            className="btn btn-primary"
+            className="btn btn-soft btn-primary"
           >
             Export
           </button>

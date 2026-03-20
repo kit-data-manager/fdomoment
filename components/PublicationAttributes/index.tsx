@@ -120,7 +120,10 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
             <div className="absolute inset-0 flex flex-col justify-center items-center text-secondary p-4">
               <span className="text-base">
                 This module contributes publication-related attributes to the FAIR Digital Object. It allows describing
-                scholarly publications with their DOI, type, title, publisher, and publication year.
+                publications with their DOI, type, title, publication year, and creators. It can be used in addition to
+                software and data object attributes if they are accessible via DOI. Based on a DOI you may try to
+                obtain the other attributes using the wizard button, which works best for Zenodo DOIs and publications
+                available in Crossref.
                 <br/><br/>
                 These attributes facilitate <span className="text-info">findability</span> and proper attribution of
                 research outputs.
@@ -149,8 +152,8 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
                 type="button"
                 onClick={handleResolveDoi}
                 disabled={loading}
-                className={`btn btn-ghost -mt-6 justify-self-end ${loading ? 'loading' : ''}`}
-                title={loading ? 'Resolving DOI...' : 'Resolve DOI'}
+                className={`btn btn-soft btn-primary -mt-6 justify-self-end ${loading ? 'loading' : ''}`}
+                title='DOI Resolution Wizard'
               >
                 <Icon icon="ic:outline-auto-fix-high" className="text-xl" />
               </button>
@@ -223,7 +226,7 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
               <button
                 type="button"
                 onClick={handleAddCreator}
-                className="btn btn-sm btn-ghost"
+                className="btn btn-sm btn-soft btn-primary"
                 title="Add creator"
               >
                 <Icon icon="ic:outline-add" className="text-xl" />
@@ -232,20 +235,28 @@ const PublicationAttributes = ({ showHelp = false }: PublicationAttributesModule
             
             {inputs.creators.map((creator, index) => (
               <div key={index} className="flex items-center gap-2">
-                <OwnerIdAutocomplete
-                  value={creator.id || ''}
-                  displayValue={creator.name || ''}
-                  idType="ORCiD"
-                  fixedType="ORCiD"
-                  onChange={(value) => handleCreatorChange(index, 'id', value)}
-                  onSelect={(id, name) => handleCreatorSelect(index, id, name)}
-                  onTypeChange={() => {}}
-                />
+
+                  <fieldset className="fieldset w-full relative">
+                      <label className="w-full relative z-60">
+                          <OwnerIdAutocomplete
+                              value={creator.id || ''}
+                              displayValue={creator.name || ''}
+                              idType="ORCiD"
+                              fixedType="ORCiD"
+                              onChange={(value) => handleCreatorChange(index, 'id', value)}
+                              onSelect={(id, name) => handleCreatorSelect(index, id, name)}
+                              onTypeChange={() => {}}
+                          />
+                      </label>
+                      <p className="label">
+                          {`The ORCiD identifier of the owner entered in \'lastName, firstName\' format.`}
+                      </p>
+                  </fieldset>
                 {inputs.creators.length > 1 && (
                   <button
                     type="button"
                     onClick={() => handleRemoveCreator(index)}
-                    className="btn btn-ghost btn-sm"
+                    className="btn btn-soft btn-primary -mt-6 btn-sm"
                     title="Remove creator"
                   >
                     <Icon icon="ic:outline-remove" className="text-xl" />

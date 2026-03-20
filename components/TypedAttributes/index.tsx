@@ -23,6 +23,7 @@ const TypedAttributes = ({ onDataChange, showHelp = false }: TypeAttributesModul
       pid: property.typeId,
       name: property.typeName,
       description: property.typeName,
+      category: property.category,
       validator: (property.validator || "JSON") as "JSON" | "SPARQL",
       validatorInput: property.validatorInput || "",
       validatorEndpoint: property.validatorEndpoint || "",
@@ -104,7 +105,7 @@ const TypedAttributes = ({ onDataChange, showHelp = false }: TypeAttributesModul
           ))}
           <button
             onClick={openAddModal}
-            className="btn btn-soft btn-info btn-sm w-full"
+            className="btn btn-soft btn-primary btn-sm w-full"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Typed Attribute
