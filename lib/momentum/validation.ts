@@ -5,7 +5,7 @@ import {
   PublicationMetadata,
   MiscMetadata,
   ModuleStatus,
-  ObjectType,
+  TemplateType,
 } from './types';
 import { KNOWN_REPOSITORIES } from './constants';
 
@@ -83,9 +83,10 @@ export function computeCoreMetadataStatus(basis: CoreMetadata): ModuleStatus {
 
 export function computeDataObjectMetadataStatus(
   dataset: DataObjectMetadata,
-  objectType: ObjectType
+  template: TemplateType
 ): ModuleStatus {
-  if (objectType === 'software') {
+  const isDataObjectTemplate = template === 'published-data-object' || template === 'unpublished-data-object';
+  if (!isDataObjectTemplate) {
     return 'locked';
   }
   
@@ -107,9 +108,10 @@ export function computeDataObjectMetadataStatus(
 
 export function computeSoftwareMetadataStatus(
   software: SoftwareMetadata,
-  objectType: ObjectType
+  template: TemplateType
 ): ModuleStatus {
-  if (objectType === 'dataobject') {
+  const isSoftwareTemplate = template === 'published-software' || template === 'unpublished-software';
+  if (!isSoftwareTemplate) {
     return 'locked';
   }
   

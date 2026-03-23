@@ -14,12 +14,8 @@ export default function EditorPage() {
       updateSoftware={editorState.updateSoftware}
       updatePublication={editorState.updatePublication}
       updateMisc={editorState.updateMisc}
-      setObjectType={editorState.setObjectType}
+      setTemplate={editorState.setTemplate}
       setActiveModule={editorState.setActiveModule as (module: string) => void}
-      activatePublication={editorState.activatePublication}
-      activateMisc={editorState.activateMisc}
-      deactivatePublication={editorState.deactivatePublication}
-      deactivateMisc={editorState.deactivateMisc}
       canCreate={editorState.canCreate}
     />
   );

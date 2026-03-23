@@ -23,9 +23,9 @@ export function NavigatorModule({
   onActivate,
 }: NavigatorModuleProps) {
   const icons = {
-    pristine: '○',
-    incomplete: '⚠️',
-    complete: '✅',
+    pristine: '⚪',
+    incomplete: '🟡',
+    complete: '🟢',
     locked: '🔒',
   };
 

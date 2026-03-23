@@ -10,7 +10,22 @@ export type ModuleStatus =
   | 'complete'
   | 'locked';
 
-export type ObjectType = 'dataobject' | 'software' | null;
+export type TemplateType = 
+  | 'published-data-object'
+  | 'unpublished-data-object'
+  | 'published-software'
+  | 'unpublished-software'
+  | null;
+
+export type ModuleIdentifier = 'core' | 'dataobject' | 'software' | 'publication' | 'misc';
+
+export type TemplateConfig = {
+  type: TemplateType;
+  label: string;
+  description: string;
+  icon: string;
+  modules: ModuleIdentifier[];
+};
 
 export type CoreMetadata = {
   researchDomain: ResearchDomain | null;
@@ -64,7 +79,7 @@ export type MiscMetadata = {
 };
 
 export type EditorState = {
-  objectType: ObjectType;
+  template: TemplateType;
 
   basis: CoreMetadata;
   dataset: DataObjectMetadata;
@@ -82,7 +97,7 @@ export type EditorState = {
 
   activeModule:
     | 'core'
-    | 'type-select'
+    | 'template-select'
     | 'dataobject'
     | 'software'
     | 'publication'

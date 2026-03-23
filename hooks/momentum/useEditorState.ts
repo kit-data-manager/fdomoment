@@ -9,8 +9,8 @@ import {
   PublicationMetadata,
   MiscMetadata,
   MiscEntry,
-  ObjectType,
   ModuleStatus,
+  TemplateType,
 } from '@/lib/momentum/types';
 import {
   computeCoreMetadataStatus,
@@ -22,13 +22,13 @@ import {
 
 function createInitialState(): EditorState {
   return {
-    objectType: null,
-    activeModule: 'basis',
+    template: null,
+    activeModule: 'template-select',
     basis: {
       researchDomain: null,
       orcid: '',
       orcidName: null,
-      orcidInstitution: null,
+      orcidEmail: null,
       orcidValidated: false,
     },
     dataset: {
@@ -114,11 +114,26 @@ export function useEditorState() {
     }));
   };
 
-  const setObjectType = (type: ObjectType) => {
-    setState(prev => ({
-      ...prev,
-      objectType: type,
-    }));
+  const setTemplate = (template: TemplateType) => {
+    setState(prev => {
+      const hasPublication = template === 'published-data-object' || template === 'published-software';
+      const hasMisc = template !== null;
+      
+      return {
+        ...prev,
+        template,
+        publication: hasPublication ? {
+          doi: '',
+          title: '',
+          titleImported: false,
+          publicationType: '',
+          publicationTypeImported: false,
+          creators: [],
+          creatorsImported: false,
+        } : null,
+        misc: hasMisc ? { entries: [] } : null,
+      };
+    });
   };
 
   const setActiveModule = (module: EditorState['activeModule']) => {
@@ -128,61 +143,37 @@ export function useEditorState() {
     }));
   };
 
-  const activatePublication = () => {
-    setState(prev => ({
-      ...prev,
-      publication: {
-        doi: '',
-        title: '',
-        titleImported: false,
-        publicationType: '',
-        publicationTypeImported: false,
-        creators: [],
-        creatorsImported: false,
-      },
-      activeModule: 'publication',
-    }));
-  };
 
-  const activateMisc = () => {
-    setState(prev => ({
-      ...prev,
-      misc: { entries: [] },
-      activeModule: 'misc',
-    }));
-  };
-
-  const deactivatePublication = () => {
-    setState(prev => ({
-      ...prev,
-      publication: null,
-    }));
-  };
-
-  const deactivateMisc = () => {
-    setState(prev => ({
-      ...prev,
-      misc: null,
-    }));
-  };
 
   const moduleStatus = useMemo<EditorState['moduleStatus']>(() => {
+    const dataobjectTemplate: TemplateType = state.template === 'published-data-object' || state.template === 'unpublished-data-object' ? state.template : null;
+    const softwareTemplate: TemplateType = state.template === 'published-software' || state.template === 'unpublished-software' ? state.template : null;
+    
     return {
       core: computeCoreMetadataStatus(state.basis),
-      dataobject: computeDataObjectMetadataStatus(state.dataset, state.objectType),
-      software: computeSoftwareMetadataStatus(state.software, state.objectType),
+      dataobject: computeDataObjectMetadataStatus(state.dataset, dataobjectTemplate),
+      software: computeSoftwareMetadataStatus(state.software, softwareTemplate),
       publication: computePublicationMetadataStatus(state.publication),
       misc: computeMiscMetadataStatus(state.misc),
     };
-  }, [state.basis, state.dataset, state.software, state.publication, state.misc, state.objectType]);
+  }, [state.basis, state.dataset, state.software, state.publication, state.misc, state.template]);
 
   const canCreate = useMemo(() => {
+    const hasPublication = state.template === 'published-data-object' || state.template === 'published-software';
+    
+    if (hasPublication) {
+      return (
+        moduleStatus.core === 'complete' &&
+        (moduleStatus.dataobject === 'complete' || moduleStatus.software === 'complete') &&
+        moduleStatus.publication === 'complete'
+      );
+    }
+    
     return (
       moduleStatus.core === 'complete' &&
-      (moduleStatus.dataobject === 'complete' ||
-       moduleStatus.software === 'complete')
+      (moduleStatus.dataobject === 'complete' || moduleStatus.software === 'complete')
     );
-  }, [moduleStatus]);
+  }, [moduleStatus, state.template]);
 
   return {
     state: { ...state, moduleStatus },
@@ -191,12 +182,8 @@ export function useEditorState() {
     updateSoftware,
     updatePublication,
     updateMisc,
-    setObjectType,
+    setTemplate,
     setActiveModule,
-    activatePublication,
-    activateMisc,
-    deactivatePublication,
-    deactivateMisc,
     canCreate,
   };
 }

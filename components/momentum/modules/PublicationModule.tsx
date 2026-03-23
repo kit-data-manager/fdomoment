@@ -37,13 +37,11 @@ interface PublicationModuleProps {
     creators: CreatorWithOrcid[];
     creatorsImported: boolean;
   }>) => void;
-  onDeactivate: () => void;
 }
 
 export function PublicationModule({
   publication,
   updatePublication,
-  onDeactivate,
 }: PublicationModuleProps) {
   const {
     handleDoiImport,
@@ -159,8 +157,7 @@ export function PublicationModule({
   return (
     <ModuleShell
       title="📚 Publication Metadata"
-      badge="optional"
-      onClose={onDeactivate}
+      badge="required"
     >
       <div className="space-y-6">
         <div className="flex gap-3">

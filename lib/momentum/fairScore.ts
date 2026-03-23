@@ -82,7 +82,10 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  if (state.objectType === 'dataobject' && !state.dataset.dataUrlValidated) {
+  const isDataObjectTemplate = state.template === 'published-data-object' || state.template === 'unpublished-data-object';
+  const isSoftwareTemplate = state.template === 'published-software' || state.template === 'unpublished-software';
+
+  if (isDataObjectTemplate && !state.dataset.dataUrlValidated) {
     tips.push({
       text: 'A valid data object URL increases the F-Score by 30% and A-Score by +40%.',
       targetModule: 'dataobject',
@@ -90,7 +93,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  if (state.objectType === 'software' && !state.software.repositoryUrl) {
+  if (isSoftwareTemplate && !state.software.repositoryUrl) {
     tips.push({
       text: 'A public repository URL increases F- and A-Score by +30% each.',
       targetModule: 'software',
@@ -98,7 +101,8 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  if (!state.publication && state.objectType) {
+  const hasPublicationModule = state.template === 'published-data-object' || state.template === 'published-software';
+  if (!state.publication && hasPublicationModule) {
     tips.push({
       text: 'Publication information increase the F-Score by 40% and the A-Score by +30%.',
       targetModule: 'publication',
@@ -106,7 +110,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  if (!state.misc && state.objectType) {
+  if (!state.misc && state.template) {
     tips.push({
       text: 'Additional metadata improve the I-Score by up to 20% and R-Score by up to 20%.',
       targetModule: 'misc',

@@ -13,7 +13,6 @@ interface AdditionalAttributesModuleProps {
   misc: MiscMetadata;
   researchDomain: ResearchDomain | null;
   updateMisc: (entries: MiscMetadata['entries']) => void;
-  onDeactivate: () => void;
 }
 
 interface TypedAttribute {
@@ -27,7 +26,6 @@ export function AdditionalAttributesModule({
   misc,
   researchDomain,
   updateMisc,
-  onDeactivate,
 }: AdditionalAttributesModuleProps) {
   const [mode, setMode] = useState<'custom' | 'typed'>('custom');
   const [typedAttributes, setTypedAttributes] = useState<TypedAttribute[]>([]);
@@ -84,8 +82,7 @@ export function AdditionalAttributesModule({
   return (
     <ModuleShell
       title="🔧 Additional Metadata"
-      badge="optional"
-      onClose={onDeactivate}
+      badge="required"
     >
       <div className="space-y-4">
         <div className="tabs tabs-boxed">

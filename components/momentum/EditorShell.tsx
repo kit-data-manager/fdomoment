@@ -4,7 +4,7 @@ import React from 'react';
 import { EditorState } from '@/lib/momentum/types';
 import { EditorNavigator } from './navigator/EditorNavigator';
 import { CoreModule } from './modules/CoreModule';
-import { WelcomeStep } from './modules/WelcomeStep';
+import { TemplateSelection } from './modules/TemplateSelection';
 import { DataObjectModule } from './modules/DataObjectModule';
 import { SoftwareModule } from './modules/SoftwareModule';
 import { PublicationModule } from './modules/PublicationModule';
@@ -18,12 +18,8 @@ interface EditorShellProps {
   updateSoftware: (partial: Partial<any>) => void;
   updatePublication: (partial: Partial<any>) => void;
   updateMisc: (entries: any[]) => void;
-  setObjectType: (type: EditorState['objectType']) => void;
+  setTemplate: (type: EditorState['template']) => void;
   setActiveModule: (module: string) => void;
-  activatePublication: () => void;
-  activateMisc: () => void;
-  deactivatePublication: () => void;
-  deactivateMisc: () => void;
   canCreate: boolean;
 }
 
@@ -35,23 +31,36 @@ export function EditorShell(props: EditorShellProps) {
     updateSoftware,
     updatePublication,
     updateMisc,
-    setObjectType,
+    setTemplate,
     setActiveModule,
-    activatePublication,
-    activateMisc,
-    deactivatePublication,
-    deactivateMisc,
     canCreate,
   } = props;
 
   const handleCreate = () => {
-    // TODO: Implement FDO creation
     console.log('Creating FDO', state);
   };
 
-  const handleBasisNext = () => {
-    setActiveModule('type-select');
+  const handleCoreNext = () => {
+    if (!state.template) {
+      setActiveModule('template-select');
+    } else {
+      if (state.template === 'published-data-object' || state.template === 'unpublished-data-object') {
+        setActiveModule('dataobject');
+      } else if (state.template === 'published-software' || state.template === 'unpublished-software') {
+        setActiveModule('software');
+      }
+    }
   };
+
+  const handleTemplateSelect = (template: EditorState['template']) => {
+    setTemplate(template);
+    setActiveModule('core');
+  };
+
+  const showFullInterface = state.template !== null;
+
+  const isDataObjectTemplate = state.template === 'published-data-object' || state.template === 'unpublished-data-object';
+  const isSoftwareTemplate = state.template === 'published-software' || state.template === 'unpublished-software';
 
   const renderActiveModule = () => {
     switch (state.activeModule) {
@@ -60,23 +69,21 @@ export function EditorShell(props: EditorShellProps) {
           <CoreModule
             basis={state.basis}
             updateBasis={updateBasis}
-            onNext={handleBasisNext}
-            objectType={state.objectType}
+            onNext={handleCoreNext}
+            objectType={isDataObjectTemplate ? 'dataobject' : isSoftwareTemplate ? 'software' : null}
           />
         );
 
-      case 'type-select':
+      case 'template-select':
         return (
-          <WelcomeStep
-            setObjectType={setObjectType}
-            setActiveModule={setActiveModule as (module: string) => void}
-            currentObjectType={state.objectType}
+          <TemplateSelection
+            onSelectTemplate={handleTemplateSelect}
           />
         );
 
       case 'dataobject':
-        if (!state.objectType || state.objectType === 'software') {
-          setActiveModule('type-select');
+        if (!isDataObjectTemplate) {
+          setActiveModule('core');
           return null;
         }
         return (
@@ -84,21 +91,19 @@ export function EditorShell(props: EditorShellProps) {
             dataset={state.dataset}
             basis={state.basis}
             updateDataset={updateDataset}
-            activatePublication={activatePublication}
             setActiveModule={setActiveModule as (module: string) => void}
           />
         );
 
       case 'software':
-        if (!state.objectType || state.objectType === 'dataobject') {
-          setActiveModule('type-select');
+        if (!isSoftwareTemplate) {
+          setActiveModule('core');
           return null;
         }
         return (
           <SoftwareModule
             software={state.software}
             updateSoftware={updateSoftware}
-            activatePublication={activatePublication}
             setActiveModule={setActiveModule as (module: string) => void}
           />
         );
@@ -109,7 +114,6 @@ export function EditorShell(props: EditorShellProps) {
           <PublicationModule
             publication={state.publication}
             updatePublication={updatePublication}
-            onDeactivate={deactivatePublication}
           />
         );
 
@@ -120,7 +124,6 @@ export function EditorShell(props: EditorShellProps) {
             misc={state.misc}
             researchDomain={state.basis.researchDomain}
             updateMisc={updateMisc}
-            onDeactivate={deactivateMisc}
           />
         );
 
@@ -129,17 +132,17 @@ export function EditorShell(props: EditorShellProps) {
     }
   };
 
+  if (!showFullInterface) {
+    return renderActiveModule();
+  }
+
   return (
     <div className="flex flex-col h-full">
-      {/* Desktop Layout */}
       <div className="hidden md:flex flex-1 overflow-hidden">
         <EditorNavigator
           state={state}
           moduleStatus={state.moduleStatus}
           setActiveModule={setActiveModule}
-          activatePublication={activatePublication}
-          activateMisc={activateMisc}
-          setObjectType={setObjectType}
           canCreate={canCreate}
           onCreate={handleCreate}
         />
@@ -158,7 +161,6 @@ export function EditorShell(props: EditorShellProps) {
         </main>
       </div>
 
-      {/* Mobile Layout */}
       <div className="md:hidden flex flex-col flex-1 overflow-hidden">
         <main className="flex-1 overflow-y-auto bg-base-200 p-4">
           {renderActiveModule()}
