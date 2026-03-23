@@ -1,17 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { BasisData, ResearchDomain } from '@/lib/momentum/types';
+import { CoreMetadata, ResearchDomain } from '@/lib/momentum/types';
 import { ModuleShell } from './ModuleShell';
 import { SearchableSelect } from '../ui/SearchableSelect';
 import { ValidatedInput } from '../ui/ValidatedInput';
 import { RESEARCH_DOMAINS } from '@/lib/momentum/constants';
 import { validateOrcidFormat } from '@/lib/momentum/validation';
 import { useOrcidImport } from '@/hooks/momentum/useOrcidImport';
+import { getOrcidMetadata } from '@/utils/orcid-client';
 
 interface BasisModuleProps {
-  basis: BasisData;
-  updateBasis: (partial: Partial<BasisData>) => void;
+  basis: CoreMetadata;
+  updateBasis: (partial: Partial<CoreMetadata>) => void;
   onNext: () => void;
   objectType: 'dataobject' | 'software' | null;
 }
@@ -22,33 +23,14 @@ export function CoreModule({
   onNext,
   objectType,
 }: BasisModuleProps) {
-  const { handleOrcidLogin, isLoading: isOrcidLoading } = useOrcidImport();
-  const [showOrcidError, setShowOrcidError] = useState(false);
   const [validationTimeout, setValidationTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  const handleOrcidImport = async () => {
-    try {
-      const result = await handleOrcidLogin();
-      if (result) {
-        updateBasis({
-          orcid: result.orcid,
-          orcidName: result.name,
-          orcidInstitution: result.institution,
-          orcidValidated: true,
-        });
-      }
-    } catch {
-      setShowOrcidError(true);
-      setTimeout(() => setShowOrcidError(false), 3000);
-    }
-  };
-
   const handleOrcidChange = (value: string) => {
-    updateBasis({
+      updateBasis({
       orcid: value,
       orcidValidated: false,
       orcidName: null,
-      orcidInstitution: null,
+      orcidEmail: null,
     });
 
     if (validationTimeout) {
@@ -58,10 +40,11 @@ export function CoreModule({
     if (value.length >= 19) {
       const timeout = setTimeout(async () => {
         if (validateOrcidFormat(value)) {
+          const metadata = await getOrcidMetadata(value);
           updateBasis({
             orcidValidated: true,
-            orcidName: 'Verified via ORCiD',
-            orcidInstitution: 'Verified',
+            orcidName: metadata?.name || 'Verified via ORCiD',
+            orcidEmail: metadata?.email || 'Unknown',
           });
         }
       }, 800);
@@ -147,7 +130,7 @@ export function CoreModule({
           {basis.orcidValidated && basis.orcidName && (
             <div className="alert alert-success alert-sm mt-2 py-2">
               <span className="text-xs">
-                👤 {basis.orcidName} · {basis.orcidInstitution}
+                👤 {basis.orcidName} · ({basis.orcidEmail})
               </span>
             </div>
           )}

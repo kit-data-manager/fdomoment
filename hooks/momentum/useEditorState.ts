@@ -3,21 +3,21 @@
 import { useState, useMemo } from 'react';
 import {
   EditorState,
-  BasisData,
-  DatasetData,
-  SoftwareData,
-  PublicationData,
-  MiscData,
+  CoreMetadata,
+  DataObjectMetadata,
+  SoftwareMetadata,
+  PublicationMetadata,
+  MiscMetadata,
   MiscEntry,
   ObjectType,
   ModuleStatus,
 } from '@/lib/momentum/types';
 import {
-  computeBasisStatus,
-  computeDatasetStatus,
-  computeSoftwareStatus,
-  computePublicationStatus,
-  computeMiscStatus,
+  computeCoreMetadataStatus,
+  computeDataObjectMetadataStatus,
+  computeSoftwareMetadataStatus,
+  computePublicationMetadataStatus,
+  computeMiscMetadataStatus,
 } from '@/lib/momentum/validation';
 
 function createInitialState(): EditorState {
@@ -50,8 +50,8 @@ function createInitialState(): EditorState {
     publication: null,
     misc: null,
     moduleStatus: {
-      basis: 'incomplete',
-      dataset: 'pristine',
+      core: 'incomplete',
+      dataobject: 'pristine',
       software: 'pristine',
       publication: 'pristine',
       misc: 'pristine',
@@ -62,28 +62,28 @@ function createInitialState(): EditorState {
 export function useEditorState() {
   const [state, setState] = useState<EditorState>(createInitialState());
 
-  const updateBasis = (partial: Partial<BasisData>) => {
+  const updateBasis = (partial: Partial<CoreMetadata>) => {
     setState(prev => ({
       ...prev,
       basis: { ...prev.basis, ...partial },
     }));
   };
 
-  const updateDataset = (partial: Partial<DatasetData>) => {
+  const updateDataset = (partial: Partial<DataObjectMetadata>) => {
     setState(prev => ({
       ...prev,
       dataset: { ...prev.dataset, ...partial },
     }));
   };
 
-  const updateSoftware = (partial: Partial<SoftwareData>) => {
+  const updateSoftware = (partial: Partial<SoftwareMetadata>) => {
     setState(prev => ({
       ...prev,
       software: { ...prev.software, ...partial },
     }));
   };
 
-  const updatePublication = (partial: Partial<PublicationData>) => {
+  const updatePublication = (partial: Partial<PublicationMetadata>) => {
     setState(prev => {
       if (!prev.publication) {
         return {
@@ -168,18 +168,18 @@ export function useEditorState() {
 
   const moduleStatus = useMemo<EditorState['moduleStatus']>(() => {
     return {
-      basis: computeBasisStatus(state.basis),
-      dataset: computeDatasetStatus(state.dataset, state.objectType),
-      software: computeSoftwareStatus(state.software, state.objectType),
-      publication: computePublicationStatus(state.publication),
-      misc: computeMiscStatus(state.misc),
+      core: computeCoreMetadataStatus(state.basis),
+      dataobject: computeDataObjectMetadataStatus(state.dataset, state.objectType),
+      software: computeSoftwareMetadataStatus(state.software, state.objectType),
+      publication: computePublicationMetadataStatus(state.publication),
+      misc: computeMiscMetadataStatus(state.misc),
     };
   }, [state.basis, state.dataset, state.software, state.publication, state.misc, state.objectType]);
 
   const canCreate = useMemo(() => {
     return (
-      moduleStatus.basis === 'complete' &&
-      (moduleStatus.dataset === 'complete' ||
+      moduleStatus.core === 'complete' &&
+      (moduleStatus.dataobject === 'complete' ||
        moduleStatus.software === 'complete')
     );
   }, [moduleStatus]);

@@ -27,7 +27,7 @@ export function useOrcidImport() {
 
       return mockResult;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ORCiD Import fehlgeschlagen');
+      setError(err instanceof Error ? err.message : 'ORCiD Import failed.');
       return null;
     } finally {
       setIsLoading(false);

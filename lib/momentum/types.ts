@@ -12,15 +12,15 @@ export type ModuleStatus =
 
 export type ObjectType = 'dataobject' | 'software' | null;
 
-export type BasisData = {
+export type CoreMetadata = {
   researchDomain: ResearchDomain | null;
   orcid: string;
   orcidName: string | null;
-  orcidInstitution: string | null;
+  orcidEmail: string | null;
   orcidValidated: boolean;
 };
 
-export type DatasetData = {
+export type DataObjectMetadata = {
   license: string;
   licenseUrl: string;
   mimeType: string;
@@ -29,7 +29,7 @@ export type DatasetData = {
   dataUrlRepository: string | null;
 };
 
-export type SoftwareData = {
+export type SoftwareMetadata = {
   repositoryType: 'GitHub' | 'GitLab.com' | 'Codebase@Helmholtz' | 'GitLab@Kit' | 'Other';
   repositoryUrl: string;
   license: string;
@@ -43,7 +43,7 @@ export type Creator = {
   name: string;
 };
 
-export type PublicationData = {
+export type PublicationMetadata = {
   doi: string;
   title: string;
   titleImported: boolean;
@@ -59,22 +59,22 @@ export type MiscEntry = {
   value: string;
 };
 
-export type MiscData = {
+export type MiscMetadata = {
   entries: MiscEntry[];
 };
 
 export type EditorState = {
   objectType: ObjectType;
 
-  basis: BasisData;
-  dataset: DatasetData;
-  software: SoftwareData;
-  publication: PublicationData | null;
-  misc: MiscData | null;
+  basis: CoreMetadata;
+  dataset: DataObjectMetadata;
+  software: SoftwareMetadata;
+  publication: PublicationMetadata | null;
+  misc: MiscMetadata | null;
 
   moduleStatus: {
-    basis: ModuleStatus;
-    dataset: ModuleStatus;
+    core: ModuleStatus;
+    dataobject: ModuleStatus;
     software: ModuleStatus;
     publication: ModuleStatus;
     misc: ModuleStatus;

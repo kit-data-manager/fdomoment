@@ -12,7 +12,7 @@ export const RESEARCH_DOMAINS: ResearchDomain[] = [
   { id: 'mechanical-engineering', label: 'Mechanical Engineering', category: 'Engineering' },
   { id: 'electrical-engineering', label: 'Electrical Engineering', category: 'Engineering' },
   { id: 'medicine', label: 'Medicine', category: 'Live Sciences' },
-  { id: 'pharmacy', label: 'Parmacy', category: 'Live Sciences' },
+  { id: 'pharmacy', label: 'Pharmacy', category: 'Live Sciences' },
   { id: 'psychology', label: 'Psychology', category: 'Live Sciences' },
   { id: 'sociology', label: 'Sociology', category: 'Arts and Humanities' },
   { id: 'history', label: 'History', category: 'Arts and Humanities' },

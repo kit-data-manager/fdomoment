@@ -31,7 +31,7 @@ export function EditorNavigator({
       {/* Mandatory */}
       <NavigatorModule
         module="core"
-        status={moduleStatus.basis}
+        status={moduleStatus.core}
         label="Core"
         isActive={state.activeModule === 'core'}
         onClick={() => setActiveModule('core')}
@@ -42,7 +42,7 @@ export function EditorNavigator({
         <div className="text-xs opacity-50 mb-2 px-2">Typ wählen</div>
         <NavigatorModule
           module="dataobject"
-          status={state.objectType === null ? 'pristine' : moduleStatus.dataset}
+          status={state.objectType === null ? 'pristine' : moduleStatus.dataobject}
           label="Data Object"
           isActive={state.activeModule === 'type-select' && state.objectType === 'dataobject' || state.activeModule === 'dataobject'}
           onClick={() => {

@@ -188,7 +188,7 @@ export const finalizeModulesData = (modulesData: Record<string, ModuleDataType>,
                     if (prop.typeId === '0.SIMPLE/UNESCO_THESAURUS_CONCEPT') {
                         recordData.record.push({
                             key: prop.typeId,
-                            value: JSON.stringify(prop.value.uri)
+                            value: JSON.stringify(prop.value.uri).replace("\"", '')
                         });
                     }else{
                         recordData.record.push({
@@ -218,20 +218,23 @@ export const finalizeModulesData = (modulesData: Record<string, ModuleDataType>,
             const moduleData: PublicationAttributesModuleData = modulesData[key] as unknown as PublicationAttributesModuleData;
 
             if (moduleData.doi) {
-                recordData.record.push({ key: 'doi', value: moduleData.doi as string });
+                recordData.record.push({ key: '0.SIMPLE/DOI', value: moduleData.doi as string });
             }
             if (moduleData.publicationType) {
-                recordData.record.push({ key: 'publicationType', value: moduleData.publicationType as string });
+                recordData.record.push({ key: '0.SIMPLE/PUBLICATION_TYPE', value: moduleData.publicationType as string });
             }
             if (moduleData.title) {
-                recordData.record.push({ key: 'title', value: moduleData.title as string });
+                recordData.record.push({ key: '0.SIMPLE/TITLE', value: moduleData.title as string });
             }
             if (moduleData.publicationYear) {
-                recordData.record.push({ key: 'publicationYear', value: moduleData.publicationYear as string });
+                recordData.record.push({ key: '0.SIMPLE/PUBLICATION_YEAR', value: moduleData.publicationYear as string });
             }
             if (moduleData.creators && moduleData.creators.length > 0) {
-                recordData.record.push({ key: 'creators', value: JSON.stringify(moduleData.creators) });
+                moduleData.creators.forEach((prop) => {
+                    recordData.record.push({ key: '0.SIMPLE/CREATOR', value: JSON.stringify(prop.id).replace("\"", '') });
+                })
             }
+            recordData.record.push({key: "0.SIMPLE/PROFILE", value:"0.SIMPLE/PUBLICATION"});
         }
     }
 

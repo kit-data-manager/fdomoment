@@ -1,9 +1,9 @@
 import {
-  BasisData,
-  DatasetData,
-  SoftwareData,
-  PublicationData,
-  MiscData,
+  CoreMetadata,
+  DataObjectMetadata,
+  SoftwareMetadata,
+  PublicationMetadata,
+  MiscMetadata,
   ModuleStatus,
   ObjectType,
 } from './types';
@@ -28,16 +28,6 @@ export function validateOrcidFormat(orcid: string): boolean {
   const result = (12 - remainder) % 11;
   
   return checkDigit === result;
-}
-
-export function validateDoiFormat(doi: string): boolean {
-  const normalized = doi.replace(/^https:\/\/doi\.org\//, '');
-  const regex = /^10\.\d{4,}\/\S+$/;
-  return regex.test(normalized);
-}
-
-export function normalizeDoi(doi: string): string {
-  return doi.replace(/^https:\/\/doi\.org\//, '');
 }
 
 export async function validateUrl(
@@ -75,7 +65,7 @@ export async function validateUrl(
   }
 }
 
-export function computeBasisStatus(basis: BasisData): ModuleStatus {
+export function computeCoreMetadataStatus(basis: CoreMetadata): ModuleStatus {
   const hasResearchDomain = basis.researchDomain !== null;
   const hasOrcid = basis.orcid.length > 0;
   const orcidValid = basis.orcidValidated;
@@ -91,8 +81,8 @@ export function computeBasisStatus(basis: BasisData): ModuleStatus {
   return 'incomplete';
 }
 
-export function computeDatasetStatus(
-  dataset: DatasetData,
+export function computeDataObjectMetadataStatus(
+  dataset: DataObjectMetadata,
   objectType: ObjectType
 ): ModuleStatus {
   if (objectType === 'software') {
@@ -115,8 +105,8 @@ export function computeDatasetStatus(
   return 'incomplete';
 }
 
-export function computeSoftwareStatus(
-  software: SoftwareData,
+export function computeSoftwareMetadataStatus(
+  software: SoftwareMetadata,
   objectType: ObjectType
 ): ModuleStatus {
   if (objectType === 'dataobject') {
@@ -137,8 +127,8 @@ export function computeSoftwareStatus(
   return 'incomplete';
 }
 
-export function computePublicationStatus(
-  publication: PublicationData | null
+export function computePublicationMetadataStatus(
+  publication: PublicationMetadata | null
 ): ModuleStatus {
   if (!publication) {
     return 'pristine';
@@ -158,7 +148,7 @@ export function computePublicationStatus(
   return 'incomplete';
 }
 
-export function computeMiscStatus(misc: MiscData | null): ModuleStatus {
+export function computeMiscMetadataStatus(misc: MiscMetadata | null): ModuleStatus {
   if (!misc) {
     return 'pristine';
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { SoftwareData } from '@/lib/momentum/types';
+import { SoftwareMetadata } from '@/lib/momentum/types';
 import { ModuleShell } from './ModuleShell';
 import { ValidatedInput } from '../ui/ValidatedInput';
 import { ImportButton } from '../ui/ImportButton';
@@ -11,8 +11,8 @@ import { SearchableSelect } from '../ui/SearchableSelect';
 type RepositoryType = 'GitHub' | 'GitLab.com' | 'Codebase@Helmholtz' | 'GitLab@Kit' | 'Other';
 
 interface SoftwareModuleProps {
-  software: SoftwareData;
-  updateSoftware: (partial: Partial<SoftwareData>) => void;
+  software: SoftwareMetadata;
+  updateSoftware: (partial: Partial<SoftwareMetadata>) => void;
   activatePublication?: () => void;
   setActiveModule?: (module: string) => void;
 }

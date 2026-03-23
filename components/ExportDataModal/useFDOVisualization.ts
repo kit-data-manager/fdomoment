@@ -8,7 +8,7 @@ export const MODULE_CONFIGS: Record<string, ModuleConfig> = {
   core: { type: 'core_attributes', label: 'Core Attributes', colour: '#5C7AEA', keys: ['0.SIMPLE/OWNER', '0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD'] },
   dataObject: { type: 'data_object', label: 'Data Object', colour: '#5C9D7A', keys: ['0.SIMPLE/DATA_OBJECT_LOCATION', '0.SIMPLE/DATA_OBJECT_LICENSE', '0.SIMPLE/MIME_TYPE'] },
   software: { type: 'software', label: 'Software', colour: '#7A5CBD', keys: ['0.SIMPLE/SOFTWARE_LOCATION', '0.SIMPLE/README_LOCATION', '0.SIMPLE/SOFTWARE_LICENSE'] },
-  publication: { type: 'publication', label: 'Publication', colour: '#D97A4A', keys: ['doi', 'publicationType', 'title', 'publicationYear', 'creators'] },
+  publication: { type: 'publication', label: 'Publication', colour: '#D97A4A', keys: ['0.SIMPLE/DOI', '0.SIMPLE/PUBLICATION_TYPE', '0.SIMPLE/TITLE', '0.SIMPLE/PUBLICATION_YEAR', '0.SIMPLE/CREATOR'] },
 };
 
 const MODULE_BLOCK_DEFS: Record<string, BlockDefinition> = {

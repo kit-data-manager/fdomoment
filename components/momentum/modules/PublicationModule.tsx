@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PublicationData, Creator } from '@/lib/momentum/types';
+import { PublicationMetadata, Creator } from '@/lib/momentum/types';
 import { ModuleShell } from './ModuleShell';
 import { ValidatedInput } from '../ui/ValidatedInput';
 import { ImportButton } from '../ui/ImportButton';

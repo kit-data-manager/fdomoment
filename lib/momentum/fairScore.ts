@@ -14,12 +14,7 @@ export function calculateFairScore(state: EditorState): FairScore {
     findable += 20;
     interoperable += 30;
   }
-  
-  if (state.publication && state.publication.doi.length > 0) {
-    findable += 30;
-    accessible += 30;
-  }
-  
+
   if (state.dataset.dataUrlValidated) {
     findable += 30;
     accessible += 40;
@@ -47,11 +42,17 @@ export function calculateFairScore(state: EditorState): FairScore {
     reusable += 30;
   }
   
-  if (state.publication && (state.publication.doi.length > 0 || state.publication.title.length > 0)) {
-    reusable += 30;
+  if (state.publication && state.publication.doi.length > 0 && state.publication.title.length > 0) {
+      findable += 40;
+      accessible += 30;
   }
 
-  const total = Math.round((findable + accessible + interoperable + reusable) / 4);
+  if(state.misc && (state.misc.entries.length > 0)) {
+        reusable += Math.max(state.misc.entries.length * 5, 20);
+        interoperable += Math.max(state.misc.entries.length * 5, 20);
+  }
+
+  const total = Math.min(Math.round((findable + accessible + interoperable + reusable) / 4), 100);
 
   return {
     findable: Math.min(findable, 100),
@@ -67,31 +68,31 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (!state.basis.orcidValidated) {
     tips.push({
-      text: 'Eine validierte ORCiD steigert den F-Score um +20%',
-      targetModule: 'basis',
+      text: 'A valid ORCiD increases the F-Score by +20%.',
+      targetModule: 'core',
       scoreGain: 20,
     });
   }
 
   if (!state.basis.researchDomain) {
     tips.push({
-      text: 'Ein Forschungsbereich steigert F- und I-Score um +50%',
-      targetModule: 'basis',
+      text: 'A Research Domains increases the F-Score by 30% and I-Score by +20%.',
+      targetModule: 'core',
       scoreGain: 50,
     });
   }
 
-  if (state.objectType === 'dataset' && !state.dataset.dataUrlValidated) {
+  if (state.objectType === 'dataobject' && !state.dataset.dataUrlValidated) {
     tips.push({
-      text: 'Eine validierte Daten-URL steigert F- und A-Score um +70%',
-      targetModule: 'dataset',
+      text: 'A valid data object URL increases the F-Score by 30% and A-Score by +40%.',
+      targetModule: 'dataobject',
       scoreGain: 70,
     });
   }
 
   if (state.objectType === 'software' && !state.software.repositoryUrl) {
     tips.push({
-      text: 'Eine Repository-URL steigert F- und A-Score um +60%',
+      text: 'A public repository URL increases F- and A-Score by +30% each.',
       targetModule: 'software',
       scoreGain: 60,
     });
@@ -99,15 +100,15 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (!state.publication && state.objectType) {
     tips.push({
-      text: 'Eine DOI steigert den A-Score um +30%',
+      text: 'Publication information increase the F-Score by 40% and the A-Score by +30%.',
       targetModule: 'publication',
-      scoreGain: 30,
+      scoreGain: 70,
     });
   }
 
   if (!state.misc && state.objectType) {
     tips.push({
-      text: 'Zusätzliche Metadaten verbessern die Nachnutzbarkeit',
+      text: 'Additional metadata improve the I-Score by up to 20% and R-Score by up to 20%.',
       targetModule: 'misc',
       scoreGain: 10,
     });
@@ -120,7 +121,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
   }
 
   return {
-    text: 'Alle Metadaten sind vollständig!',
+    text: 'You\'re perfectly set. No more tips available.',
     targetModule: state.activeModule,
     scoreGain: 0,
   };

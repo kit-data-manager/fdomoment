@@ -29,12 +29,14 @@ export function FairScoreBar({ state, setActiveModule }: FairScoreBarProps) {
         {/* Tip Section */}
         <div className="bg-base-200 rounded-lg p-3">
           <div className="flex items-start gap-2">
-            <span className="text-lg">💡</span>
+              {currentTip.scoreGain > 0 ? (<span className="text-lg">💡</span>)
+                  : (<span className="text-lg">⭐</span>)
+              }
             <div className="flex-1">
               <p className="text-xs text-base-content/80 mb-2">
                 {currentTip.text}
               </p>
-              {currentTip.targetModule && (
+              {(currentTip.targetModule && currentTip.scoreGain > 0) && (
                 <button
                   type="button"
                   onClick={() => setActiveModule(currentTip.targetModule)}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { MiscData, ResearchDomain } from '@/lib/momentum/types';
+import { MiscMetadata, ResearchDomain } from '@/lib/momentum/types';
 import { ModuleShell } from './ModuleShell';
 import { KeyValueEditor } from '../ui/KeyValueEditor';
 import { getSuggestedKeys } from '@/lib/momentum/constants';
@@ -10,9 +10,9 @@ import { TypeDefinition } from '@/components/SimpleTypeRegistryComponent/types';
 import { Trash2 } from "lucide-react";
 
 interface AdditionalAttributesModuleProps {
-  misc: MiscData;
+  misc: MiscMetadata;
   researchDomain: ResearchDomain | null;
-  updateMisc: (entries: MiscData['entries']) => void;
+  updateMisc: (entries: MiscMetadata['entries']) => void;
   onDeactivate: () => void;
 }
 

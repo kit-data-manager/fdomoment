@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { DatasetData, BasisData } from '@/lib/momentum/types';
+import { DataObjectMetadata, CoreMetadata } from '@/lib/momentum/types';
 import { ModuleShell } from './ModuleShell';
 import { SearchableSelect } from '../ui/SearchableSelect';
 import { ValidatedInput } from '../ui/ValidatedInput';
@@ -14,9 +14,9 @@ import {
 import { validateUrl } from '@/lib/momentum/validation';
 
 interface DatasetModuleProps {
-  dataset: DatasetData;
-  basis: BasisData;
-  updateDataset: (partial: Partial<DatasetData>) => void;
+  dataset: DataObjectMetadata;
+  basis: CoreMetadata;
+  updateDataset: (partial: Partial<DataObjectMetadata>) => void;
   activatePublication?: () => void;
   setActiveModule?: (module: string) => void;
 }
