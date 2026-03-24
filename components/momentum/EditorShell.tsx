@@ -18,7 +18,7 @@ interface EditorShellProps {
   updateSoftware: (partial: Partial<any>) => void;
   updatePublication: (partial: Partial<any>) => void;
   updateMisc: (entries: any[]) => void;
-  setTemplate: (type: EditorState['template']) => void;
+  setTemplate: (type: EditorState['template'], enabledModules?: string[]) => void;
   setActiveModule: (module: string) => void;
   canCreate: boolean;
 }
@@ -43,26 +43,23 @@ export function EditorShell(props: EditorShellProps) {
   const handleCoreNext = () => {
     if (!state.template) {
       setActiveModule('template-select');
-    } else {
-      if (state.template === 'published-dataobject' || state.template === 'unpublished-dataobject') {
-        setActiveModule('dataobject');
-      } else if (state.template === 'published-software' || state.template === 'unpublished-software') {
-        setActiveModule('software');
-      }else if (state.template === 'published-publication') {
-          setActiveModule('publication');
-      }
+    } else if (state.template === 'dataobject') {
+      setActiveModule('dataobject');
+    } else if (state.template === 'software') {
+      setActiveModule('software');
+    } else if (state.template === 'publication') {
+      setActiveModule('publication');
     }
   };
 
-  const handleTemplateSelect = (template: EditorState['template']) => {
-    setTemplate(template);
+  const handleTemplateSelect = (templateId: string, enabledModules: string[]) => {
+    setTemplate(templateId as any, enabledModules);
     setActiveModule('core');
   };
 
   const showFullInterface = state.template !== null;
 
-  const isDataObjectTemplate = state.template === 'published-dataobject' || state.template === 'unpublished-dataobject';
-  const isSoftwareTemplate = state.template === 'published-software' || state.template === 'unpublished-software';
+
 
   const renderActiveModule = () => {
       switch (state.activeModule) {
@@ -83,10 +80,6 @@ export function EditorShell(props: EditorShellProps) {
         );
 
       case 'dataobject':
-        if (!isDataObjectTemplate) {
-          setActiveModule('core');
-          return null;
-        }
         return (
           <DataObjectModule
             dataobject={state.dataobject}
@@ -97,10 +90,6 @@ export function EditorShell(props: EditorShellProps) {
         );
 
       case 'software':
-        if (!isSoftwareTemplate) {
-          setActiveModule('core');
-          return null;
-        }
         return (
           <SoftwareModule
             software={state.software}

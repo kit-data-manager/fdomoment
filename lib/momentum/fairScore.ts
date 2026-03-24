@@ -82,8 +82,8 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  const isDataObjectTemplate = state.template === 'published-dataobject' || state.template === 'unpublished-dataobject';
-  const isSoftwareTemplate = state.template === 'published-software' || state.template === 'unpublished-software';
+  const isDataObjectTemplate = state.template === 'dataobject';
+  const isSoftwareTemplate = state.template === 'software';
 
   if (isDataObjectTemplate && !state.dataobject.dataUrlValidated) {
     tips.push({

@@ -10,11 +10,9 @@ export type ModuleStatus =
   | 'complete';
 
 export type TemplateType = 
-  | 'published-dataobject'
-  | 'unpublished-dataobject'
-  | 'published-software'
-  | 'unpublished-software'
-  | 'published-publication'
+  | 'dataobject'
+  | 'software'
+  | 'publication'
   | null;
 
 export type ModuleIdentifier = 'core' | 'dataobject' | 'software' | 'publication' | 'misc';
@@ -82,6 +80,7 @@ export type MiscMetadata = {
 
 export type EditorState = {
   template: TemplateType;
+  enabledModules: string[];
 
   core: CoreMetadata;
   dataobject: DataObjectMetadata;

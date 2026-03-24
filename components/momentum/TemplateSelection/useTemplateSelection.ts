@@ -1,9 +1,6 @@
-import { TemplateType } from '@/lib/momentum/types';
-import { TemplateSelectionProps } from './types';
-
-export function useTemplateSelection({ onSelectTemplate }: TemplateSelectionProps) {
-  const handleSelectTemplate = (template: TemplateType) => {
-    onSelectTemplate(template);
+export function useTemplateSelection({ onSelectTemplate }: { onSelectTemplate: (templateId: string, enabledModules: string[]) => void }) {
+  const handleSelectTemplate = (templateId: string, enabledModules: string[]) => {
+    onSelectTemplate(templateId, enabledModules);
   };
 
   return {

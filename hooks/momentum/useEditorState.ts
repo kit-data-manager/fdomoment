@@ -21,6 +21,7 @@ import {
 function createInitialState(): EditorState {
   return {
     template: null,
+    enabledModules: [],
     activeModule: 'template-select',
     core: {
       researchDomain: null,
@@ -105,11 +106,12 @@ export function useEditorState() {
     }));
   };
 
-  const setTemplate = (template: TemplateType) => {
+  const setTemplate = (template: TemplateType, enabledModules?: string[]) => {
     setState(prev => {
       return {
         ...prev,
-        template
+        template,
+        enabledModules: enabledModules || prev.enabledModules,
       };
     });
   };
@@ -132,21 +134,11 @@ export function useEditorState() {
   }, [state.core, state.dataobject, state.software, state.publication, state.misc]);
 
   const canCreate = useMemo(() => {
-    const hasPublication = state.template?.startsWith('published-');
-    
-    if (hasPublication) {
-      return (
-        moduleStatus.core === 'complete' &&
-        (moduleStatus.dataobject === 'complete' || moduleStatus.software === 'complete') &&
-        moduleStatus.publication === 'complete'
-      );
-    }
-    
     return (
       moduleStatus.core === 'complete' &&
       (moduleStatus.dataobject === 'complete' || moduleStatus.software === 'complete')
     );
-  }, [moduleStatus, state.template]);
+  }, [moduleStatus]);
 
   return {
     state: { ...state, moduleStatus },

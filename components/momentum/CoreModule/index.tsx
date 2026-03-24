@@ -71,7 +71,7 @@ export function CoreModule({
                 }
                 validationMessage={
                   basis.orcidValidated
-                    ? '✅ ORCiD verified'
+                    ? `✅ ORCiD verified (${basis.orcidName} · ${basis.orcidEmail})`
                     : basis.orcid.length === 19 && !validateOrcidFormat(basis.orcid)
                     ? '❌ Invalid ORCiD format'
                     : undefined
@@ -79,13 +79,6 @@ export function CoreModule({
               />
             </div>
           </div>
-          {basis.orcidValidated && basis.orcidName && (
-            <div className="alert alert-success alert-sm mt-2 py-2">
-              <span className="text-xs">
-                👤 {basis.orcidName} · ({basis.orcidEmail})
-              </span>
-            </div>
-          )}
         </div>
       </div>
 

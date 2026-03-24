@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { EditorState, TemplateConfig, ModuleIdentifier } from '@/lib/momentum/types';
+import { EditorState,  ModuleIdentifier } from '@/lib/momentum/types';
 import { NavigatorModule } from './NavigatorModule';
 import { NavigatorCreateButton } from './NavigatorCreateButton';
+import { TEMPLATES } from '../TemplateSelection/types';
 
 interface EditorNavigatorProps {
   state: EditorState;
@@ -13,54 +14,6 @@ interface EditorNavigatorProps {
   onCreate: () => void;
 }
 
-const templates: TemplateConfig[] = [
-  {
-    type: 'published-dataobject',
-    baseType: 'dataobject',
-    label: 'Published Data Object',
-    description: 'Measurement, Surveys, Images, Tables, or Simulation Data with publication',
-    icon: '🗄️',
-    baseModules: ['core', 'dataobject', 'publication', 'misc'],
-    supportsPublication: true,
-  },
-  {
-    type: 'unpublished-dataobject',
-    baseType: 'dataobject',
-    label: 'Unpublished Data Object',
-    description: 'Measurement, Surveys, Images, Tables, or Simulation Data without publication',
-    icon: '🗄️',
-    baseModules: ['core', 'dataobject', 'misc'],
-    supportsPublication: false,
-  },
-  {
-    type: 'published-software',
-    baseType: 'software',
-    label: 'Published Software',
-    description: 'Source Code, Workflows, Tools, Scripts with publication',
-    icon: '💻',
-    baseModules: ['core', 'software', 'publication', 'misc'],
-    supportsPublication: true,
-  },
-  {
-    type: 'unpublished-software',
-    baseType: 'software',
-    label: 'Unpublished Software',
-    description: 'Source Code, Workflows, Tools, Scripts without publication',
-    icon: '💻',
-    baseModules: ['core', 'software', 'misc'],
-    supportsPublication: false,
-  },
-    {
-        type: 'published-publication',
-        baseType: 'publication',
-        label: 'Publication',
-        description: 'Papers, Articles',
-        icon: '💻',
-        baseModules: ['core', 'publication', 'misc'],
-        supportsPublication: true,
-    }
-];
-
 const moduleLabels: Record<ModuleIdentifier, string> = {
   core: 'Core',
   dataobject: 'Data Object',
@@ -69,12 +22,16 @@ const moduleLabels: Record<ModuleIdentifier, string> = {
   misc: 'Additional',
 };
 
-function getModulesForTemplate(template: EditorState['template']): ModuleIdentifier[] {
-  if (!template) return [];
-  const tmpl = templates.find(t => t.type === template);
+function getModulesForTemplate(templateId: string | null, enabledModules?: string[]): ModuleIdentifier[] {
+  if (!templateId) return [];
+  const tmpl = TEMPLATES.find(t => t.id === templateId);
   if (!tmpl) return [];
 
-  return tmpl.baseModules;
+  if (enabledModules && enabledModules.length > 0) {
+    return enabledModules as ModuleIdentifier[];
+  }
+
+  return tmpl.modules.map(m => m.moduleId);
 }
 
 export function EditorNavigator({
@@ -84,7 +41,7 @@ export function EditorNavigator({
   canCreate,
   onCreate,
 }: EditorNavigatorProps) {
-  const modules = getModulesForTemplate(state.template);
+  const modules = getModulesForTemplate(state.template, state.enabledModules);
 
   return (
     <div className="w-[240px] h-full bg-base-100 border-r border-base-200 overflow-y-auto flex flex-col">

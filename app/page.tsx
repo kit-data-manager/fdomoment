@@ -52,7 +52,7 @@ export default function Home() {
             Create your own FAIR Digital Objects in a modular and easy way. Once created, they can be cited in your publications, processed via available FDO tooling, or just persisted for the future.
           </p>
           <a
-            href="/editor"
+            href="/momentum"
             className="btn btn-xl btn-soft btn-primary px-6 py-3 transition-colors duration-200"
           >
               <Rocket/>
