@@ -6,4 +6,8 @@ export interface DataObjectModuleProps {
   updateDataobject: (partial: Partial<DataObjectMetadata>) => void;
   activatePublication?: () => void;
   setActiveModule?: (module: string) => void;
+  showNext?: boolean;
+  showPrev?: boolean;
+  onNextModule?: () => void;
+  onPrevModule?: () => void;
 }

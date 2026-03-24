@@ -18,7 +18,7 @@ export function KeyValueEditor({
   const addEntry = () => {
     onChange([
       ...entries,
-      { id: crypto.randomUUID(), key: '', value: '' },
+      { id: crypto.randomUUID(), key: '', value: '', attributeType: 'custom' },
     ]);
   };
 
@@ -37,7 +37,7 @@ export function KeyValueEditor({
   const addSuggestedKey = (key: string) => {
     onChange([
       ...entries,
-      { id: crypto.randomUUID(), key, value: '' },
+      { id: crypto.randomUUID(), key, value: '', attributeType: 'custom' },
     ]);
   };
 
@@ -45,7 +45,7 @@ export function KeyValueEditor({
     <div className="w-full">
       {suggestedKeys.length > 0 && (
         <div className="mb-3">
-          <span className="text-sm mr-2">Recommendations:</span>
+          <span className="text-sm mr-2">💡Suggestions for your Research Domain</span>
           <div className="flex flex-wrap gap-2 mt-2">
             {suggestedKeys.slice(0, 6).map(key => (
               <button
@@ -61,7 +61,13 @@ export function KeyValueEditor({
       )}
 
       <div className="space-y-2">
-        {entries.map(entry => (
+          <h4 className="font-medium text-sm">Custom Attributes:</h4>
+          <div className="card bg-base-200 border border-base-200 p-4 gap-2">
+          {entries.length == 0 && (
+                  <p className="text-sm font-medium text-gray-500">No custom attributes, yet.</p>
+          )}
+              
+          {entries.filter(entry => entry.attributeType === 'custom' || !entry.attributeType).map(entry => (
           <div key={entry.id} className="flex gap-2">
             <input
               type="text"
@@ -92,13 +98,14 @@ export function KeyValueEditor({
             </button>
           </div>
         ))}
+          </div>
       </div>
 
       <button
         onClick={addEntry}
         className="btn btn-soft btn-primary mt-3"
       >
-        + Add more
+        + Add custom
       </button>
     </div>
   );

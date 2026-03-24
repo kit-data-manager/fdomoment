@@ -4,6 +4,7 @@ import React from 'react';
 import { ModuleShell } from '../ModuleShell';
 import { ValidatedInput } from '../ui/ValidatedInput';
 import { ImportButton } from '../ui/ImportButton';
+import { NavigationButtons } from '../ui/NavigationButtons';
 import { SOFTWARE_LICENSES } from '@/lib/momentum/constants';
 import { SearchableSelect } from '../ui/SearchableSelect';
 import { useSoftwareModule } from './useSoftwareModule';
@@ -14,6 +15,10 @@ export function SoftwareModule({
   updateSoftware,
   activatePublication,
   setActiveModule,
+  showNext = true,
+  showPrev = false,
+  onNextModule,
+  onPrevModule,
 }: SoftwareModuleProps) {
   const {
     showSuccess,
@@ -21,13 +26,11 @@ export function SoftwareModule({
     autoImportError,
     parseRepoType,
     handleAutoImportClick,
-    handleNext,
     handleAddPublication,
     handleSkip,
   } = useSoftwareModule(software, updateSoftware, activatePublication, setActiveModule);
 
-  const isFormValid =
-    software.repositoryUrl.length > 0 && software.license.length > 0;
+
 
   const repoType = parseRepoType(software.repositoryUrl);
 
@@ -71,6 +74,8 @@ export function SoftwareModule({
         <div>
           <label className="label">
             <span className="label-text font-medium">Repository Platform</span>
+              <span className="text-error">*</span>
+
           </label>
           <select
             className="select select-bordered w-full"
@@ -157,17 +162,12 @@ export function SoftwareModule({
         />
       </div>
 
-      {isFormValid && (
-        <div className="mt-8 flex justify-end">
-          <button
-            type="button"
-            onClick={handleNext}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
-          >
-            Continue →
-          </button>
-        </div>
-      )}
+      <NavigationButtons
+        showPrev={showPrev}
+        showNext={showNext}
+        onPrev={onPrevModule}
+        onNext={onNextModule}
+      />
     </ModuleShell>
   );
 }

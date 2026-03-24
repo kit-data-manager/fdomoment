@@ -125,7 +125,7 @@ const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset }: TypeSele
             options={treeData}
             onChange={handleOnChange}
             placeholder="Choose a type..."
-            className="w-full"
+            className="w-full bg-primary"
             filter
           />
         </fieldset>

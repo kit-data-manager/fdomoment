@@ -5,6 +5,10 @@ export interface AdditionalAttributesModuleProps {
   misc: MiscMetadata;
   researchDomain: ResearchDomain | null;
   updateMisc: (entries: MiscMetadata['entries']) => void;
+  showNext?: boolean;
+  showPrev?: boolean;
+  onNextModule?: () => void;
+  onPrevModule?: () => void;
 }
 
 export interface TypedAttribute {

@@ -21,6 +21,8 @@ interface EditorShellProps {
   setTemplate: (type: EditorState['template'], enabledModules?: string[]) => void;
   setActiveModule: (module: string) => void;
   canCreate: boolean;
+  onNextModule?: () => void;
+  onPrevModule?: () => void;
 }
 
 export function EditorShell(props: EditorShellProps) {
@@ -40,6 +42,12 @@ export function EditorShell(props: EditorShellProps) {
     console.log('Creating FDO', state);
   };
 
+  const moduleOrder = ['core', 'dataobject', 'software', 'publication', 'misc'];
+  
+  const getCurrentModuleIndex = () => {
+    return moduleOrder.indexOf(state.activeModule);
+  };
+
   const handleCoreNext = () => {
     if (!state.template) {
       setActiveModule('template-select');
@@ -49,6 +57,28 @@ export function EditorShell(props: EditorShellProps) {
       setActiveModule('software');
     } else if (state.template === 'publication') {
       setActiveModule('publication');
+    }
+  };
+
+  const handleNextModule = () => {
+    const currentIndex = getCurrentModuleIndex();
+    // Find the next enabled module
+    for (let i = currentIndex + 1; i < moduleOrder.length; i++) {
+      if (state.enabledModules.includes(moduleOrder[i])) {
+        setActiveModule(moduleOrder[i]);
+        break;
+      }
+    }
+  };
+
+  const handlePrevModule = () => {
+    const currentIndex = getCurrentModuleIndex();
+    // Find the previous enabled module
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (state.enabledModules.includes(moduleOrder[i]) || moduleOrder[i] === 'core') {
+        setActiveModule(moduleOrder[i]);
+        break;
+      }
     }
   };
 
@@ -69,6 +99,17 @@ export function EditorShell(props: EditorShellProps) {
             basis={state.core}
             updateCore={updateBasis}
             onNext={handleCoreNext}
+            showNext={true}
+            showPrev={false}
+            onNextModule={handleNextModule}
+            onPrevModule={handlePrevModule}
+          />
+        );
+
+      case 'template-select':
+        return (
+          <TemplateSelection
+            onSelectTemplate={handleTemplateSelect}
           />
         );
 
@@ -86,6 +127,10 @@ export function EditorShell(props: EditorShellProps) {
             core={state.core}
             updateDataobject={updateDataset}
             setActiveModule={setActiveModule as (module: string) => void}
+            showNext={state.enabledModules.some(m => ['software', 'publication', 'misc'].includes(m))}
+            showPrev={true}
+            onNextModule={handleNextModule}
+            onPrevModule={handlePrevModule}
           />
         );
 
@@ -95,6 +140,10 @@ export function EditorShell(props: EditorShellProps) {
             software={state.software}
             updateSoftware={updateSoftware}
             setActiveModule={setActiveModule as (module: string) => void}
+            showNext={state.enabledModules.some(m => ['publication', 'misc'].includes(m))}
+            showPrev={true}
+            onNextModule={handleNextModule}
+            onPrevModule={handlePrevModule}
           />
         );
 
@@ -104,6 +153,10 @@ export function EditorShell(props: EditorShellProps) {
           <PublicationModule
             publication={state.publication}
             updatePublication={updatePublication}
+            showNext={state.enabledModules.includes('misc')}
+            showPrev={true}
+            onNextModule={handleNextModule}
+            onPrevModule={handlePrevModule}
           />
         );
 
@@ -114,6 +167,10 @@ export function EditorShell(props: EditorShellProps) {
             misc={state.misc}
             researchDomain={state.core.researchDomain}
             updateMisc={updateMisc}
+            showNext={false}
+            showPrev={true}
+            onNextModule={handleNextModule}
+            onPrevModule={handlePrevModule}
           />
         );
 

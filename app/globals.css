@@ -86,3 +86,123 @@
 .dark .logo {
     filter: invert(1)!important;
 }
+
+/* PrimeReact TreeSelect - Dark/Light Mode Support */
+.p-treeselect {
+    background-color: var(--color-base-100) !important;
+    border-color: var(--color-base-300) !important;
+    color: var(--color-base-content) !important;
+}
+
+.p-treeselect:hover {
+    border-color: var(--color-primary) !important;
+}
+
+.p-treeselect.p-focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 2px var(--color-primary) !important;
+}
+
+.p-treeselect-label {
+    color: var(--color-base-content) !important;
+}
+
+.p-treeselect-label::placeholder {
+    color: var(--color-base-content) !important;
+    opacity: 0.6;
+}
+
+.p-treeselect-icon {
+    color: var(--color-base-content) !important;
+}
+
+.p-treeselect-panel .p-treeselect-header{
+    background-color: var(--color-base-100) !important;
+    border-color: var(--color-base-300) !important;
+    color: var(--color-base-content) !important;
+}
+
+.p-inputtext{
+    background-color: var(--color-base-100) !important;
+    border-color: var(--color-base-300) !important;
+    color: var(--color-base-content) !important;
+}
+
+
+.p-treeselect-panel {
+    background-color: var(--color-base-100) !important;
+    border-color: var(--color-base-300) !important;
+}
+
+.p-treeselect-items-wrapper {
+    background-color: var(--color-base-100) !important;
+}
+
+.p-tree {
+    background-color: var(--color-base-100) !important;
+    color: var(--color-base-content) !important;
+}
+
+.p-tree .p-tree-node-content {
+    color: var(--color-base-content) !important;
+}
+
+.p-tree .p-tree-node-content:hover {
+    background-color: var(--color-base-200) !important;
+}
+
+.p-tree .p-tree-node-content.p-highlight {
+    background-color: var(--color-primary) !important;
+    color: var(--color-primary-content) !important;
+}
+
+.p-tree .p-tree-node-content.p-highlight:hover {
+    background-color: var(--color-primary) !important;
+    color: var(--color-primary-content) !important;
+}
+
+.p-tree .p-tree-node-icon {
+    color: var(--color-base-content) !important;
+}
+
+.p-tree .p-tree-node-toggler {
+    color: var(--color-base-content) !important;
+}
+
+.p-tree .p-tree-node-toggler:hover {
+    color: var(--color-primary) !important;
+}
+
+.p-tree-filter-container .p-tree-filter {
+    background-color: var(--color-base-100) !important;
+    border-color: var(--color-base-300) !important;
+    color: var(--color-base-content) !important;
+}
+
+.p-tree-filter-container .p-tree-filter::placeholder {
+    color: var(--color-base-content) !important;
+    opacity: 0.6;
+}
+
+.p-tree-filter-icon {
+    color: var(--color-base-content) !important;
+}
+
+/* Scrollbar styling for TreeSelect dropdown */
+.p-treeselect-items-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.p-treeselect-items-wrapper::-webkit-scrollbar-track {
+    background: var(--color-base-200);
+    border-radius: 4px;
+}
+
+.p-treeselect-items-wrapper::-webkit-scrollbar-thumb {
+    background: var(--color-base-300);
+    border-radius: 4px;
+}
+
+.p-treeselect-items-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}

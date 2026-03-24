@@ -8,6 +8,7 @@ type RepositoryType =
   | 'Other';
 
 function mapLicenseToId(licenseContent: string): string | undefined {
+    console.log("CONT ", licenseContent)
   if (licenseContent.includes('MIT License') || licenseContent.includes('MIT')) {
     return 'MIT';
   } else if (licenseContent.includes('Apache License') || licenseContent.includes('Apache')) {
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest) {
           signal: controller.signal,
           headers,
         });
-        
+
         if (!repoResponse.ok) {
           clearTimeout(timeoutId);
           return NextResponse.json(
@@ -128,7 +129,6 @@ export async function POST(request: NextRequest) {
             { status: 404 }
           );
         }
-
         const repoData = await repoResponse.json() as Record<string, any>;
         
         const licenseResponse = await fetch(`${apiBase}/${owner}/${repo}/license`, {
@@ -139,6 +139,7 @@ export async function POST(request: NextRequest) {
         if (licenseResponse.ok) {
           const licenseData = await licenseResponse.json();
           license = licenseData.license?.spdx_id || licenseData.license?.name || '';
+          license = license.toLowerCase();
         }
 
         const defaultBranch = repoData.default_branch || 'main';
@@ -177,7 +178,7 @@ export async function POST(request: NextRequest) {
             signal: controller.signal,
             headers,
           });
-          
+
           if (licenseResponse.ok) {
             const licenseData = await licenseResponse.json();
             if (licenseData.content) {

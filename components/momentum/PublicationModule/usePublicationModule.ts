@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { validateOrcidFormat } from '@/lib/momentum/validation';
+import { getOrcidMetadata } from '@/utils/orcid-client';
 import { PublicationModuleProps, CreatorWithOrcid } from './types';
 
 export function usePublicationModule(
@@ -11,14 +13,30 @@ export function usePublicationModule(
   ) => {
     const result = await handleDoiImport(publication.doi);
     if (result) {
+      // Validate ORCiDs for imported creators
+      const validatedCreators = await Promise.all(
+        result.creators.map(async (c: any) => {
+          if (c.orcid && validateOrcidFormat(c.orcid)) {
+            const metadata = await getOrcidMetadata(c.orcid);
+            return {
+              ...c,
+              orcidValidated: true,
+              orcidName: metadata?.name || 'Verified via ORCiD',
+              orcidEmail: metadata?.email || undefined,
+            };
+          }
+          return {
+            ...c,
+            orcidValidated: false,
+            orcidName: undefined,
+            orcidEmail: undefined,
+          };
+        })
+      );
+
       updatePublication({
         ...result,
-        creators: result.creators.map((c: any) => ({
-          ...c,
-          orcidValidated: false,
-          orcidName: undefined,
-          orcidInstitution: undefined,
-        })),
+        creators: validatedCreators,
       });
       clearImportResult();
     }
@@ -28,7 +46,7 @@ export function usePublicationModule(
     updatePublication({
       creators: [
         ...publication.creators,
-        { id: crypto.randomUUID(), name: '', orcid: '', orcidValidated: false },
+        { id: crypto.randomUUID(), orcid: '', orcidValidated: false, orcidName: undefined, orcidEmail: undefined },
       ],
     });
   }, [publication.creators, updatePublication]);
@@ -47,41 +65,21 @@ export function usePublicationModule(
     });
   }, [publication.creators, updatePublication]);
 
-  const handleCreatorOrcidChange = useCallback(async (creatorId: string, orcid: string, validateOrcidFormat: (orcid: string) => boolean) => {
+  const handleCreatorOrcidChange = useCallback(async (creatorId: string, orcid: string) => {
     updateCreator(creatorId, {
       orcid,
       orcidValidated: false,
       orcidName: undefined,
-      orcidInstitution: undefined,
+      orcidEmail: undefined,
     });
 
     if (orcid.length >= 19 && validateOrcidFormat(orcid)) {
-      try {
-        const response = await fetch('/api/orcid-info', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orcid }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          updateCreator(creatorId, {
-            orcidValidated: true,
-            orcidName: data.name || 'Verified',
-            orcidInstitution: data.institution || undefined,
-          });
-        } else {
-          updateCreator(creatorId, {
-            orcidValidated: true,
-            orcidName: 'Verified',
-          });
-        }
-      } catch {
-        updateCreator(creatorId, {
-          orcidValidated: true,
-          orcidName: 'Verified',
-        });
-      }
+      const metadata = await getOrcidMetadata(orcid);
+      updateCreator(creatorId, {
+        orcidValidated: true,
+        orcidName: metadata?.name || 'Verified via ORCiD',
+        orcidEmail: metadata?.email || undefined,
+      });
     }
   }, [updateCreator]);
 

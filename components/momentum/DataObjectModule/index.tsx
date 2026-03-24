@@ -4,6 +4,7 @@ import React from 'react';
 import { ModuleShell } from '../ModuleShell';
 import { SearchableSelect } from '../ui/SearchableSelect';
 import { ValidatedInput } from '../ui/ValidatedInput';
+import { NavigationButtons } from '../ui/NavigationButtons';
 import {
   DATASET_LICENSES,
   MIME_TYPES,
@@ -17,17 +18,15 @@ export function DataObjectModule({
   dataobject,
   core,
   updateDataobject,
+  showNext = true,
+  showPrev = false,
+  onNextModule,
+  onPrevModule,
 }: DataObjectModuleProps) {
-  const { handleDataUrlChange, handleNext } = useDataObjectModule(dataobject, updateDataobject);
-
-  const isFormValid =
-    dataobject.license.length > 0 &&
-    dataobject.mimeType.length > 0 &&
-    dataobject.dataUrl.length > 0 &&
-    dataobject.dataUrlValidated;
+  const { handleDataUrlChange } = useDataObjectModule(dataobject, updateDataobject);
 
   return (
-    <ModuleShell title="📊 Data Object Metadata" badge="required">
+    <ModuleShell title="🗄️ Data Object Metadata" badge="required">
       <div className="space-y-6">
         <SearchableSelect
           label="License"
@@ -80,17 +79,12 @@ export function DataObjectModule({
         />
       </div>
 
-      {isFormValid && (
-        <div className="mt-8 flex justify-end">
-          <button
-            type="button"
-            onClick={handleNext}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
-          >
-            Continue →
-          </button>
-        </div>
-      )}
+      <NavigationButtons
+        showPrev={showPrev}
+        showNext={showNext}
+        onPrev={onPrevModule}
+        onNext={onNextModule}
+      />
     </ModuleShell>
   );
 }

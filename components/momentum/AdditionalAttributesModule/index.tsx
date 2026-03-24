@@ -5,6 +5,7 @@ import { ModuleShell } from '../ModuleShell';
 import { KeyValueEditor } from '../ui/KeyValueEditor';
 import { getSuggestedKeys } from '@/lib/momentum/constants';
 import { SimpleTypeRegistryComponent } from '@/components/SimpleTypeRegistryComponent';
+import { NavigationButtons } from '../ui/NavigationButtons';
 import { Trash2 } from "lucide-react";
 import { useAdditionalAttributes } from './useAdditionalAttributes';
 import { AdditionalAttributesModuleProps } from './types';
@@ -13,6 +14,10 @@ export function AdditionalAttributesModule({
   misc,
   researchDomain,
   updateMisc,
+  showNext = false,
+  showPrev = false,
+  onNextModule,
+  onPrevModule,
 }: AdditionalAttributesModuleProps) {
   const {
     mode,
@@ -25,7 +30,7 @@ export function AdditionalAttributesModule({
     addTypedAttribute,
     removeTypedAttribute,
     getValidatorLabel,
-  } = useAdditionalAttributes();
+  } = useAdditionalAttributes({ misc, updateMisc });
 
   const suggestedKeys = getSuggestedKeys(researchDomain);
 
@@ -54,9 +59,11 @@ export function AdditionalAttributesModule({
 
         {mode === 'custom' && (
           <div>
-            <p className="text-sm text-base-content/70 mb-4">
-              Add custom key-value pairs for additional metadata.
-            </p>
+              <div className="alert alert-soft mb-4">
+                <span className="text-xs">
+                  Either select a suggested attribute key from below or add a custom attribute with your own key and value.
+                </span>
+              </div>
             <KeyValueEditor
               entries={misc.entries}
               onChange={updateMisc}
@@ -67,9 +74,11 @@ export function AdditionalAttributesModule({
 
         {mode === 'typed' && (
           <div className="space-y-4">
-            <p className="text-sm text-base-content/70">
-              Select from predefined attribute types with validators (JSON Schema or SPARQL).
-            </p>
+              <div className="alert alert-soft">
+                <span className="text-xs">
+                  Select a type below and click "Add Typed Attribute" to add it to your metadata.
+                </span>
+              </div>
             
             <div className="card bg-base-100 shadow-sm">
               <div className="card-body">
@@ -83,7 +92,7 @@ export function AdditionalAttributesModule({
                     <button
                       type="button"
                       onClick={addTypedAttribute}
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-soft btn-primary btn-sm"
                     >
                       Add Typed Attribute
                     </button>
@@ -91,12 +100,16 @@ export function AdditionalAttributesModule({
                 )}
               </div>
             </div>
+              <h4 className="font-medium text-sm">Typed Attributes:</h4>
+              <div className="card bg-base-200 border border-base-200 p-4 gap-2">
+            {typedAttributes.length == 0 && (
+                  <p className="text-sm font-medium text-gray-500">No typed attributes, yet.</p>
+             )}
 
             {typedAttributes.length > 0 && (
               <div className="space-y-3 mt-4">
-                <h4 className="font-medium text-sm">Added Typed Attributes:</h4>
                 {typedAttributes.map((attr) => (
-                  <div key={attr.id} className="card bg-base-100 border border-base-200">
+                  <div key={attr.id} className="card bg-base-200 border border-base-200">
                     <div className="card-body p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -123,17 +136,17 @@ export function AdditionalAttributesModule({
                 ))}
               </div>
             )}
-            
-            {typedAttributes.length === 0 && !pendingAttribute && (
-              <div className="alert alert-info">
-                <span className="text-sm">
-                  Select a type above and click "Add Typed Attribute" to add it to your metadata.
-                </span>
               </div>
-            )}
           </div>
         )}
       </div>
+      
+      <NavigationButtons
+        showPrev={showPrev}
+        showNext={showNext}
+        onPrev={onPrevModule}
+        onNext={onNextModule}
+      />
     </ModuleShell>
   );
 }

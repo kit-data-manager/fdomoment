@@ -1,86 +1,151 @@
-import { useState, useEffect } from 'react';
-import { TokenEntry, TokenRepositoryType, REPOSITORY_TYPES } from '@/components/SettingsModal/types';
+'use client';
 
-const STORAGE_KEY = 'fdo-editor-access-tokens';
+import { useState, useEffect, useCallback } from 'react';
+import { RESEARCH_DOMAINS } from '@/lib/momentum/constants';
+import { validateOrcidFormat } from '@/lib/momentum/validation';
+import { getOrcidMetadata } from '@/utils/orcid-client';
 
-export const useSettingsModal = (onClose?: () => void) => {
-    const [activeTab, setActiveTab] = useState<'general' | 'tokens'>('general');
-    const [tokens, setTokens] = useState<TokenEntry[]>([]);
-    const [tempTokens, setTempTokens] = useState<TokenEntry[]>([]);
+export interface UserSettings {
+  orcid: string;
+  orcidValidated: boolean;
+  orcidName: string | null;
+  orcidEmail: string | null;
+  researchDomain: string | null;
+  theme: 'light' | 'dark' | 'system';
+}
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    setTokens(JSON.parse(stored));
-                } catch (e) {
-                    console.error('Error loading tokens from localStorage:', e);
-                }
+const STORAGE_KEY = 'fdmoment-user-settings';
+
+export function useSettingsModal(onClose?: () => void) {
+  const [settings, setSettings] = useState<UserSettings>({
+    orcid: '',
+    orcidValidated: false,
+    orcidName: null,
+    orcidEmail: null,
+    researchDomain: null,
+    theme: 'system',
+  });
+
+  const [tempSettings, setTempSettings] = useState<UserSettings>(settings);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        setSettings(parsed);
+        setTempSettings(parsed);
+        
+        // Apply theme immediately
+        applyTheme(parsed.theme);
+        
+        // Validate ORCiD if present
+        if (parsed.orcid && validateOrcidFormat(parsed.orcid)) {
+          getOrcidMetadata(parsed.orcid).then(metadata => {
+            if (metadata) {
+              setSettings(prev => ({
+                ...prev,
+                orcidValidated: true,
+                orcidName: metadata.name,
+                orcidEmail: metadata.email,
+              }));
+              setTempSettings(prev => ({
+                ...prev,
+                orcidValidated: true,
+                orcidName: metadata.name,
+                orcidEmail: metadata.email,
+              }));
             }
+          });
         }
-    }, []);
+      } catch (e) {
+        console.error('Failed to load settings:', e);
+      }
+    }
+    setIsLoading(false);
+  }, []);
 
-    useEffect(() => {
-        setTempTokens(tokens);
-    }, []);
+  const applyTheme = useCallback((theme: 'light' | 'dark' | 'system') => {
+    const root = document.documentElement;
+    
+    if (theme === 'system') {
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', systemDark ? 'business' : 'silk');
+    } else {
+      root.setAttribute('data-theme', theme === 'dark' ? 'business' : 'silk');
+    }
+  }, []);
 
-    const handleSave = () => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(tempTokens));
-        setTokens(tempTokens);
-        if (onClose) {
-            onClose();
-        }
-    };
+  const handleOrcidChange = useCallback((value: string) => {
+    setTempSettings(prev => ({
+      ...prev,
+      orcid: value,
+      orcidValidated: false,
+      orcidName: null,
+      orcidEmail: null,
+    }));
 
-    const handleCancel = () => {
-        setTempTokens(tokens);
-        if (onClose) {
-            onClose();
-        }
-    };
+    if (value.length >= 19 && validateOrcidFormat(value)) {
+      getOrcidMetadata(value).then(metadata => {
+        setTempSettings(prev => ({
+          ...prev,
+          orcidValidated: true,
+          orcidName: metadata?.name || 'Verified via ORCiD',
+          orcidEmail: metadata?.email || null,
+        }));
+      });
+    }
+  }, []);
 
-    const addToken = () => {
-        const usedTypes = tempTokens.map(t => t.repoType);
-        const availableTypes = REPOSITORY_TYPES.filter(t => !usedTypes.includes(t));
-        if (availableTypes.length > 0) {
-            setTempTokens([...tempTokens, { repoType: availableTypes[0], token: '' }]);
-        }
-    };
+  const handleResearchDomainChange = useCallback((domainId: string | null) => {
+    setTempSettings(prev => ({
+      ...prev,
+      researchDomain: domainId,
+    }));
+  }, []);
 
-    const removeToken = (index: number) => {
-        setTempTokens(tempTokens.filter((_, i) => i !== index));
-    };
+  const handleThemeChange = useCallback((theme: 'light' | 'dark' | 'system') => {
+    setTempSettings(prev => ({
+      ...prev,
+      theme,
+    }));
+    applyTheme(theme);
+  }, [applyTheme]);
 
-    const handleRepoTypeChange = (index: number, repoType: TokenRepositoryType) => {
-        const newTokens = [...tempTokens];
-        newTokens[index].repoType = repoType;
-        setTempTokens(newTokens);
-    };
+  const handleSave = useCallback(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tempSettings));
+    setSettings(tempSettings);
+    
+    // Apply theme
+    applyTheme(tempSettings.theme);
+    
+    // Close modal
+    if (onClose) {
+      onClose();
+    }
+  }, [tempSettings, applyTheme, onClose]);
 
-    const handleTokenValueChange = (index: number, token: string) => {
-        const newTokens = [...tempTokens];
-        newTokens[index].token = token;
-        setTempTokens(newTokens);
-    };
+  const handleCancel = useCallback(() => {
+    setTempSettings(settings);
+    applyTheme(settings.theme);
+    
+    // Close modal
+    if (onClose) {
+      onClose();
+    }
+  }, [settings, applyTheme, onClose]);
 
-    const usedRepoTypes = tempTokens.map(t => t.repoType);
-    const availableRepoTypes = REPOSITORY_TYPES.filter(t => !usedRepoTypes.includes(t));
-
-    return {
-        activeTab,
-        setActiveTab,
-        tokens,
-        tempTokens,
-        setTempTokens,
-        handleSave,
-        handleCancel,
-        addToken,
-        removeToken,
-        handleRepoTypeChange,
-        handleTokenValueChange,
-        usedRepoTypes,
-        availableRepoTypes,
-        REPOSITORY_TYPES
-    };
-};
+  return {
+    settings,
+    tempSettings,
+    handleOrcidChange,
+    handleResearchDomainChange,
+    handleThemeChange,
+    handleSave,
+    handleCancel,
+    RESEARCH_DOMAINS,
+    isLoading,
+  };
+}

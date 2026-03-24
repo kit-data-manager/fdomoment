@@ -4,10 +4,9 @@ import {
   SoftwareMetadata,
   PublicationMetadata,
   MiscMetadata,
-  ModuleStatus,
-  TemplateType,
+  ModuleStatus
 } from './types';
-import { KNOWN_REPOSITORIES } from './constants';
+import {KNOWN_REPOSITORIES} from "@/lib/momentum/constants";
 
 export function validateOrcidFormat(orcid: string): boolean {
   const regex = /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/;

@@ -1,4 +1,4 @@
-import { ResearchDomain } from './types';
+import {ResearchDomain} from "@/lib/momentum/types";
 
 export const RESEARCH_DOMAINS: ResearchDomain[] = [
   { id: 'biology', label: 'Biology', category: 'Natural Sciences' },
@@ -19,26 +19,27 @@ export const RESEARCH_DOMAINS: ResearchDomain[] = [
 ];
 
 export const DATASET_LICENSES = [
-  { id: 'cc0-1.0', label: 'CC0 1.0', url: 'https://creativecommons.org/publicdomain/zero/1.0/', recommended: true },
-  { id: 'cc-by-4.0', label: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/', recommended: true },
-  { id: 'cc-by-sa-4.0', label: 'CC BY-SA 4.0', url: 'https://creativecommons.org/licenses/by-sa/4.0/', recommended: false },
-  { id: 'cc-by-nc-4.0', label: 'CC BY-NC 4.0', url: 'https://creativecommons.org/licenses/by-nc/4.0/', recommended: false },
-  { id: 'odc-by', label: 'ODC-By', url: 'https://opendatacommons.org/licenses/by/', recommended: false },
-  { id: 'odbl', label: 'ODbL', url: 'https://opendatacommons.org/licenses/odbl/', recommended: false },
+  { id: 'cc0-1.0', label: 'CC0 1.0', url: 'https://spdx.org/licenses/CC0-1.0', recommended: true },
+  { id: 'cc-by-4.0', label: 'CC BY 4.0', url: 'https://spdx.org/licenses/CC-BY-4.0', recommended: true },
+  { id: 'cc-by-sa-4.0', label: 'CC BY-SA 4.0', url: 'https://spdx.org/licenses/CC-BY-SA-4.0', recommended: false },
+  { id: 'cc-by-nc-4.0', label: 'CC BY-NC 4.0', url: 'https://spdx.org/licenses/CC-BY-NC-4.0', recommended: false },
+  { id: 'odc-by-1.0', label: 'ODC-By 1.0', url: 'https://spdx.org/licenses/ODC-By-1.0', recommended: false },
+  { id: 'odbl-1.0', label: 'ODbL 1.0', url: 'https://spdx.org/licenses/ODbL-1.0', recommended: false },
 ];
 
 export const SOFTWARE_LICENSES = [
-  { id: 'mit', label: 'MIT', url: 'https://opensource.org/licenses/MIT' },
-  { id: 'apache-2.0', label: 'Apache 2.0', url: 'https://opensource.org/licenses/Apache-2.0' },
-  { id: 'gpl-3.0', label: 'GPL-3.0', url: 'https://opensource.org/licenses/GPL-3.0' },
-  { id: 'bsd-3-clause', label: 'BSD-3-Clause', url: 'https://opensource.org/licenses/BSD-3-Clause' },
-  { id: 'lgpl-2.1', label: 'LGPL-2.1', url: 'https://opensource.org/licenses/LGPL-2.1' },
-  { id: 'eupl-1.2', label: 'EUPL-1.2', url: 'https://opensource.org/licenses/EUPL-1.2' },
+  { id: 'mit', label: 'MIT', url: 'https://spdx.org/licenses/MIT' },
+  { id: 'apache-2.0', label: 'Apache 2.0', url: 'https://spdx.org/licenses/Apache-2.0' },
+  { id: 'gpl-3.0-only', label: 'GPL-3.0 only', url: 'https://spdx.org/licenses/GPL-3.0-only' },
+  { id: 'bsd-3-clause', label: 'BSD-3-Clause', url: 'https://spdx.org/licenses/BSD-3-Clause' },
+  { id: 'lgpl-2.1-only', label: 'LGPL-2.1 only', url: 'https://spdx.org/licenses/LGPL-2.1-only' },
+  { id: 'eupl-1.2', label: 'EUPL-1.2', url: 'https://spdx.org/licenses/EUPL-1.2' },
 ];
 
 export const MIME_TYPES = [
   { id: 'text/csv', label: 'text/csv', category: 'text' },
   { id: 'text/plain', label: 'text/plain', category: 'text' },
+  { id: 'text/html', label: 'text/html' , category: 'text' },
   { id: 'text/xml', label: 'text/xml', category: 'text' },
   { id: 'application/json', label: 'application/json', category: 'application' },
   { id: 'application/xml', label: 'application/xml', category: 'application' },
@@ -48,6 +49,8 @@ export const MIME_TYPES = [
   { id: 'image/tiff', label: 'image/tiff', category: 'image' },
   { id: 'image/png', label: 'image/png', category: 'image' },
   { id: 'image/jpeg', label: 'image/jpeg', category: 'image' },
+  { id: 'audio/mpeg', label: 'audio/mpeg', description: 'media' },
+  { id: 'video/mp4',label: 'video/mp4', description: 'media' }
 ];
 
 export const DOMAIN_DEFAULT_LICENSE: Record<string, string> = {
@@ -132,13 +135,4 @@ export function getSuggestedKeys(researchDomain: ResearchDomain | null): string[
   }
   
   return baseKeys;
-}
-
-export function recognizeRepository(url: string): string | null {
-  for (const repo of KNOWN_REPOSITORIES) {
-    if (repo.pattern.test(url)) {
-      return repo.name;
-    }
-  }
-  return null;
 }

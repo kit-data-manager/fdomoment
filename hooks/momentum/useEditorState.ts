@@ -9,7 +9,9 @@ import {
   PublicationMetadata,
   MiscEntry,
   TemplateType,
+  ResearchDomain,
 } from '@/lib/momentum/types';
+import { RESEARCH_DOMAINS } from '@/lib/momentum/constants';
 import {
   computeCoreMetadataStatus,
   computeDataObjectMetadataStatus,
@@ -19,16 +21,42 @@ import {
 } from '@/lib/momentum/validation';
 
 function createInitialState(): EditorState {
+  // Load user settings from localStorage
+  let defaultOrcid = '';
+  let defaultOrcidName = null;
+  let defaultOrcidEmail = null;
+  let defaultOrcidValidated = false;
+  let defaultResearchDomain = null;
+  
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('fdmoment-user-settings');
+        if (stored) {
+      try {
+        const settings = JSON.parse(stored);
+        defaultOrcid = settings.orcid || '';
+        defaultOrcidName = settings.orcidName || null;
+        defaultOrcidEmail = settings.orcidEmail || null;
+        defaultOrcidValidated = settings.orcidValidated || false;
+        if (settings.researchDomain) {
+          const domain = RESEARCH_DOMAINS.find(d => d.id === settings.researchDomain);
+          defaultResearchDomain = domain || null;
+        }
+      } catch (e) {
+        console.error('Failed to load user settings:', e);
+      }
+    }
+  }
+  
   return {
     template: null,
     enabledModules: [],
     activeModule: 'template-select',
     core: {
-      researchDomain: null,
-      orcid: '',
-      orcidName: null,
-      orcidEmail: null,
-      orcidValidated: false,
+      researchDomain: defaultResearchDomain,
+      orcid: defaultOrcid,
+      orcidName: defaultOrcidName,
+      orcidEmail: defaultOrcidEmail,
+      orcidValidated: defaultOrcidValidated,
     },
     dataobject: {
       license: '',
@@ -134,11 +162,26 @@ export function useEditorState() {
   }, [state.core, state.dataobject, state.software, state.publication, state.misc]);
 
   const canCreate = useMemo(() => {
-    return (
-      moduleStatus.core === 'complete' &&
-      (moduleStatus.dataobject === 'complete' || moduleStatus.software === 'complete')
-    );
-  }, [moduleStatus]);
+    // Must always have core module complete
+    if (moduleStatus.core !== 'complete') {
+      return false;
+    }
+
+    // Get enabled modules from state
+    const enabled = state.enabledModules;
+    
+    // Must have at least one content module (dataobject, software, or publication)
+    const hasDataObject = enabled.includes('dataobject') && moduleStatus.dataobject === 'complete';
+    const hasSoftware = enabled.includes('software') && moduleStatus.software === 'complete';
+    const hasPublication = enabled.includes('publication') && moduleStatus.publication === 'complete';
+    
+    // At least one content module must be enabled and complete
+    const hasContentModule = hasDataObject || hasSoftware || hasPublication;
+    
+    // If misc is enabled, it's optional (doesn't block creation)
+    
+    return hasContentModule;
+  }, [moduleStatus, state.enabledModules]);
 
   return {
     state: { ...state, moduleStatus },

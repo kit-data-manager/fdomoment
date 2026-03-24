@@ -1,10 +1,11 @@
 import { Creator } from '@/lib/momentum/types';
 
-export interface CreatorWithOrcid extends Creator {
+export interface CreatorWithOrcid {
+  id: string;
   orcid?: string;
   orcidValidated?: boolean;
   orcidName?: string;
-  orcidInstitution?: string;
+  orcidEmail?: string;
 }
 
 export interface PublicationModuleProps {
@@ -26,4 +27,8 @@ export interface PublicationModuleProps {
     creators: CreatorWithOrcid[];
     creatorsImported: boolean;
   }>) => void;
+  showNext?: boolean;
+  showPrev?: boolean;
+  onNextModule?: () => void;
+  onPrevModule?: () => void;
 }

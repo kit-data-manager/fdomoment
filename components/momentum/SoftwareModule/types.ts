@@ -7,4 +7,8 @@ export interface SoftwareModuleProps {
   updateSoftware: (partial: Partial<SoftwareMetadata>) => void;
   activatePublication?: () => void;
   setActiveModule?: (module: string) => void;
+  showNext?: boolean;
+  showPrev?: boolean;
+  onNextModule?: () => void;
+  onPrevModule?: () => void;
 }

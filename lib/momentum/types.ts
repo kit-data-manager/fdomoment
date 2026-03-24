@@ -68,10 +68,15 @@ export type PublicationMetadata = {
   creatorsImported: boolean;
 };
 
+import { TypeDefinition } from '@/components/SimpleTypeRegistryComponent/types';
+
 export type MiscEntry = {
   id: string;
   key: string;
-  value: string;
+  value: string | any;
+  attributeType: 'custom' | 'typed';
+  isTyped?: boolean;
+  typeDef?: TypeDefinition;
 };
 
 export type MiscMetadata = {

@@ -3,7 +3,7 @@
 import React from 'react';
 
 interface ValidatedInputProps {
-  label: string;
+  label?: string;
   required?: boolean;
   type?: 'text' | 'url' | 'email';
   value: string;
@@ -79,9 +79,9 @@ export function ValidatedInput({
           </div>
         )}
       </div>
-      {validationMessage && validationState !== 'none' && (
+      {validationMessage && (
         <label className="label">
-          <span className={`label-text-alt ${messageColors[validationState]}`}>
+          <span className={`label-text-alt ${validationState === 'invalid' ? messageColors.invalid : messageColors.valid}`}>
             {validationMessage}
           </span>
         </label>

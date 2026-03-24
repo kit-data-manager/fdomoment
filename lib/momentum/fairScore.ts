@@ -48,8 +48,17 @@ export function calculateFairScore(state: EditorState): FairScore {
   }
 
   if(state.misc && (state.misc.entries.length > 0)) {
-        reusable += Math.max(state.misc.entries.length * 5, 20);
-        interoperable += Math.max(state.misc.entries.length * 5, 20);
+      state.misc.entries.forEach(entry => {
+         if(Object.hasOwn(entry, 'typeDef')){
+             //add 10 points for typed attributes
+             reusable += 10;
+             interoperable += 10;
+         }else{
+             //add 5 points for custom attributes
+             reusable += 5
+             interoperable += 5;
+         }
+      })
   }
 
   const total = Math.min(Math.round((findable + accessible + interoperable + reusable) / 4), 100);
@@ -126,7 +135,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
   }
 
   return {
-    text: 'You\'re perfectly set. No more tips available.',
+    text: 'Your FAIR-Score reached the maximum. No more tips available.',
     targetModule: state.activeModule,
     scoreGain: 0,
   };
