@@ -3,13 +3,13 @@
 import React from 'react';
 import { EditorState } from '@/lib/momentum/types';
 import { EditorNavigator } from './navigator/EditorNavigator';
-import { CoreModule } from './modules/CoreModule';
-import { TemplateSelection } from './modules/TemplateSelection';
-import { DataObjectModule } from './modules/DataObjectModule';
-import { SoftwareModule } from './modules/SoftwareModule';
-import { PublicationModule } from './modules/PublicationModule';
-import { AdditionalAttributesModule } from './modules/AdditionalAttributesModule';
+import { CoreModule } from './CoreModule';
 import { FairScoreBar } from './FairScoreBar';
+import {TemplateSelection} from "./TemplateSelection";
+import {DataObjectModule} from "./DataObjectModule";
+import {SoftwareModule} from "./SoftwareModule";
+import {PublicationModule} from "./PublicationModule";
+import {AdditionalAttributesModule} from "./AdditionalAttributesModule";
 
 interface EditorShellProps {
   state: EditorState;

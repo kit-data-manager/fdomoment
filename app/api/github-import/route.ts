@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LicenseId } from '@/utils/license-client';
 
 type RepositoryType =
   | 'GitHub'
@@ -7,13 +6,6 @@ type RepositoryType =
   | 'Codebase@Helmholtz'
   | 'GitLab@Kit'
   | 'Other';
-
-interface TokenEntry {
-  repoType: RepositoryType;
-  token: string;
-}
-
-const STORAGE_KEY = 'fdo-editor-access-tokens';
 
 function mapLicenseToId(licenseContent: string): string | undefined {
   if (licenseContent.includes('MIT License') || licenseContent.includes('MIT')) {
@@ -38,20 +30,6 @@ function mapLicenseToId(licenseContent: string): string | undefined {
     return 'MIT';
   }
   return undefined;
-}
-
-async function fetchFileContent(url: string, headers: Record<string, string>): Promise<string | null> {
-  try {
-    const response = await fetch(url, { headers });
-    if (!response.ok) return null;
-    const data = await response.json();
-    if (data.content) {
-      return Buffer.from(data.content, 'base64').toString('utf-8');
-    }
-    return null;
-  } catch {
-    return null;
-  }
 }
 
 export async function POST(request: NextRequest) {

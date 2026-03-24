@@ -1,0 +1,17 @@
+import { MiscMetadata, ResearchDomain } from '@/lib/momentum/types';
+import { TypeDefinition } from '@/components/SimpleTypeRegistryComponent/types';
+
+export interface AdditionalAttributesModuleProps {
+  misc: MiscMetadata;
+  researchDomain: ResearchDomain | null;
+  updateMisc: (entries: MiscMetadata['entries']) => void;
+}
+
+export interface TypedAttribute {
+  id: string;
+  key: string;
+  typeDef: TypeDefinition;
+  value: any;
+}
+
+export type AttributesMode = 'custom' | 'typed';
