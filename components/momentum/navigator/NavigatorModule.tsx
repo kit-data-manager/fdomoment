@@ -25,13 +25,10 @@ export function NavigatorModule({
   const icons = {
     pristine: '⚪',
     incomplete: '🟡',
-    complete: '🟢',
-    locked: '🔒',
+    complete: '🟢'
   };
 
   const handleClick = () => {
-    if (status === 'locked') return;
-    
     if (isOptional && status === 'pristine' && onActivate) {
       onActivate();
     } else if (onClick) {
@@ -39,17 +36,13 @@ export function NavigatorModule({
     }
   };
 
-  const isClickable =
-    status !== 'locked' &&
-    (onClick || (isOptional && onActivate));
+  const isClickable = (onClick || (isOptional && onActivate));
 
   return (
     <div
       className={`w-full py-2 px-4 text-sm rounded-box cursor-pointer transition-colors mb-1 ${
         isActive
           ? 'bg-primary/10 text-primary font-medium'
-          : status === 'locked'
-          ? 'text-base-content/30 cursor-not-allowed'
           : status === 'pristine'
           ? 'text-base-content/50 hover:text-base-content/70'
           : 'text-base-content hover:bg-base-200'
@@ -67,11 +60,7 @@ export function NavigatorModule({
       <div className="flex items-center gap-2">
         <span className="w-4 text-center">{icons[status]}</span>
         <span>
-          {isOptional && status === 'pristine' ? (
-            <span className="text-primary">➕ {label}</span>
-          ) : (
-            label
-          )}
+          {label}
         </span>
       </div>
     </div>

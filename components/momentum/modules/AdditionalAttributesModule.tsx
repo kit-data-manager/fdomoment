@@ -82,7 +82,7 @@ export function AdditionalAttributesModule({
   return (
     <ModuleShell
       title="🔧 Additional Metadata"
-      badge="required"
+      badge="optional"
     >
       <div className="space-y-4">
         <div className="tabs tabs-boxed">

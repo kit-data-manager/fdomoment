@@ -44,10 +44,12 @@ export function EditorShell(props: EditorShellProps) {
     if (!state.template) {
       setActiveModule('template-select');
     } else {
-      if (state.template === 'published-data-object' || state.template === 'unpublished-data-object') {
+      if (state.template === 'published-dataobject' || state.template === 'unpublished-dataobject') {
         setActiveModule('dataobject');
       } else if (state.template === 'published-software' || state.template === 'unpublished-software') {
         setActiveModule('software');
+      }else if (state.template === 'published-publication') {
+          setActiveModule('publication');
       }
     }
   };
@@ -59,18 +61,17 @@ export function EditorShell(props: EditorShellProps) {
 
   const showFullInterface = state.template !== null;
 
-  const isDataObjectTemplate = state.template === 'published-data-object' || state.template === 'unpublished-data-object';
+  const isDataObjectTemplate = state.template === 'published-dataobject' || state.template === 'unpublished-dataobject';
   const isSoftwareTemplate = state.template === 'published-software' || state.template === 'unpublished-software';
 
   const renderActiveModule = () => {
-    switch (state.activeModule) {
+      switch (state.activeModule) {
       case 'core':
         return (
           <CoreModule
-            basis={state.basis}
-            updateBasis={updateBasis}
+            basis={state.core}
+            updateCore={updateBasis}
             onNext={handleCoreNext}
-            objectType={isDataObjectTemplate ? 'dataobject' : isSoftwareTemplate ? 'software' : null}
           />
         );
 
@@ -88,9 +89,9 @@ export function EditorShell(props: EditorShellProps) {
         }
         return (
           <DataObjectModule
-            dataset={state.dataset}
-            basis={state.basis}
-            updateDataset={updateDataset}
+            dataobject={state.dataobject}
+            core={state.core}
+            updateDataobject={updateDataset}
             setActiveModule={setActiveModule as (module: string) => void}
           />
         );
@@ -122,7 +123,7 @@ export function EditorShell(props: EditorShellProps) {
         return (
           <AdditionalAttributesModule
             misc={state.misc}
-            researchDomain={state.basis.researchDomain}
+            researchDomain={state.core.researchDomain}
             updateMisc={updateMisc}
           />
         );

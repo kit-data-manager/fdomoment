@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { EditorState, FairScore, ScoreTip } from '@/lib/momentum/types';
+import { EditorState } from '@/lib/momentum/types';
 import { useFairScore } from '@/hooks/momentum/useFairScore';
 import { ScoreProgressBar } from './ui/ScoreProgressBar';
 

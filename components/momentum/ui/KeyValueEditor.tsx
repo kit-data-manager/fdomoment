@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MiscEntry } from '@/lib/momentum/types';
+import {Trash2} from "lucide-react";
 
 interface KeyValueEditorProps {
   entries: MiscEntry[];
@@ -44,14 +45,13 @@ export function KeyValueEditor({
     <div className="w-full">
       {suggestedKeys.length > 0 && (
         <div className="mb-3">
-          <span className="text-sm text-gray-500 mr-2">Vorschläge:</span>
-          <div className="flex flex-wrap gap-2">
+          <span className="text-sm mr-2">Recommendations:</span>
+          <div className="flex flex-wrap gap-2 mt-2">
             {suggestedKeys.slice(0, 6).map(key => (
               <button
                 key={key}
-                type="button"
                 onClick={() => addSuggestedKey(key)}
-                className="text-xs border border-gray-200 rounded-full px-2 py-0.5 bg-gray-50 hover:bg-blue-50 hover:border-blue-300 transition-colors text-gray-700"
+                className="text-xs badge badge-primary"
               >
                 {key}
               </button>
@@ -67,9 +67,9 @@ export function KeyValueEditor({
               type="text"
               value={entry.key}
               onChange={(e) => updateEntry(entry.id, 'key', e.target.value)}
-              placeholder="Schlüssel"
+              placeholder="Key"
               list={`suggestions-${entry.id}`}
-              className="w-[140px] px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-[140px] px-3 py-2 input"
             />
             <datalist id={`suggestions-${entry.id}`}>
               {suggestedKeys.map(key => (
@@ -80,27 +80,25 @@ export function KeyValueEditor({
               type="text"
               value={entry.value}
               onChange={(e) => updateEntry(entry.id, 'value', e.target.value)}
-              placeholder="Wert"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Value"
+              className="flex-1 px-3 py-2 input"
             />
             <button
-              type="button"
               onClick={() => removeEntry(entry.id)}
-              className="text-gray-400 hover:text-red-500 transition-colors px-2"
-              title="Entfernen"
+              className="btn-soft btn-primary px-2"
+              title="Remove"
             >
-              ✕
+            <Trash2 width="16" height="16" />
             </button>
           </div>
         ))}
       </div>
 
       <button
-        type="button"
         onClick={addEntry}
-        className="mt-3 text-sm text-blue-600 hover:text-blue-700 transition-colors font-medium"
+        className="btn btn-soft btn-primary mt-3"
       >
-        + Weiteres Paar hinzufügen
+        + Add more
       </button>
     </div>
   );

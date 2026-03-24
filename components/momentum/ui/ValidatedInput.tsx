@@ -54,21 +54,22 @@ export function ValidatedInput({
       {label && (
         <label className="label">
           <span className="label-text font-medium">
-            {label}
-            {required && <span className="text-error ml-1">*</span>}
-            {importedBadge && (
-              <span className="badge badge-sm badge-info ml-2">
-                📥 Importiert
-              </span>
-            )}
+              {label}
+              {required && <span className="text-error ml-1">*</span>}
           </span>
+            {importedBadge && (
+            <div className="indicator ml-5">
+                <span className="indicator-item badge badge-primary badge-xs">Imported</span>
+                <div>&nbsp;</div>
+            </div>
+            )}
         </label>
       )}
-      <div className="relative">
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+        <div className="relative">
+            <input
+                type={type}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className={`input w-full ${inputClasses[validationState]}`}
         />

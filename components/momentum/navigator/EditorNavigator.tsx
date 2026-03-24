@@ -15,33 +15,50 @@ interface EditorNavigatorProps {
 
 const templates: TemplateConfig[] = [
   {
-    type: 'published-data-object',
+    type: 'published-dataobject',
+    baseType: 'dataobject',
     label: 'Published Data Object',
     description: 'Measurement, Surveys, Images, Tables, or Simulation Data with publication',
     icon: '🗄️',
-    modules: ['core', 'dataobject', 'publication', 'misc'],
+    baseModules: ['core', 'dataobject', 'publication', 'misc'],
+    supportsPublication: true,
   },
   {
-    type: 'unpublished-data-object',
+    type: 'unpublished-dataobject',
+    baseType: 'dataobject',
     label: 'Unpublished Data Object',
     description: 'Measurement, Surveys, Images, Tables, or Simulation Data without publication',
     icon: '🗄️',
-    modules: ['core', 'dataobject', 'misc'],
+    baseModules: ['core', 'dataobject', 'misc'],
+    supportsPublication: false,
   },
   {
     type: 'published-software',
+    baseType: 'software',
     label: 'Published Software',
     description: 'Source Code, Workflows, Tools, Scripts with publication',
     icon: '💻',
-    modules: ['core', 'software', 'publication', 'misc'],
+    baseModules: ['core', 'software', 'publication', 'misc'],
+    supportsPublication: true,
   },
   {
     type: 'unpublished-software',
+    baseType: 'software',
     label: 'Unpublished Software',
     description: 'Source Code, Workflows, Tools, Scripts without publication',
     icon: '💻',
-    modules: ['core', 'software', 'misc'],
+    baseModules: ['core', 'software', 'misc'],
+    supportsPublication: false,
   },
+    {
+        type: 'published-publication',
+        baseType: 'publication',
+        label: 'Publication',
+        description: 'Papers, Articles',
+        icon: '💻',
+        baseModules: ['core', 'publication', 'misc'],
+        supportsPublication: true,
+    }
 ];
 
 const moduleLabels: Record<ModuleIdentifier, string> = {
@@ -55,7 +72,9 @@ const moduleLabels: Record<ModuleIdentifier, string> = {
 function getModulesForTemplate(template: EditorState['template']): ModuleIdentifier[] {
   if (!template) return [];
   const tmpl = templates.find(t => t.type === template);
-  return tmpl ? tmpl.modules : [];
+  if (!tmpl) return [];
+
+  return tmpl.baseModules;
 }
 
 export function EditorNavigator({

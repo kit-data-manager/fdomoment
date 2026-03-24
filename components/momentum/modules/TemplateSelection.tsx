@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { TemplateType, TemplateConfig } from '@/lib/momentum/types';
+import React, { useState } from 'react';
+import { TemplateType, TemplateConfig, ModuleIdentifier } from '@/lib/momentum/types';
 
 interface TemplateSelectionProps {
   onSelectTemplate: (template: TemplateType) => void;
@@ -9,36 +9,53 @@ interface TemplateSelectionProps {
 
 const templates: TemplateConfig[] = [
   {
-    type: 'published-data-object',
-    label: 'Published Data Object',
-    description: 'Measurement, Surveys, Images, Tables, or Simulation Data with publication',
+    type: 'published-dataobject',
+    baseType: 'dataobject',
+    label: 'Data Object',
+    description: 'Measurement, Surveys, Images, Tables, or Simulation Data',
     icon: '🗄️',
-    modules: ['core', 'dataobject', 'publication', 'misc'],
-  },
-  {
-    type: 'unpublished-data-object',
-    label: 'Unpublished Data Object',
-    description: 'Measurement, Surveys, Images, Tables, or Simulation Data without publication',
-    icon: '🗄️',
-    modules: ['core', 'dataobject', 'misc'],
+    baseModules: ['core', 'dataobject', 'misc'],
+    supportsPublication: true,
   },
   {
     type: 'published-software',
-    label: 'Published Software',
-    description: 'Source Code, Workflows, Tools, Scripts with publication',
+    baseType: 'software',
+    label: 'Software',
+    description: 'Source Code, Workflows, Tools, Scripts',
     icon: '💻',
-    modules: ['core', 'software', 'publication', 'misc'],
+    baseModules: ['core', 'software', 'misc'],
+    supportsPublication: true,
+  },
+  {
+    type: 'unpublished-dataobject',
+    baseType: 'dataobject',
+    label: 'Data Object',
+    description: 'Measurement, Surveys, Images, Tables, or Simulation Data',
+    icon: '🗄️',
+    baseModules: ['core', 'dataobject', 'misc'],
+    supportsPublication: false,
   },
   {
     type: 'unpublished-software',
-    label: 'Unpublished Software',
-    description: 'Source Code, Workflows, Tools, Scripts without publication',
+    baseType: 'software',
+    label: 'Software',
+    description: 'Source Code, Workflows, Tools, Scripts',
     icon: '💻',
-    modules: ['core', 'software', 'misc'],
+    baseModules: ['core', 'software', 'misc'],
+    supportsPublication: false,
   },
+    {
+        type: 'published-publication',
+        baseType: 'publication',
+        label: 'Publication',
+        description: 'Papers, Articles',
+        icon: '💻',
+        baseModules: ['core', 'publication', 'misc'],
+        supportsPublication: true,
+    },
 ];
 
-const moduleLabels: Record<string, string> = {
+const moduleLabels: Record<ModuleIdentifier, string> = {
   core: 'Core',
   dataobject: 'Data Object',
   software: 'Software',
@@ -49,9 +66,38 @@ const moduleLabels: Record<string, string> = {
 export function TemplateSelection({
   onSelectTemplate,
 }: TemplateSelectionProps) {
-  const handleSelect = (template: TemplateType) => {
-    onSelectTemplate(template);
+  const [includePublication, setIncludePublication] = useState<{
+    dataobject: boolean;
+    software: boolean;
+    publication: boolean;
+  }>({
+    dataobject: true,
+    software: true,
+    publication: true,
+  });
+
+  const handleSelect = (baseType: 'dataobject' | 'software' | 'publication', withPublication: boolean) => {
+    if(baseType === 'publication') {
+        onSelectTemplate('published-publication');
+    }else{
+      const type: TemplateType = withPublication
+      ? baseType === 'dataobject'
+        ? 'published-dataobject'
+        : 'published-software'
+      : baseType === 'dataobject'
+        ? 'unpublished-dataobject'
+        : 'unpublished-software';
+    onSelectTemplate(type);
+    }
   };
+
+  const groupedTemplates = templates.reduce((acc, template) => {
+    if (!acc[template.baseType]) {
+      acc[template.baseType] = [];
+    }
+    acc[template.baseType].push(template);
+    return acc;
+  }, {} as Record<'dataobject' | 'software' | 'publication', TemplateConfig[]>);
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -66,35 +112,71 @@ export function TemplateSelection({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {templates.map((template) => (
-            <label
-              key={template.type}
-              className="card bg-base-100 border-2 border-base-200 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-primary"
-            >
-              <input
-                type="radio"
-                name="template"
-                className="sr-only"
-                onChange={() => handleSelect(template.type)}
-              />
-              <figure className="px-4 pt-4 flex justify-center gap-4">
-                <div className="text-5xl">{template.icon}</div>
-              </figure>
-              <div className="card-body items-center text-center">
-                <h2 className="card-title text-xl">{template.label}</h2>
-                <p className="text-sm text-base-content/70">
-                  {template.description}
-                </p>
-                <div className="flex gap-2 mt-2 flex-wrap">
-                  {template.modules.map((module) => (
-                    <span key={module} className="badge badge-sm badge-outline">
-                      {moduleLabels[module]}
-                    </span>
-                  ))}
+          {(['dataobject', 'software', 'publication'] as const).map((baseType) => {
+            const template = groupedTemplates[baseType].find(t => 
+              includePublication[baseType] 
+                ? t.type === `published-${baseType}`
+                : t.type === `unpublished-${baseType}`
+            );
+
+            if (!template) return null;
+
+            const hasPublication = includePublication[baseType];
+            const modules: ModuleIdentifier[] = hasPublication
+              ? [...template.baseModules]
+              : template.baseModules.filter(m => m !== 'publication');
+
+            return (
+              <div
+                key={baseType}
+                className="card bg-base-100 border-2 border-base-200 transition-all duration-300 hover:shadow-2xl"
+              >
+                <div className="card-body">
+                  <figure className="flex justify-center gap-4 mb-2">
+                    <div className="text-5xl">{template.icon}</div>
+                  </figure>
+                  <h2 className="card-title text-xl text-center">{template.label}</h2>
+                  <p className="text-sm text-base-content/70 text-center">
+                    {template.description}
+                  </p>
+
+                  <div className="flex items-center gap-2 my-4">
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-primary"
+                      checked={includePublication[baseType]}
+                      disabled={template.baseType === 'publication'}
+                      onChange={(e) =>
+                        setIncludePublication(prev => ({
+                          ...prev,
+                          [baseType]: e.target.checked,
+                        }))
+                      }
+                    />
+                    <label className="label cursor-pointer">
+                      <span className="label-text font-medium">Include Publication module</span>
+                    </label>
+                  </div>
+
+                  <div className="flex gap-2 mt-2 flex-wrap justify-center">
+                    {modules.map((module) => (
+                      <span key={module} className="badge badge-sm badge-outline">
+                        {moduleLabels[module]}
+                      </span>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn-primary mt-4"
+                    onClick={() => handleSelect(baseType, includePublication[baseType])}
+                  >
+                    Select {template.label}
+                  </button>
                 </div>
               </div>
-            </label>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

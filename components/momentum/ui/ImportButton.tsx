@@ -12,7 +12,7 @@ interface ImportButtonProps {
 
 export function ImportButton({
   label,
-  loadingLabel = 'Importiere...',
+  loadingLabel = 'Importing...',
   onClick,
   disabled = false,
   size = 'md',
@@ -43,10 +43,9 @@ export function ImportButton({
 
   return (
     <button
-      type="button"
       onClick={handleClick}
       disabled={disabled || isLoading}
-      className={`btn btn-outline ${buttonSize[size]} ${
+      className={`btn btn-soft btn-primary ${buttonSize[size]} ${
         isLoading ? 'loading' : ''
       }`}
       style={{

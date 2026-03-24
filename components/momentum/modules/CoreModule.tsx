@@ -7,26 +7,23 @@ import { SearchableSelect } from '../ui/SearchableSelect';
 import { ValidatedInput } from '../ui/ValidatedInput';
 import { RESEARCH_DOMAINS } from '@/lib/momentum/constants';
 import { validateOrcidFormat } from '@/lib/momentum/validation';
-import { useOrcidImport } from '@/hooks/momentum/useOrcidImport';
 import { getOrcidMetadata } from '@/utils/orcid-client';
 
 interface BasisModuleProps {
   basis: CoreMetadata;
-  updateBasis: (partial: Partial<CoreMetadata>) => void;
+  updateCore: (partial: Partial<CoreMetadata>) => void;
   onNext: () => void;
-  objectType: 'dataobject' | 'software' | null;
 }
 
 export function CoreModule({
   basis,
-  updateBasis,
-  onNext,
-  objectType,
+  updateCore,
+  onNext
 }: BasisModuleProps) {
   const [validationTimeout, setValidationTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const handleOrcidChange = (value: string) => {
-      updateBasis({
+      updateCore({
       orcid: value,
       orcidValidated: false,
       orcidName: null,
@@ -41,7 +38,7 @@ export function CoreModule({
       const timeout = setTimeout(async () => {
         if (validateOrcidFormat(value)) {
           const metadata = await getOrcidMetadata(value);
-          updateBasis({
+          updateCore({
             orcidValidated: true,
             orcidName: metadata?.name || 'Verified via ORCiD',
             orcidEmail: metadata?.email || 'Unknown',
@@ -87,7 +84,7 @@ export function CoreModule({
           value={basis.researchDomain?.id || null}
           onChange={(option) => {
             const domain = RESEARCH_DOMAINS.find(d => d.id === option.id) as ResearchDomain;
-            updateBasis({ researchDomain: domain });
+            updateCore({ researchDomain: domain });
           }}
           placeholder="Choose Research Domain..."
           hint="e.g. Information, Biology, Physics"

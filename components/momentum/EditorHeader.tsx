@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { SettingsModal } from '@/components/SettingsModal';
+import Image from "next/image";
 
 export function EditorHeader() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -17,7 +18,24 @@ export function EditorHeader() {
             rel="noopener noreferrer"
             className="text-lg font-semibold hover:text-primary transition-colors"
           >
-            🔬 FDO Creator
+              <div className="flex items-center gap-2 flex-shrink-0">
+                  <Image
+                      src="/logo_small.png"
+                      alt="FDO Moment Logo"
+                      width={60}
+                      height={60}
+                      className="logo w-10 h-10 md:w-12 md:h-12"
+                  />
+                  <div className="flex justify-center">
+                      <h1 className="text-center text-primary">
+                          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-1 font-bold">
+                            <span className="text-primary text-bold">FDO MoMEnT</span>
+                          </div>
+                      </h1>
+                  </div>
+
+              </div>
+
           </a>
         </div>
         <div className="flex-none gap-2">
@@ -26,9 +44,8 @@ export function EditorHeader() {
             className="btn btn-ghost btn-sm"
             onClick={() => window.open('https://docs.example.com', '_blank')}
           >
-            Hilfe
+            Help
           </button>
-          <ThemeToggle />
           <button
             type="button"
             className="btn btn-ghost btn-sm"
@@ -36,6 +53,8 @@ export function EditorHeader() {
           >
             👤 Profile
           </button>
+          <ThemeToggle />
+
         </div>
       </div>
 

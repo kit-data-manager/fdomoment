@@ -14,21 +14,20 @@ import {
 import { validateUrl } from '@/lib/momentum/validation';
 
 interface DatasetModuleProps {
-  dataset: DataObjectMetadata;
-  basis: CoreMetadata;
-  updateDataset: (partial: Partial<DataObjectMetadata>) => void;
+  dataobject: DataObjectMetadata;
+  core: CoreMetadata;
+  updateDataobject: (partial: Partial<DataObjectMetadata>) => void;
   activatePublication?: () => void;
   setActiveModule?: (module: string) => void;
 }
 
 export function DataObjectModule({
-  dataset,
-  basis,
-  updateDataset,
+  dataobject,
+  core,
+  updateDataobject,
   activatePublication,
   setActiveModule,
 }: DatasetModuleProps) {
-  const [showSuccess, setShowSuccess] = useState(false);
   const [validationTimeout, setValidationTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const triggerUrlValidation = useCallback((url: string) => {
@@ -39,7 +38,7 @@ export function DataObjectModule({
     const timeout = setTimeout(async () => {
       if (url.length > 0) {
         const result = await validateUrl(url);
-        updateDataset({
+        updateDataobject({
           dataUrlValidated: result.valid,
           dataUrlRepository: result.repository,
         });
@@ -47,7 +46,7 @@ export function DataObjectModule({
     }, 800);
 
     setValidationTimeout(timeout);
-  }, [validationTimeout, updateDataset]);
+  }, [validationTimeout, updateDataobject]);
 
   useEffect(() => {
     return () => {
@@ -58,7 +57,7 @@ export function DataObjectModule({
   }, [validationTimeout]);
 
   const handleDataUrlChange = (value: string) => {
-    updateDataset({
+    updateDataobject({
       dataUrl: value,
       dataUrlValidated: false,
       dataUrlRepository: null,
@@ -67,61 +66,14 @@ export function DataObjectModule({
   };
 
   const isFormValid =
-    dataset.license.length > 0 &&
-    dataset.mimeType.length > 0 &&
-    dataset.dataUrl.length > 0 &&
-    dataset.dataUrlValidated;
+    dataobject.license.length > 0 &&
+    dataobject.mimeType.length > 0 &&
+    dataobject.dataUrl.length > 0 &&
+    dataobject.dataUrlValidated;
 
   const handleNext = () => {
-    if (activatePublication && setActiveModule) {
-      setShowSuccess(true);
-    }
+    //todo: got to next module according to template
   };
-
-  const handleAddPublication = () => {
-    if (activatePublication && setActiveModule) {
-      activatePublication();
-      setActiveModule('publication');
-    }
-  };
-
-  const handleSkip = () => {
-    setShowSuccess(false);
-  };
-
-  if (showSuccess) {
-    return (
-      <ModuleShell title="📊 Data Object Metadata" badge="required">
-        <div className="bg-green-50 border border-green-200 rounded-md p-4">
-          <p className="text-sm text-green-800 mb-2">
-            ✅ Dataset Metadata complete!
-          </p>
-          <p className="text-sm text-green-700 mb-3">
-            Do you want to add more metadata?
-          </p>
-          <div className="text-sm text-green-700 mb-4">
-            💡 Add Publication Metadata: +22% Score
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleAddPublication}
-              className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              + Add module
-            </button>
-            <button
-              type="button"
-              onClick={handleSkip}
-              className="bg-white border border-gray-300 text-gray-700 text-sm px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Skip →
-            </button>
-          </div>
-        </div>
-      </ModuleShell>
-    );
-  }
 
   return (
     <ModuleShell title="📊 Data Object Metadata" badge="required">
@@ -130,47 +82,47 @@ export function DataObjectModule({
           label="License"
           required
           options={DATASET_LICENSES}
-          value={dataset.license || null}
+          value={dataobject.license || null}
           onChange={(option) => {
-            updateDataset({
+            updateDataobject({
               license: option.id,
               licenseUrl: DATASET_LICENSES.find(l => l.id === option.id)?.url || '',
             });
           }}
           placeholder="Choose license..."
-          hint={getLicenseHint(basis.researchDomain)}
+          hint={getLicenseHint(core.researchDomain)}
         />
 
         <SearchableSelect
           label="MIME-Type"
           required
           options={MIME_TYPES}
-          value={dataset.mimeType || null}
+          value={dataobject.mimeType || null}
           onChange={(option) => {
-            updateDataset({ mimeType: option.id });
+            updateDataobject({ mimeType: option.id });
           }}
           placeholder="Choose MIME-Type..."
-          quickOptions={getCommonMimeTypes(basis.researchDomain)}
+          quickOptions={getCommonMimeTypes(core.researchDomain)}
         />
 
         <ValidatedInput
           label="Data URL"
           required
           type="url"
-          value={dataset.dataUrl}
+          value={dataobject.dataUrl}
           onChange={handleDataUrlChange}
           placeholder="https://..."
           validationState={
-            dataset.dataUrlValidated
+            dataobject.dataUrlValidated
               ? 'valid'
-              : dataset.dataUrl.length > 0
+              : dataobject.dataUrl.length > 0
               ? 'pending'
               : 'none'
           }
           validationMessage={
-            dataset.dataUrlValidated
-              ? dataset.dataUrlRepository
-                ? `✅ Accessible · Detected: ${dataset.dataUrlRepository}`
+            dataobject.dataUrlValidated
+              ? dataobject.dataUrlRepository
+                ? `✅ Accessible · Detected: ${dataobject.dataUrlRepository}`
                 : '✅ Accessible'
               : undefined
           }

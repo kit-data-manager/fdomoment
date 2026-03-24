@@ -27,7 +27,7 @@ export function SearchableSelect({
   options,
   value,
   onChange,
-  placeholder = 'Bitte wählen...',
+  placeholder = 'Please select...',
   hint,
   quickOptions,
   importedBadge = false,
@@ -76,12 +76,13 @@ export function SearchableSelect({
         <span className="label-text font-medium">
           {label}
           {required && <span className="text-error ml-1">*</span>}
-          {importedBadge && (
-            <span className="badge badge-sm badge-info ml-2">
-              📥 Importiert
-            </span>
-          )}
         </span>
+          {importedBadge && (
+              <div className="indicator ml-5">
+                  <span className="indicator-item badge badge-primary badge-xs">Imported</span>
+                  <div>&nbsp;</div>
+              </div>
+          )}
       </label>
       
       <div className="relative">
@@ -108,7 +109,7 @@ export function SearchableSelect({
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-base-100 border border-base-200 rounded-box shadow-lg max-h-60 overflow-y-auto">
           {filteredOptions.length === 0 ? (
-            <div className="p-3 text-sm text-base-content/70">Keine Optionen gefunden</div>
+            <div className="p-3 text-sm text-base-content/70">No option found</div>
           ) : (
             filteredOptions.map(option => (
               <div

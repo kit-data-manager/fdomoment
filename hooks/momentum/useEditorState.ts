@@ -7,9 +7,7 @@ import {
   DataObjectMetadata,
   SoftwareMetadata,
   PublicationMetadata,
-  MiscMetadata,
   MiscEntry,
-  ModuleStatus,
   TemplateType,
 } from '@/lib/momentum/types';
 import {
@@ -24,14 +22,14 @@ function createInitialState(): EditorState {
   return {
     template: null,
     activeModule: 'template-select',
-    basis: {
+    core: {
       researchDomain: null,
       orcid: '',
       orcidName: null,
       orcidEmail: null,
       orcidValidated: false,
     },
-    dataset: {
+    dataobject: {
       license: '',
       licenseUrl: '',
       mimeType: '',
@@ -47,8 +45,18 @@ function createInitialState(): EditorState {
       readmeUrl: '',
       readmeImported: false,
     },
-    publication: null,
-    misc: null,
+    publication: {
+        doi: '',
+        title:'',
+        titleImported:false,
+        publicationType:'',
+        publicationTypeImported:false,
+        creators:[],
+        creatorsImported:false
+    },
+    misc: {
+        entries: []
+    },
     moduleStatus: {
       core: 'incomplete',
       dataobject: 'pristine',
@@ -65,14 +73,14 @@ export function useEditorState() {
   const updateBasis = (partial: Partial<CoreMetadata>) => {
     setState(prev => ({
       ...prev,
-      basis: { ...prev.basis, ...partial },
+      core: { ...prev.core, ...partial },
     }));
   };
 
   const updateDataset = (partial: Partial<DataObjectMetadata>) => {
     setState(prev => ({
       ...prev,
-      dataset: { ...prev.dataset, ...partial },
+      dataobject: { ...prev.dataobject, ...partial },
     }));
   };
 
@@ -84,27 +92,10 @@ export function useEditorState() {
   };
 
   const updatePublication = (partial: Partial<PublicationMetadata>) => {
-    setState(prev => {
-      if (!prev.publication) {
-        return {
+      setState(prev => ({
           ...prev,
-          publication: {
-            doi: '',
-            title: '',
-            titleImported: false,
-            publicationType: '',
-            publicationTypeImported: false,
-            creators: [],
-            creatorsImported: false,
-            ...partial,
-          },
-        };
-      }
-      return {
-        ...prev,
-        publication: { ...prev.publication, ...partial },
-      };
-    });
+          publication: { ...prev.publication, ...partial },
+      }));
   };
 
   const updateMisc = (entries: MiscEntry[]) => {
@@ -116,22 +107,9 @@ export function useEditorState() {
 
   const setTemplate = (template: TemplateType) => {
     setState(prev => {
-      const hasPublication = template === 'published-data-object' || template === 'published-software';
-      const hasMisc = template !== null;
-      
       return {
         ...prev,
-        template,
-        publication: hasPublication ? {
-          doi: '',
-          title: '',
-          titleImported: false,
-          publicationType: '',
-          publicationTypeImported: false,
-          creators: [],
-          creatorsImported: false,
-        } : null,
-        misc: hasMisc ? { entries: [] } : null,
+        template
       };
     });
   };
@@ -143,23 +121,18 @@ export function useEditorState() {
     }));
   };
 
-
-
   const moduleStatus = useMemo<EditorState['moduleStatus']>(() => {
-    const dataobjectTemplate: TemplateType = state.template === 'published-data-object' || state.template === 'unpublished-data-object' ? state.template : null;
-    const softwareTemplate: TemplateType = state.template === 'published-software' || state.template === 'unpublished-software' ? state.template : null;
-    
     return {
-      core: computeCoreMetadataStatus(state.basis),
-      dataobject: computeDataObjectMetadataStatus(state.dataset, dataobjectTemplate),
-      software: computeSoftwareMetadataStatus(state.software, softwareTemplate),
+      core: computeCoreMetadataStatus(state.core),
+      dataobject: computeDataObjectMetadataStatus(state.dataobject),
+      software: computeSoftwareMetadataStatus(state.software),
       publication: computePublicationMetadataStatus(state.publication),
       misc: computeMiscMetadataStatus(state.misc),
     };
-  }, [state.basis, state.dataset, state.software, state.publication, state.misc, state.template]);
+  }, [state.core, state.dataobject, state.software, state.publication, state.misc]);
 
   const canCreate = useMemo(() => {
-    const hasPublication = state.template === 'published-data-object' || state.template === 'published-software';
+    const hasPublication = state.template?.startsWith('published-');
     
     if (hasPublication) {
       return (

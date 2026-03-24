@@ -65,8 +65,6 @@ export function SoftwareModule({
     setIsAutoImportLoading(true);
     setAutoImportError(null);
 
-    const repoType = parseRepoType(software.repositoryUrl);
-    
     const tokens: Record<RepositoryType, string | undefined> = {
       'GitHub': getAccessToken('GitHub'),
       'GitLab.com': getAccessToken('GitLab.com'),
@@ -191,7 +189,7 @@ export function SoftwareModule({
           {repoType === 'Other' && software.repositoryUrl && (
             <label className="label">
               <span className="label-text-alt text-warning">
-                ⚠️ Auto-Import not available for custom repository platforms.
+                ⚠️ Import not available for custom repository platforms.
               </span>
             </label>
           )}
@@ -210,14 +208,15 @@ export function SoftwareModule({
               placeholder={repoType === 'Other' ? 'https://...' : `https://${repoType.toLowerCase().split('@')[0].replace(' ', '.')}/owner/repo`}
             />
           </div>
-          <div className="pt-7">
-            <ImportButton
-              label="📥 Auto"
-              loadingLabel="Importing..."
-              onClick={handleAutoImportClick}
-              disabled={!software.repositoryUrl || isAutoImportLoading || repoType === 'Other'}
-              size="md"
-            />
+          <div className="pt-6">
+              <ImportButton
+                  label="📥 Import"
+                  size="sm"
+                  loadingLabel="Importing..."
+                  onClick={handleAutoImportClick}
+                  disabled={!software.repositoryUrl || isAutoImportLoading || repoType === 'Other'}
+
+              />
           </div>
         </div>
         
@@ -239,7 +238,7 @@ export function SoftwareModule({
 
         <ValidatedInput
           label="README URL"
-          required={false}
+          required
           type="url"
           value={software.readmeUrl}
           onChange={(value) => {

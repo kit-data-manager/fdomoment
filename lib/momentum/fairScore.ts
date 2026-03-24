@@ -6,16 +6,16 @@ export function calculateFairScore(state: EditorState): FairScore {
   let interoperable = 0;
   let reusable = 0;
 
-  if (state.basis.orcidValidated) {
+  if (state.core.orcidValidated) {
     findable += 20;
   }
   
-  if (state.basis.researchDomain) {
+  if (state.core.researchDomain) {
     findable += 20;
     interoperable += 30;
   }
 
-  if (state.dataset.dataUrlValidated) {
+  if (state.dataobject.dataUrlValidated) {
     findable += 30;
     accessible += 40;
   }
@@ -25,16 +25,16 @@ export function calculateFairScore(state: EditorState): FairScore {
     accessible += 30;
   }
   
-  if (state.dataset.mimeType.length > 0 || state.software.repositoryUrl.length > 0) {
+  if (state.dataobject.mimeType.length > 0 || state.software.repositoryUrl.length > 0) {
     interoperable += 40;
   }
   
-  if (state.dataset.license.length > 0 || state.software.license.length > 0) {
+  if (state.dataobject.license.length > 0 || state.software.license.length > 0) {
     interoperable += 30;
     reusable += 40;
   }
   
-  if (state.dataset.licenseUrl.length > 0 || state.software.licenseImported) {
+  if (state.dataobject.licenseUrl.length > 0 || state.software.licenseImported) {
     reusable += 30;
   }
   
@@ -66,7 +66,7 @@ export function calculateFairScore(state: EditorState): FairScore {
 export function calculateCurrentTip(state: EditorState): ScoreTip {
   const tips: ScoreTip[] = [];
 
-  if (!state.basis.orcidValidated) {
+  if (!state.core.orcidValidated) {
     tips.push({
       text: 'A valid ORCiD increases the F-Score by +20%.',
       targetModule: 'core',
@@ -74,7 +74,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  if (!state.basis.researchDomain) {
+  if (!state.core.researchDomain) {
     tips.push({
       text: 'A Research Domains increases the F-Score by 30% and I-Score by +20%.',
       targetModule: 'core',
@@ -82,10 +82,10 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  const isDataObjectTemplate = state.template === 'published-data-object' || state.template === 'unpublished-data-object';
+  const isDataObjectTemplate = state.template === 'published-dataobject' || state.template === 'unpublished-dataobject';
   const isSoftwareTemplate = state.template === 'published-software' || state.template === 'unpublished-software';
 
-  if (isDataObjectTemplate && !state.dataset.dataUrlValidated) {
+  if (isDataObjectTemplate && !state.dataobject.dataUrlValidated) {
     tips.push({
       text: 'A valid data object URL increases the F-Score by 30% and A-Score by +40%.',
       targetModule: 'dataobject',
@@ -101,8 +101,9 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  const hasPublicationModule = state.template === 'published-data-object' || state.template === 'published-software';
-  if (!state.publication && hasPublicationModule) {
+  const hasPublicationModule = state.template?.startsWith('published-');
+
+  if (hasPublicationModule && (!state.publication?.doi || !state.publication.title)) {
     tips.push({
       text: 'Publication information increase the F-Score by 40% and the A-Score by +30%.',
       targetModule: 'publication',
@@ -119,7 +120,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
   }
 
   const sortedTips = tips.sort((a, b) => b.scoreGain - a.scoreGain);
-  
+
   if (sortedTips.length > 0) {
     return sortedTips[0];
   }

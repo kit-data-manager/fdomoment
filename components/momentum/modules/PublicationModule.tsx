@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { PublicationMetadata, Creator } from '@/lib/momentum/types';
+import { Creator } from '@/lib/momentum/types';
 import { ModuleShell } from './ModuleShell';
 import { ValidatedInput } from '../ui/ValidatedInput';
 import { ImportButton } from '../ui/ImportButton';
-import { ImportPreviewCard } from '../ui/ImportPreviewCard';
+
 import { SearchableSelect } from '../ui/SearchableSelect';
 import { PUBLICATION_TYPES } from '@/lib/momentum/constants';
 import { useDoiImport } from '@/hooks/momentum/useDoiImport';
@@ -47,44 +47,22 @@ export function PublicationModule({
     handleDoiImport,
     isLoading: isImportLoading,
     error: importError,
-    preview,
-    acceptPreview,
-    clearPreview,
+    clearImportResult,
   } = useDoiImport();
 
   const handleDoiImportClick = async () => {
-    await handleDoiImport(publication.doi);
-  };
-
-  const handleAcceptPreview = () => {
-    if (preview) {
-      const pData = acceptPreview(publication.doi);
+    const result = await handleDoiImport(publication.doi);
+    if (result) {
       updatePublication({
-        ...pData,
-        creators: preview.creators.map(c => ({
+        ...result,
+        creators: result.creators.map(c => ({
           ...c,
           orcidValidated: false,
           orcidName: undefined,
           orcidInstitution: undefined,
         })),
       });
-      clearPreview();
-    }
-  };
-
-  const handleEditManually = () => {
-    if (preview) {
-      const pData = acceptPreview(publication.doi);
-      updatePublication({
-        ...pData,
-        creators: preview.creators.map(c => ({
-          ...c,
-          orcidValidated: false,
-          orcidName: undefined,
-          orcidInstitution: undefined,
-        })),
-      });
-      clearPreview();
+      clearImportResult();
     }
   };
 
@@ -149,11 +127,6 @@ export function PublicationModule({
     }
   };
 
-  const isComplete =
-    publication.doi.length > 0 ||
-    publication.title.length > 0 ||
-    publication.creators.length > 0;
-
   return (
     <ModuleShell
       title="📚 Publication Metadata"
@@ -164,7 +137,7 @@ export function PublicationModule({
           <div className="flex-1">
             <ValidatedInput
               label="DOI"
-              required={false}
+              required
               value={publication.doi}
               onChange={(value) => {
                 updatePublication({ doi: value });
@@ -172,9 +145,10 @@ export function PublicationModule({
               placeholder="10.xxxx/xxxxx"
             />
           </div>
-          <div className="pt-7">
+          <div className="pt-6">
             <ImportButton
               label="📥 Import"
+              size="sm"
               loadingLabel="Importing..."
               onClick={handleDoiImportClick}
               disabled={!publication.doi || isImportLoading}
@@ -186,35 +160,14 @@ export function PublicationModule({
           <p className="text-sm text-error">{importError}</p>
         )}
 
-        {preview && (
-          <ImportPreviewCard
-            title="Imported from CrossRef"
-            fields={[
-              { label: 'Title', value: preview.title },
-              { label: 'Type', value: preview.publicationType },
-              {
-                label: 'Authors',
-                value: preview.creators.map((c) => {
-                  if (c.orcid) return c.orcid;
-                  return c.name;
-                }).join('; '),
-              },
-            ]}
-            onAccept={handleAcceptPreview}
-            onEdit={handleEditManually}
-            onDismiss={clearPreview}
-          />
-        )}
-
-        {!preview && (
-          <>
+        <>
             <div className="text-xs text-base-content/50 text-center py-2 border-t border-b border-base-200">
-              ── Or enter manually ──
+              ── Click Import or enter manually ──
             </div>
 
             <ValidatedInput
               label="Title"
-              required={false}
+              required
               value={publication.title}
               onChange={(value) => {
                 updatePublication({ title: value, titleImported: false });
@@ -226,7 +179,7 @@ export function PublicationModule({
             <div className="grid grid-cols-2 gap-4">
               <SearchableSelect
                 label="Publication Type"
-                required={false}
+                required
                 options={PUBLICATION_TYPES}
                 value={publication.publicationType || null}
                 onChange={(option) => {
@@ -240,13 +193,15 @@ export function PublicationModule({
               />
 
               <div>
-                <label className="label">
+                <label className="label" >
                   <span className="label-text font-medium">Creators</span>
-                  {publication.creatorsImported && (
-                    <span className="badge badge-sm badge-info">
-                      📥 Imported
-                    </span>
-                  )}
+                  <span className="text-error ml-1">*</span>
+                     {publication.creatorsImported && (
+                        <div className="indicator ml-5">
+                            <span className="indicator-item badge badge-primary badge-xs">Imported</span>
+                            <div>&nbsp;</div>
+                        </div>
+                    )}
                 </label>
                 
                 <div className="space-y-3">
@@ -326,8 +281,7 @@ export function PublicationModule({
                 </button>
               </div>
             </div>
-          </>
-        )}
+        </>
       </div>
     </ModuleShell>
   );

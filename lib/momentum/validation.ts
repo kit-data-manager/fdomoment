@@ -82,14 +82,9 @@ export function computeCoreMetadataStatus(basis: CoreMetadata): ModuleStatus {
 }
 
 export function computeDataObjectMetadataStatus(
-  dataset: DataObjectMetadata,
-  template: TemplateType
+  dataset: DataObjectMetadata
 ): ModuleStatus {
-  const isDataObjectTemplate = template === 'published-data-object' || template === 'unpublished-data-object';
-  if (!isDataObjectTemplate) {
-    return 'locked';
-  }
-  
+
   const hasLicense = dataset.license.length > 0;
   const hasMimeType = dataset.mimeType.length > 0;
   const hasDataUrl = dataset.dataUrl.length > 0;
@@ -107,14 +102,8 @@ export function computeDataObjectMetadataStatus(
 }
 
 export function computeSoftwareMetadataStatus(
-  software: SoftwareMetadata,
-  template: TemplateType
+  software: SoftwareMetadata
 ): ModuleStatus {
-  const isSoftwareTemplate = template === 'published-software' || template === 'unpublished-software';
-  if (!isSoftwareTemplate) {
-    return 'locked';
-  }
-  
   const hasRepoUrl = software.repositoryUrl.length > 0;
   const hasLicense = software.license.length > 0;
   

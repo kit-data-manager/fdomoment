@@ -7,24 +7,26 @@ export type ResearchDomain = {
 export type ModuleStatus =
   | 'pristine'
   | 'incomplete'
-  | 'complete'
-  | 'locked';
+  | 'complete';
 
 export type TemplateType = 
-  | 'published-data-object'
-  | 'unpublished-data-object'
+  | 'published-dataobject'
+  | 'unpublished-dataobject'
   | 'published-software'
   | 'unpublished-software'
+  | 'published-publication'
   | null;
 
 export type ModuleIdentifier = 'core' | 'dataobject' | 'software' | 'publication' | 'misc';
 
 export type TemplateConfig = {
   type: TemplateType;
+  baseType: 'dataobject' | 'software' | 'publication';
   label: string;
   description: string;
   icon: string;
-  modules: ModuleIdentifier[];
+  baseModules: ModuleIdentifier[];
+  supportsPublication: boolean;
 };
 
 export type CoreMetadata = {
@@ -81,10 +83,10 @@ export type MiscMetadata = {
 export type EditorState = {
   template: TemplateType;
 
-  basis: CoreMetadata;
-  dataset: DataObjectMetadata;
+  core: CoreMetadata;
+  dataobject: DataObjectMetadata;
   software: SoftwareMetadata;
-  publication: PublicationMetadata | null;
+  publication: PublicationMetadata;
   misc: MiscMetadata | null;
 
   moduleStatus: {

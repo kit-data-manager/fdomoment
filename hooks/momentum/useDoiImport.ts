@@ -8,12 +8,6 @@ interface CreatorWithOrcid {
   orcid?: string;
 }
 
-interface DoiImportPreview {
-  title: string;
-  publicationType: string;
-  creators: CreatorWithOrcid[];
-}
-
 interface PublicationDataWithCreators {
   doi: string;
   title: string;
@@ -24,28 +18,33 @@ interface PublicationDataWithCreators {
   creatorsImported: boolean;
 }
 
+interface DoiImportResult {
+  data: PublicationDataWithCreators;
+  doi: string;
+}
+
 export function useDoiImport() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [preview, setPreview] = useState<DoiImportPreview | null>(null);
+  const [importResult, setImportResult] = useState<DoiImportResult | null>(null);
 
-  const handleDoiImport = async (doi: string): Promise<boolean> => {
-    const normalizedDoi = doi.replace(/^https:\/\/doi\.org\//, '');
+  const handleDoiImport = async (doi: string): Promise<PublicationDataWithCreators | null> => {
+    const normalized = normalizedDoi(doi);
     
-    if (!/^(10\.\d{4,}\/\S+)$/.test(normalizedDoi)) {
+    if (!/^(10\.\d{4,}\/\S+)$/.test(normalized)) {
       setError('Invalid DOI format');
-      return false;
+      return null;
     }
 
     setIsLoading(true);
     setError(null);
-    setPreview(null);
+    setImportResult(null);
 
     try {
       const response = await fetch('/api/resolve-doi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ doiInput: normalizedDoi }),
+        body: JSON.stringify({ doiInput: normalized }),
       });
 
       if (!response.ok) {
@@ -61,20 +60,17 @@ export function useDoiImport() {
 
       const metadata = result.metadata;
 
-      // Primary: Use ORCiD as creator identifier
       const creators: CreatorWithOrcid[] = [];
       
       if (metadata.creators && Array.isArray(metadata.creators)) {
         metadata.creators.forEach((c: { familyName?: string; givenName?: string; orcid?: string }) => {
           if (c.orcid) {
-            // If ORCiD exists, use it as the primary identifier
             creators.push({
               id: crypto.randomUUID(),
               name: c.orcid,
               orcid: c.orcid,
             });
           } else if (c.familyName || c.givenName) {
-            // Fallback to name if no ORCiD
             const name = `${c.familyName || ''} ${c.givenName || ''}`.trim();
             if (name) {
               creators.push({
@@ -86,7 +82,6 @@ export function useDoiImport() {
         });
       }
 
-      // If no creators with ORCiD found, try creatorsString
       if (creators.length === 0 && metadata.creatorsString) {
         metadata.creatorsString.split(',').forEach((name: string) => {
           creators.push({
@@ -96,43 +91,39 @@ export function useDoiImport() {
         });
       }
 
-      setPreview({
+      const data: PublicationDataWithCreators = {
+        doi: normalized,
         title: metadata.title || 'Unknown Title',
+        titleImported: true,
         publicationType: metadata.publicationType || 'Unknown',
-        creators: creators,
-      });
+        publicationTypeImported: true,
+        creators,
+        creatorsImported: true,
+      };
 
-      return true;
+      setImportResult({ data, doi: normalized });
+
+      return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connection failed.');
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const acceptPreview = (doi: string): PublicationDataWithCreators => {
-    if (!preview) {
-      throw new Error('No preview available');
-    }
-
-    return {
-      doi: normalizedDoi(doi),
-      title: preview.title,
-      titleImported: true,
-      publicationType: preview.publicationType,
-      publicationTypeImported: true,
-      creators: preview.creators,
-      creatorsImported: true,
-    };
-  };
-
-  const clearPreview = () => {
-    setPreview(null);
+  const clearImportResult = () => {
+    setImportResult(null);
     setError(null);
   };
 
-  return { handleDoiImport, isLoading, error, preview, acceptPreview, clearPreview };
+  return { 
+    handleDoiImport, 
+    isLoading, 
+    error, 
+    importResult,
+    clearImportResult 
+  };
 }
 
 function normalizedDoi(doi: string): string {
