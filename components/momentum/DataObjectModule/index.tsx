@@ -27,6 +27,11 @@ export function DataObjectModule({
 
   return (
     <ModuleShell title="🗄️ Data Object Metadata" badge="required">
+        <div className="alert alert-soft mb-4">
+                <span className="text-xs">
+                  Either select a suggested attribute key from below or add a custom attribute with your own key and value.
+                </span>
+        </div>
       <div className="space-y-6">
         <SearchableSelect
           label="License"

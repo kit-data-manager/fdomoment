@@ -81,10 +81,12 @@ export function PublicationModule({
   };
 
   return (
-    <ModuleShell
-      title="📚 Publication Metadata"
-      badge="required"
-    >
+    <ModuleShell title="📚 Publication Metadata" badge="required">
+        <div className="alert alert-soft mb-4">
+                <span className="text-xs">
+                  Either select a suggested attribute key from below or add a custom attribute with your own key and value.
+                </span>
+        </div>
       <div className="space-y-6">
         <div className="flex gap-3">
           <div className="flex-1">

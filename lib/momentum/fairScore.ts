@@ -11,8 +11,8 @@ export function calculateFairScore(state: EditorState): FairScore {
   }
   
   if (state.core.researchDomain) {
-    findable += 20;
-    interoperable += 30;
+    findable += 30;
+    interoperable += 20;
   }
 
   if (state.dataobject.dataUrlValidated) {
@@ -41,24 +41,29 @@ export function calculateFairScore(state: EditorState): FairScore {
   if (state.software.readmeUrl.length > 0) {
     reusable += 30;
   }
+
+    if (state.software.repositoryType?.length && state.software.repositoryType != "Other") {
+        findable += 30;
+        accessible += 30;
+    }
   
   if (state.publication && state.publication.doi.length > 0 && state.publication.title.length > 0) {
       findable += 40;
-      accessible += 30;
   }
 
   if(state.misc && (state.misc.entries.length > 0)) {
+      let attribIncrease = 0;
       state.misc.entries.forEach(entry => {
          if(Object.hasOwn(entry, 'typeDef')){
              //add 10 points for typed attributes
-             reusable += 10;
-             interoperable += 10;
+             attribIncrease += 10;
          }else{
              //add 5 points for custom attributes
-             reusable += 5
-             interoperable += 5;
+             attribIncrease += 5;
          }
       })
+      reusable += Math.min(attribIncrease, 20);
+      interoperable += Math.min(attribIncrease, 20);
   }
 
   const total = Math.min(Math.round((findable + accessible + interoperable + reusable) / 4), 100);
@@ -91,10 +96,10 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  const isDataObjectTemplate = state.template === 'dataobject';
-  const isSoftwareTemplate = state.template === 'software';
+  const hasDataObjectModule = state.enabledModules.find((val) => val === "dataobject");
+  const hasSoftwareModule = state.enabledModules.find((val) => val === "software");
 
-  if (isDataObjectTemplate && !state.dataobject.dataUrlValidated) {
+  if (hasDataObjectModule && !state.dataobject.dataUrlValidated) {
     tips.push({
       text: 'A valid data object URL increases the F-Score by 30% and A-Score by +40%.',
       targetModule: 'dataobject',
@@ -102,29 +107,37 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     });
   }
 
-  if (isSoftwareTemplate && !state.software.repositoryUrl) {
+    if (hasSoftwareModule && (state.software.repositoryType === "Other")) {
+        tips.push({
+            text: 'Using a standard software repository increases F- and A-Score by +30% each.',
+            targetModule: 'software',
+            scoreGain: 60,
+        });
+    }
+
+  if (hasSoftwareModule && !state.software.repositoryUrl) {
     tips.push({
-      text: 'A public repository URL increases F- and A-Score by +30% each.',
+      text: 'A software repository URL increases F- and A-Score by +30% each.',
       targetModule: 'software',
       scoreGain: 60,
     });
   }
 
-  const hasPublicationModule = state.template?.startsWith('published-');
+  const hasPublicationModule = state.enabledModules.find((val) => val === "publication");
 
   if (hasPublicationModule && (!state.publication?.doi || !state.publication.title)) {
     tips.push({
-      text: 'Publication information increase the F-Score by 40% and the A-Score by +30%.',
+      text: 'Publication information increase the F-Score by 40%.',
       targetModule: 'publication',
-      scoreGain: 70,
+      scoreGain: 40,
     });
   }
 
   if (!state.misc && state.template) {
     tips.push({
-      text: 'Additional metadata improve the I-Score by up to 20% and R-Score by up to 20%.',
+      text: 'Additional metadata may increase I- and R-Score by up to 20%.',
       targetModule: 'misc',
-      scoreGain: 10,
+      scoreGain: 40,
     });
   }
 

@@ -24,8 +24,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" id="daisyui">
+    <html lang="en" id="daisyui" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem('fdmoment-user-settings');
+                  let theme = 'system';
+                  if (stored) {
+                    try {
+                      const settings = JSON.parse(stored);
+                      theme = settings.theme || 'system';
+                    } catch (e) {}
+                  }
+                  
+                  const root = document.documentElement;
+                  if (theme === 'system') {
+                    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    root.setAttribute('data-theme', systemDark ? 'business' : 'silk');
+                  } else {
+                    root.setAttribute('data-theme', theme === 'dark' ? 'business' : 'silk');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         <Providers>
           {children}
         </Providers>

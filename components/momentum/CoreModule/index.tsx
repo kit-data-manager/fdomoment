@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, {useState} from 'react';
 import { CoreMetadata, ResearchDomain } from '@/lib/momentum/types';
 import { ModuleShell } from '../ModuleShell';
 import { SearchableSelect } from '../ui/SearchableSelect';
@@ -10,6 +10,7 @@ import { RESEARCH_DOMAINS } from '@/lib/momentum/constants';
 import { validateOrcidFormat } from '@/lib/momentum/validation';
 import { useCoreModule } from './useCoreModule';
 import { CoreModuleProps } from './types';
+import SettingsModal from "@/components/SettingsModal";
 
 export function CoreModule({
   basis,
@@ -17,21 +18,27 @@ export function CoreModule({
   onNext,
   showNext = true,
   showPrev = false,
-  onNextModule,
   onPrevModule,
 }: CoreModuleProps) {
   const { handleOrcidChange } = useCoreModule(updateCore);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
 
 
   return (
-    <ModuleShell
-      title="📋 Core Metadata"
-      badge="required"
-    >
-      <p className="text-sm text-base-content/70 mb-6">
-        This core metadata ensures basic findability and includes ownership information.
-      </p>
+    <ModuleShell title="📋 Core Metadata" badge="required">
+        <div className="alert alert-soft mb-4">
+            <span className="text-xs">
+                Add basic context and owner information to make your FAIR Digital Object findable and reusable.<br/><br/>
+               💡 You may store both values in your <button
+                type="button"
+                onClick={() => {setIsSettingsOpen(true)}}
+                className="text-xs text-primary hover:text-primary-focus transition-colors font-medium"
+            >
+                  Profile →
+                </button>
+            </span>
+        </div>
 
       <div className="space-y-6">
         <SearchableSelect
@@ -90,6 +97,11 @@ export function CoreModule({
         onPrev={onPrevModule}
         onNext={onNext}
       />
+        <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+        />
     </ModuleShell>
+
   );
 }
