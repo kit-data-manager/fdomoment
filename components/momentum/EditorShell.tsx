@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { EditorState } from '@/lib/momentum/types';
-import { EditorNavigator } from './navigator/EditorNavigator';
-import { CoreModule } from './CoreModule';
-import { FairScoreBar } from './FairScoreBar';
-import {TemplateSelection} from "./TemplateSelection";
-import {DataObjectModule} from "./DataObjectModule";
-import {SoftwareModule} from "./SoftwareModule";
+import { EditorNavigator } from '@/components/momentum/Navigator/EditorNavigator';
+import { CoreModule } from '@/components/momentum/CoreModule';
+import { FairScoreBar } from '@/components/momentum/FairScoreBar';
+import {TemplateSelection} from "@/components/momentum/TemplateSelection";
+import {DataObjectModule} from "@/components/momentum/DataObjectModule";
+import {SoftwareModule} from "@/components/momentum/SoftwareModule";
 import {PublicationModule} from "./PublicationModule";
-import {AdditionalAttributesModule} from "./AdditionalAttributesModule";
+import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
 
 interface EditorShellProps {
   state: EditorState;
@@ -89,8 +89,6 @@ export function EditorShell(props: EditorShellProps) {
 
   const showFullInterface = state.template !== null;
 
-
-
   const renderActiveModule = () => {
       switch (state.activeModule) {
       case 'core':
@@ -103,13 +101,6 @@ export function EditorShell(props: EditorShellProps) {
             showPrev={false}
             onNextModule={handleNextModule}
             onPrevModule={handlePrevModule}
-          />
-        );
-
-      case 'template-select':
-        return (
-          <TemplateSelection
-            onSelectTemplate={handleTemplateSelect}
           />
         );
 

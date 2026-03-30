@@ -64,32 +64,18 @@ export function useDoiImport() {
       
       if (metadata.creators && Array.isArray(metadata.creators)) {
         metadata.creators.forEach((c: { familyName?: string; givenName?: string; orcid?: string }) => {
+          //only use creators with orcid
           if (c.orcid) {
             creators.push({
               id: crypto.randomUUID(),
               name: c.orcid,
               orcid: c.orcid,
             });
-          } else if (c.familyName || c.givenName) {
-            const name = `${c.familyName || ''} ${c.givenName || ''}`.trim();
-            if (name) {
-              creators.push({
-                id: crypto.randomUUID(),
-                name,
-              });
-            }
           }
         });
       }
 
-      if (creators.length === 0 && metadata.creatorsString) {
-        metadata.creatorsString.split(',').forEach((name: string) => {
-          creators.push({
-            id: crypto.randomUUID(),
-            name: name.trim()
-          });
-        });
-      }
+      const creatorsImported = creators.length != 0;
 
       const data: PublicationDataWithCreators = {
         doi: normalized,
@@ -98,7 +84,7 @@ export function useDoiImport() {
         publicationType: metadata.publicationType || 'Unknown',
         publicationTypeImported: true,
         creators,
-        creatorsImported: true,
+        creatorsImported: creatorsImported,
       };
 
       setImportResult({ data, doi: normalized });

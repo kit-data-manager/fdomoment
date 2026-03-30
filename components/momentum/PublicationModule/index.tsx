@@ -10,8 +10,6 @@ import { PUBLICATION_TYPES } from '@/lib/momentum/constants';
 import { useDoiImport } from '@/hooks/momentum/useDoiImport';
 import { usePublicationModule } from './usePublicationModule';
 import { PublicationModuleProps, CreatorWithOrcid } from './types';
-import { validateOrcidFormat } from '@/lib/momentum/validation';
-import { getOrcidMetadata } from '@/utils/orcid-client';
 
 interface CreatorInputProps {
   creator: CreatorWithOrcid;
@@ -84,7 +82,7 @@ export function PublicationModule({
     <ModuleShell title="📚 Publication Metadata" badge="required">
         <div className="alert alert-soft mb-4">
                 <span className="text-xs">
-                  Either select a suggested attribute key from below or add a custom attribute with your own key and value.
+                  Add publication-related information starting with a DOI. Then,
                 </span>
         </div>
       <div className="space-y-6">

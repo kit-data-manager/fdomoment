@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import {Icon} from "@iconify/react";
 
 interface Option {
   id: string;
@@ -69,7 +70,6 @@ export function SearchableSelect({
   const handleQuickSelect = (option: Option) => {
     onChange(option);
   };
-
   return (
     <div className="w-full relative" ref={containerRef}>
       <label className="label">
@@ -132,14 +132,13 @@ export function SearchableSelect({
       {quickOptions && quickOptions.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {quickOptions.map(option => (
-            <button
+            <div
               key={option.id}
-              type="button"
               onClick={() => handleQuickSelect(option)}
-              className="badge badge-outline hover:bg-primary hover:text-primary-content transition-colors cursor-pointer"
+              className="badge badge-soft badge-primary hover:bg-primary hover:text-primary-content transition-colors cursor-pointer"
             >
               {option.label}
-            </button>
+            </div>
           ))}
         </div>
       )}

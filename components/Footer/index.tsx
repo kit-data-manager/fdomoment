@@ -1,7 +1,9 @@
 'use client';
 
 import { useKeycloak } from '@/context/KeycloakContext';
-import { LogIn, LogOut, Github, Copyright } from 'lucide-react';
+import { LogIn, LogOut, Copyright } from 'lucide-react';
+import { SiGithub } from '@icons-pack/react-simple-icons';
+
 
 export function Footer() {
   const { authenticated, login, logout, userName } = useKeycloak();
@@ -40,12 +42,12 @@ export function Footer() {
 
           {/* GitHub Link */}
           <a
-            href="https://github.com/kit-dm/fdomoment"
+            href="https://github.com/kit-data-manager/fdomoment"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 hover:underline"
           >
-            <Github className="w-4 h-4" />
+            <SiGithub className="w-4 h-4" />
             <span>View on GitHub</span>
           </a>
 

@@ -3,7 +3,6 @@ import { DoiMetadata } from '@/utils/doi-utils';
 
 interface CrossrefResponse {
   message: {
-    items: Array<{
       title?: string[];
       publisher?: string;
       type?: string;
@@ -15,7 +14,6 @@ interface CrossrefResponse {
         family?: string;
         ORCID?: string;
         orcid?: string;
-      }>;
     }>;
   };
 }
@@ -128,7 +126,7 @@ const fallbackResolveDoi = async (doi: string): Promise<DoiMetadata | null> => {
         .filter((n): n is string => Boolean(n))
         .join(', ');
       if (creatorNames) metadata.creatorsString = creatorNames;
-      
+
       const orcid = extractCreatorOrcid(html);
       if (orcid) {
         metadata.creators = [{ givenName: '', familyName: '', orcid }];
@@ -243,12 +241,8 @@ const resolveCrossref = async (doi: string): Promise<DoiMetadata | null> => {
     }
     
     const data = (await response.json()) as CrossrefResponse;
-    
-    if (!data.message?.items?.[0]) {
-      return null;
-    }
-    
-    const item = data.message.items[0];
+
+    const item = data.message;
     const metadata: DoiMetadata = {};
     
     if (item?.type) {
@@ -281,13 +275,15 @@ const resolveCrossref = async (doi: string): Promise<DoiMetadata | null> => {
       const authors = item.author as AuthorType[];
       const orcid = authors.find(a => a.orcid || a.ORCID);
       const orcidValue = orcid ? (orcid.ORCID || orcid.orcid || '').replace('https://orcid.org/', '') : undefined;
-      
+
+      metadata.creators = []
+      if(orcidValue){
       metadata.creators = authors.map(a => ({
         givenName: a.given,
         familyName: a.family,
         orcid: orcidValue
       }));
-      
+      }
       const creatorNames = metadata.creators
         .filter((c): c is NonNullable<typeof c> => Boolean(c))
         .map(c => `${c.familyName || ''} ${c.givenName || ''}`.trim())
@@ -427,7 +423,7 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-      
+
       const isZenodoDoi = extractZenodoRecordId(doi) !== null;
       
       if (isZenodoDoi) {

@@ -21,7 +21,7 @@ export function DataObjectModule({
   showNext = true,
   showPrev = false,
   onNextModule,
-  onPrevModule,
+  onPrevModule
 }: DataObjectModuleProps) {
   const { handleDataUrlChange } = useDataObjectModule(dataobject, updateDataobject);
 
@@ -29,15 +29,22 @@ export function DataObjectModule({
     <ModuleShell title="🗄️ Data Object Metadata" badge="required">
         <div className="alert alert-soft mb-4">
                 <span className="text-xs">
-                  Either select a suggested attribute key from below or add a custom attribute with your own key and value.
+                  Add data object related attributes, i.e., license, mime type, and data object URL. Depending on the selected
+                  research field in <button
+                    type="button"
+                    onClick={onPrevModule}
+                    className="text-xs text-primary hover:text-primary-focus transition-colors font-medium"
+                >
+                  Core Attributes →
+                </button>, you may get quick select mime types and licenses.
                 </span>
         </div>
-      <div className="space-y-6">
-        <SearchableSelect
-          label="License"
-          required
-          options={DATASET_LICENSES}
-          value={dataobject.license || null}
+        <div className="space-y-6">
+            <SearchableSelect
+                label="License"
+                required
+                options={DATASET_LICENSES}
+                value={dataobject.license || null}
           onChange={(option) => {
             updateDataobject({
               license: option.id,
@@ -45,7 +52,7 @@ export function DataObjectModule({
             });
           }}
           placeholder="Choose license..."
-          hint={getLicenseHint(core.researchDomain)}
+          quickOptions={getLicenseHint(core.researchDomain)}
         />
 
         <SearchableSelect
@@ -61,7 +68,7 @@ export function DataObjectModule({
         />
 
         <ValidatedInput
-          label="Data URL"
+          label="Data Object URL"
           required
           type="url"
           value={dataobject.dataUrl}

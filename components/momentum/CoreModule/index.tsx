@@ -34,7 +34,7 @@ export function CoreModule({
                 type="button"
                 onClick={() => {setIsSettingsOpen(true)}}
                 className="text-xs text-primary hover:text-primary-focus transition-colors font-medium"
-            >
+                >
                   Profile →
                 </button>
             </span>

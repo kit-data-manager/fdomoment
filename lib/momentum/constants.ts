@@ -100,16 +100,17 @@ export const KNOWN_REPOSITORIES = [
   { pattern: /osf\.io/, name: 'OSF' },
 ];
 
-export function getLicenseHint(researchDomain: ResearchDomain | null): string {
-  if (!researchDomain) return '';
+export function getLicenseHint(researchDomain: ResearchDomain | null) {
+  if (!researchDomain) return [];
+
   const defaultLicense = DOMAIN_DEFAULT_LICENSE[researchDomain.id];
   if (defaultLicense) {
     const license = DATASET_LICENSES.find(l => l.id === defaultLicense);
     if (license) {
-      return `Recommended for ${researchDomain.label}`;
+      return [{id: license.id, label:license.label}];//`Recommended for ${researchDomain.label}`;
     }
   }
-  return '';
+  return [];
 }
 
 export function getCommonMimeTypes(researchDomain: ResearchDomain | null) {
