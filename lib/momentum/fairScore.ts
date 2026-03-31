@@ -82,7 +82,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (!state.core.orcidValidated) {
     tips.push({
-      text: 'A valid ORCiD increases the F-Score by +20%.',
+      text: 'A valid ORCiD increases the Findability by +20%.',
       targetModule: 'core',
       scoreGain: 20,
     });
@@ -90,7 +90,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (!state.core.researchDomain) {
     tips.push({
-      text: 'A Research Domains increases the F-Score by 30% and I-Score by +20%.',
+      text: 'A Research Domains increases Findability by 30% and Interoperability by +20%.',
       targetModule: 'core',
       scoreGain: 50,
     });
@@ -101,7 +101,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (hasDataObjectModule && !state.dataobject.dataUrlValidated) {
     tips.push({
-      text: 'A valid data object URL increases the F-Score by 30% and A-Score by +40%.',
+      text: 'A valid data object URL increases the Findability by 30% and Accessibility by +40%.',
       targetModule: 'dataobject',
       scoreGain: 70,
     });
@@ -109,7 +109,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
     if (hasSoftwareModule && (state.software.repositoryType === "Other")) {
         tips.push({
-            text: 'Using a standard software repository increases F- and A-Score by +30% each.',
+            text: 'Using a standard software repository increases Findability and Accessibility by +30% each.',
             targetModule: 'software',
             scoreGain: 60,
         });
@@ -117,7 +117,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (hasSoftwareModule && !state.software.repositoryUrl) {
     tips.push({
-      text: 'A software repository URL increases F- and A-Score by +30% each.',
+      text: 'A software repository URL increases Findability and Accessibility by +30% each.',
       targetModule: 'software',
       scoreGain: 60,
     });
@@ -127,7 +127,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (hasPublicationModule && (!state.publication?.doi || !state.publication.title)) {
     tips.push({
-      text: 'Publication information increase the F-Score by 40%.',
+      text: 'Publication information increase Findability by 40%.',
       targetModule: 'publication',
       scoreGain: 40,
     });
@@ -135,7 +135,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
 
   if (!state.misc && state.template) {
     tips.push({
-      text: 'Additional metadata may increase I- and R-Score by up to 20%.',
+      text: 'Additional metadata may increase Interoperability and Reusability by up to 20%.',
       targetModule: 'misc',
       scoreGain: 40,
     });

@@ -20,6 +20,7 @@ import {SoftwareModule} from "@/components/momentum/SoftwareModule";
 import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
 import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
+import {calculateFairScore} from "@/lib/momentum/fairScore";
 
 interface EditorShellProps {
   state: EditorState;
@@ -66,7 +67,12 @@ export function EditorShell(props: EditorShellProps) {
         default: console.log("Unknown/unhandled module: ", module);
       }
     })
+    const score = calculateFairScore(state);
+    console.log("SC", score)
     console.log('Creating FDO', fdoRecord);
+    //remote call to TPIDM
+    fdoRecord.pid = crypto.randomUUID();
+    //persist fdoRecord.pid in database connected to logged in user id
   };
 
   const collectSoftwareAttributes = (metadata:SoftwareMetadata, fdoRecord:RecordData):RecordData => {

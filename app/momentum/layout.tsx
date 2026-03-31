@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { EditorHeader } from '@/components/momentum/EditorHeader';
+import { KeycloakWrapper } from '@/components/Providers';
 
 export default function EditorLayout({
   children,
@@ -9,11 +10,13 @@ export default function EditorLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
-      <EditorHeader />
-      <main className="flex-1 overflow-hidden">
-        {children}
-      </main>
-    </div>
+    <KeycloakWrapper>
+      <div className="flex flex-col h-screen overflow-hidden">
+        <EditorHeader />
+        <main className="flex-1 overflow-hidden">
+          {children}
+        </main>
+      </div>
+    </KeycloakWrapper>
   );
 }

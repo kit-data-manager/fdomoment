@@ -3,11 +3,28 @@
 import React, { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { SettingsModal } from '@/components/SettingsModal';
+import { useKeycloak } from '@/context/KeycloakContext';
 import Image from "next/image";
 import Link from "next/link";
+import { LogIn, LogOut } from "lucide-react";
 
 export function EditorHeader() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { keycloak, authenticated, login, logout, userName } = useKeycloak();
+
+  const handleLogin = () => {
+    if (keycloak) {
+      keycloak.login();
+    }
+  };
+
+  const handleLogout = () => {
+    if (keycloak) {
+      keycloak.logout({
+        redirectUri: window.location.origin,
+      });
+    }
+  };
 
   return (
     <>
@@ -47,13 +64,44 @@ export function EditorHeader() {
           >
             Help
           </button>
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm"
-            onClick={() => setIsSettingsOpen(true)}
-          >
-            👤 Profile
-          </button>
+          {authenticated && userName ? (
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-1">
+                <span>👤 Logged In</span>
+              </div>
+              <ul tabIndex={0} className="dropdown-content menu p-2 shadow-lg bg-base-100 rounded-box w-52 border border-base-200">
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => setIsSettingsOpen(true)}
+                  >
+                    Profile Settings
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="text-error"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </div>
+          ) : keycloak ? (
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm gap-1"
+              onClick={handleLogin}
+            >
+              <LogIn className="w-4 h-4" />
+              Login
+            </button>
+          ) : (
+            <span className="loading loading-spinner loading-sm"></span>
+          )}
           <ThemeToggle />
 
         </div>
