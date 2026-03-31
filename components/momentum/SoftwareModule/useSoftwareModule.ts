@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SoftwareMetadata } from '@/lib/momentum/types';
+import { validateUrl } from '@/lib/momentum/validation';
 import { RepositoryType } from './types';
 
 const STORAGE_KEY = 'fdo-editor-access-tokens';
@@ -28,6 +29,7 @@ export function useSoftwareModule(
   const [showSuccess, setShowSuccess] = useState(false);
   const [isAutoImportLoading, setIsAutoImportLoading] = useState(false);
   const [autoImportError, setAutoImportError] = useState<string | null>(null);
+  const [validationTimeout, setValidationTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const parseRepoType = useCallback((url: string): RepositoryType => {
     try {
@@ -43,6 +45,39 @@ export function useSoftwareModule(
       return 'Other';
     }
   }, []);
+
+  const triggerUrlValidation = useCallback((url: string) => {
+    if (validationTimeout) {
+      clearTimeout(validationTimeout);
+    }
+
+    const timeout = setTimeout(async () => {
+      if (url.length > 0) {
+        const result = await validateUrl(url);
+        updateSoftware({
+          repositoryUrlValidated: result.valid,
+        });
+      }
+    }, 800);
+
+    setValidationTimeout(timeout);
+  }, [validationTimeout, updateSoftware]);
+
+  useEffect(() => {
+    return () => {
+      if (validationTimeout) {
+        clearTimeout(validationTimeout);
+      }
+    };
+  }, [validationTimeout]);
+
+  const handleRepositoryUrlChange = useCallback((value: string) => {
+    updateSoftware({
+      repositoryUrl: value,
+      repositoryUrlValidated: false,
+    });
+    triggerUrlValidation(value);
+  }, [triggerUrlValidation, updateSoftware]);
 
   const handleAutoImportClick = useCallback(async () => {
     if (!software.repositoryUrl) return;
@@ -109,6 +144,7 @@ export function useSoftwareModule(
     autoImportError,
     parseRepoType,
     handleAutoImportClick,
+    handleRepositoryUrlChange,
     handleNext,
     handleAddPublication,
     handleSkip,

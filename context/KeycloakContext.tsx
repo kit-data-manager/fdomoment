@@ -6,6 +6,7 @@ import Keycloak, { KeycloakConfig, KeycloakInitOptions } from 'keycloak-js';
 interface KeycloakContextType {
   keycloak: Keycloak | null;
   authenticated: boolean;
+  isLoading: boolean;
   login: () => void;
   logout: () => void;
   token: string | undefined;
@@ -23,6 +24,7 @@ const keycloakConfig: KeycloakConfig = {
 export function KeycloakProvider({ children }: { children: ReactNode }) {
   const [keycloak, setKeycloak] = useState<Keycloak | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
     kc.init(initOptions).then((auth) => {
       setKeycloak(kc);
       setAuthenticated(auth);
+      setIsLoading(false);
       if (auth && kc.tokenParsed) {
         setUserName(kc.tokenParsed['preferred_username'] || kc.tokenParsed['name']);
       }
@@ -44,6 +47,7 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
       console.error('Keycloak initialization error:', error);
       setKeycloak(kc);
       setAuthenticated(false);
+      setIsLoading(false);
     });
   }, []);
 
@@ -62,7 +66,7 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <KeycloakContext.Provider value={{ keycloak, authenticated, login, logout, token: keycloak?.token, userName }}>
+    <KeycloakContext.Provider value={{ keycloak, authenticated, isLoading, login, logout, token: keycloak?.token, userName }}>
       {children}
     </KeycloakContext.Provider>
   );
@@ -71,7 +75,15 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
 export function useKeycloak() {
   const context = useContext(KeycloakContext);
   if (context === undefined) {
-    throw new Error('useKeycloak must be used within a KeycloakProvider');
+    return {
+      keycloak: null,
+      authenticated: false,
+      isLoading: false,
+      login: () => {},
+      logout: () => {},
+      token: undefined,
+      userName: undefined,
+    };
   }
   return context;
 }

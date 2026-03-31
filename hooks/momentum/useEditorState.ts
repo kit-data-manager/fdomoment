@@ -5,6 +5,8 @@ import {
   EditorState,
   CoreMetadata,
   DataObjectMetadata,
+  ModuleIdentifier,
+  MODULE_ORDER,
   SoftwareMetadata,
   PublicationMetadata,
   MiscEntry,
@@ -69,6 +71,7 @@ function createInitialState(): EditorState {
     software: {
       repositoryType: 'GitHub',
       repositoryUrl: '',
+      repositoryUrlValidated: false,
       license: '',
       licenseImported: false,
       readmeUrl: '',
@@ -169,19 +172,56 @@ export function useEditorState() {
 
     // Get enabled modules from state
     const enabled = state.enabledModules;
-    
-    // Must have at least one content module (dataobject, software, or publication)
-    const hasDataObject = enabled.includes('dataobject') && moduleStatus.dataobject === 'complete';
-    const hasSoftware = enabled.includes('software') && moduleStatus.software === 'complete';
-    const hasPublication = enabled.includes('publication') && moduleStatus.publication === 'complete';
-    
-    // At least one content module must be enabled and complete
-    const hasContentModule = hasDataObject || hasSoftware || hasPublication;
-    
-    // If misc is enabled, it's optional (doesn't block creation)
-    
-    return hasContentModule;
+
+    let result = true;
+    if(enabled.includes('dataobject')){
+      result = moduleStatus.dataobject === 'complete';
+    }
+
+    if(enabled.includes('software')){
+      result = result && moduleStatus.software === 'complete';
+    }
+
+    if(enabled.includes('publication')){
+      result = result && moduleStatus.publication === 'complete';
+    }
+
+    return result;
   }, [moduleStatus, state.enabledModules]);
+
+  const getNextModule = (currentModule: ModuleIdentifier): ModuleIdentifier | null => {
+    const currentIndex = MODULE_ORDER.indexOf(currentModule);
+    for (let i = currentIndex + 1; i < MODULE_ORDER.length; i++) {
+      if (state.enabledModules.includes(MODULE_ORDER[i])) {
+        return MODULE_ORDER[i];
+      }
+    }
+    return null;
+  };
+
+  const getPrevModule = (currentModule: ModuleIdentifier): ModuleIdentifier | null => {
+    const currentIndex = MODULE_ORDER.indexOf(currentModule);
+    for (let i = currentIndex - 1; i >= 0; i--) {
+      if (state.enabledModules.includes(MODULE_ORDER[i]) || MODULE_ORDER[i] === 'core') {
+        return MODULE_ORDER[i];
+      }
+    }
+    return null;
+  };
+
+  const isModuleEnabled = (moduleId: ModuleIdentifier): boolean => {
+    return state.enabledModules.includes(moduleId);
+  };
+
+  const hasSubsequentModule = (currentModule: ModuleIdentifier): boolean => {
+    const currentIndex = MODULE_ORDER.indexOf(currentModule);
+    for (let i = currentIndex + 1; i < MODULE_ORDER.length; i++) {
+      if (state.enabledModules.includes(MODULE_ORDER[i])) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   return {
     state: { ...state, moduleStatus },

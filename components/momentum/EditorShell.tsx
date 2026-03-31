@@ -1,7 +1,16 @@
 'use client';
 
 import React from 'react';
-import { EditorState } from '@/lib/momentum/types';
+import {
+  Creator,
+  DataObjectMetadata,
+  EditorState, MiscEntry,
+  MiscMetadata,
+  ModuleIdentifier,
+  MODULE_ORDER,
+  PublicationMetadata,
+  SoftwareMetadata
+} from '@/lib/momentum/types';
 import { EditorNavigator } from '@/components/momentum/Navigator/EditorNavigator';
 import { CoreModule } from '@/components/momentum/CoreModule';
 import { FairScoreBar } from '@/components/momentum/FairScoreBar';
@@ -10,6 +19,7 @@ import {DataObjectModule} from "@/components/momentum/DataObjectModule";
 import {SoftwareModule} from "@/components/momentum/SoftwareModule";
 import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
+import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
 
 interface EditorShellProps {
   state: EditorState;
@@ -39,13 +49,62 @@ export function EditorShell(props: EditorShellProps) {
   } = props;
 
   const handleCreate = () => {
-    console.log('Creating FDO', state);
+    let fdoRecord:RecordData = createRecordData();
+
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', state['core'].orcid);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HelmholtzResearchField', state['core'].researchDomain?.label);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/CORE');
+
+    state['enabledModules'].
+    filter((module) => module != 'core').
+    forEach(module => {
+      switch (module as ModuleIdentifier) {
+        case "software": fdoRecord = collectSoftwareAttributes(state['software'], fdoRecord);break;
+        case "dataobject": fdoRecord = collectDataObjectAttributes(state['dataobject'], fdoRecord);break;
+        case "publication": fdoRecord = collectPublicationAttributes(state['publication'], fdoRecord);break;
+        case "misc": fdoRecord = collectMiscAttributes(state['misc'], fdoRecord);break;
+        default: console.log("Unknown/unhandled module: ", module);
+      }
+    })
+    console.log('Creating FDO', fdoRecord);
   };
 
-  const moduleOrder = ['core', 'dataobject', 'software', 'publication', 'misc'];
-  
+  const collectSoftwareAttributes = (metadata:SoftwareMetadata, fdoRecord:RecordData):RecordData => {
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_REPOSITORY_TYPE', metadata.repositoryType);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_LOCATION', metadata.repositoryUrl);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_LICENCE', metadata.license);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/README_LOCATION', metadata.readmeUrl);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/SOFTWARE');
+    return fdoRecord;
+  }
+
+  const collectDataObjectAttributes = (metadata:DataObjectMetadata, fdoRecord:RecordData):RecordData => {
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DATA_OBJECT_LOCATION', metadata.dataUrl);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DATA_OBJECT_LICENCE', metadata.license);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/MIME_TYPE', metadata.mimeType);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/DATA_OBJECT');
+    return fdoRecord;
+  }
+
+  const collectPublicationAttributes = (metadata:PublicationMetadata, fdoRecord:RecordData):RecordData => {
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DOI', metadata.doi);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_TITLE', metadata.title);
+
+    metadata.creators.forEach((creator:Creator) => {
+      fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_CREATOR', creator.id);
+    })
+  return fdoRecord;
+  }
+  const collectMiscAttributes = (metadata:MiscMetadata | null, fdoRecord:RecordData):RecordData => {
+    if(!metadata) return fdoRecord;
+    metadata.entries.forEach((entry:MiscEntry) => {
+      fdoRecord = addRecordEntry(fdoRecord, entry.key, entry.value);
+    })
+    return fdoRecord;
+  }
+
   const getCurrentModuleIndex = () => {
-    return moduleOrder.indexOf(state.activeModule);
+    return MODULE_ORDER.indexOf(state.activeModule as ModuleIdentifier);
   };
 
   const handleCoreNext = () => {
@@ -63,9 +122,9 @@ export function EditorShell(props: EditorShellProps) {
   const handleNextModule = () => {
     const currentIndex = getCurrentModuleIndex();
     // Find the next enabled module
-    for (let i = currentIndex + 1; i < moduleOrder.length; i++) {
-      if (state.enabledModules.includes(moduleOrder[i])) {
-        setActiveModule(moduleOrder[i]);
+    for (let i = currentIndex + 1; i < MODULE_ORDER.length; i++) {
+      if (state.enabledModules.includes(MODULE_ORDER[i])) {
+        setActiveModule(MODULE_ORDER[i]);
         break;
       }
     }
@@ -75,8 +134,8 @@ export function EditorShell(props: EditorShellProps) {
     const currentIndex = getCurrentModuleIndex();
     // Find the previous enabled module
     for (let i = currentIndex - 1; i >= 0; i--) {
-      if (state.enabledModules.includes(moduleOrder[i]) || moduleOrder[i] === 'core') {
-        setActiveModule(moduleOrder[i]);
+      if (state.enabledModules.includes(MODULE_ORDER[i]) || MODULE_ORDER[i] === 'core') {
+        setActiveModule(MODULE_ORDER[i]);
         break;
       }
     }

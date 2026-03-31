@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { SettingsModal } from '@/components/SettingsModal';
 import Image from "next/image";
+import Link from "next/link";
 
 export function EditorHeader() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -12,9 +13,9 @@ export function EditorHeader() {
     <>
       <div className="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
         <div className="flex-1">
-          <a
+          <Link
             href="/"
-            target="_blank"
+            target="_self"
             rel="noopener noreferrer"
             className="text-lg font-semibold hover:text-primary transition-colors"
           >
@@ -36,7 +37,7 @@ export function EditorHeader() {
 
               </div>
 
-          </a>
+          </Link>
         </div>
         <div className="flex-none gap-2">
           <button

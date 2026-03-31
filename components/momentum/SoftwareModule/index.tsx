@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, {useState} from 'react';
 import { ModuleShell } from '../ModuleShell';
 import { ValidatedInput } from '../ui/ValidatedInput';
 import { ImportButton } from '../ui/ImportButton';
@@ -9,6 +9,7 @@ import { SOFTWARE_LICENSES } from '@/lib/momentum/constants';
 import { SearchableSelect } from '../ui/SearchableSelect';
 import { useSoftwareModule } from './useSoftwareModule';
 import { SoftwareModuleProps, RepositoryType } from './types';
+import SettingsModal from "@/components/SettingsModal";
 
 export function SoftwareModule({
   software,
@@ -21,58 +22,32 @@ export function SoftwareModule({
   onPrevModule,
 }: SoftwareModuleProps) {
   const {
-    showSuccess,
     isAutoImportLoading,
     autoImportError,
     parseRepoType,
     handleAutoImportClick,
-    handleAddPublication,
-    handleSkip,
+    handleRepositoryUrlChange,
   } = useSoftwareModule(software, updateSoftware, activatePublication, setActiveModule);
 
-
-
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const repoType = parseRepoType(software.repositoryUrl);
-
-  if (showSuccess) {
-    return (
-      <ModuleShell title="💻 Software Metadata" badge="required">
-        <div className="bg-green-50 border border-green-200 rounded-md p-4">
-          <p className="text-sm text-green-800 mb-2">
-            ✅ Software Metadata complete!
-          </p>
-          <p className="text-sm text-green-700 mb-3">
-            Do you want to add more metadata?
-          </p>
-          <div className="text-sm text-green-700 mb-4">
-            💡 Add Publication Metadata: +22% Score
-          </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleAddPublication}
-              className="bg-blue-600 text-white text-sm px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              + Add module
-            </button>
-            <button
-              type="button"
-              onClick={handleSkip}
-              className="bg-white border border-gray-300 text-gray-700 text-sm px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Skip →
-            </button>
-          </div>
-        </div>
-      </ModuleShell>
-    );
-  }
 
   return (
     <ModuleShell title="💻 Software Metadata" badge="required">
         <div className="alert alert-soft mb-4">
                 <span className="text-xs">
-                  Either select a suggested attribute key from below or add a custom attribute with your own key and value.
+                    To extract software metadata, first select the repository platform where your software is hosted and
+                    paste the repository URL. From known platforms you may then 📥 Import all required metadata
+                    automatically. Afterwards, if required, complete missing fields manually.<br/><br/>
+                    💡 For known repository platforms you may set an Access Token in your <button
+                    type="button"
+                    onClick={() => {
+                        setIsSettingsOpen(true)
+                    }}
+                    className="text-xs text-primary hover:text-primary-focus transition-colors font-medium"
+                >
+                  Profile →
+                </button>  to read from protected repositories.
                 </span>
         </div>
       <div className="space-y-6">
@@ -120,10 +95,20 @@ export function SoftwareModule({
               required
               type="url"
               value={software.repositoryUrl}
-              onChange={(value) => {
-                updateSoftware({ repositoryUrl: value });
-              }}
+              onChange={handleRepositoryUrlChange}
               placeholder={repoType === 'Other' ? 'https://...' : `https://${repoType.toLowerCase().split('@')[0].replace(' ', '.')}/owner/repo`}
+              validationState={
+                software.repositoryUrlValidated
+                  ? 'valid'
+                  : software.repositoryUrl.length > 0
+                  ? 'pending'
+                  : 'none'
+              }
+              validationMessage={
+                software.repositoryUrlValidated
+                  ? '✅ Accessible'
+                  : undefined
+              }
             />
           </div>
           <div className="pt-6">
@@ -173,6 +158,10 @@ export function SoftwareModule({
         onPrev={onPrevModule}
         onNext={onNextModule}
       />
+        <SettingsModal
+            isOpen={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+        />
     </ModuleShell>
   );
 }

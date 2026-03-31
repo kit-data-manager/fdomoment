@@ -69,10 +69,6 @@ export function computeCoreMetadataStatus(basis: CoreMetadata): ModuleStatus {
   const hasOrcid = basis.orcid.length > 0;
   const orcidValid = basis.orcidValidated;
   
-  if (!hasResearchDomain && !hasOrcid) {
-    return 'pristine';
-  }
-  
   if (hasResearchDomain && hasOrcid && orcidValid) {
     return 'complete';
   }
@@ -83,16 +79,15 @@ export function computeCoreMetadataStatus(basis: CoreMetadata): ModuleStatus {
 export function computeDataObjectMetadataStatus(
   dataset: DataObjectMetadata
 ): ModuleStatus {
-
   const hasLicense = dataset.license.length > 0;
   const hasMimeType = dataset.mimeType.length > 0;
   const hasDataUrl = dataset.dataUrl.length > 0;
   const dataUrlValid = dataset.dataUrlValidated;
-  
-  if (!hasLicense && !hasMimeType && !hasDataUrl) {
+
+  if (!hasDataUrl) {
     return 'pristine';
   }
-  
+
   if (hasLicense && hasMimeType && hasDataUrl && dataUrlValid) {
     return 'complete';
   }
@@ -103,14 +98,17 @@ export function computeDataObjectMetadataStatus(
 export function computeSoftwareMetadataStatus(
   software: SoftwareMetadata
 ): ModuleStatus {
+  const hasRepo = software.repositoryType.length > 0;
   const hasRepoUrl = software.repositoryUrl.length > 0;
+  const repoUrlValid = software.repositoryUrlValidated;
   const hasLicense = software.license.length > 0;
-  
-  if (!hasRepoUrl && !hasLicense) {
+  const hasReadme = software.readmeUrl.length > 0;
+
+  if (!hasRepoUrl) {
     return 'pristine';
   }
-  
-  if (hasRepoUrl && hasLicense) {
+
+  if (hasRepo && hasRepoUrl && repoUrlValid && hasLicense && hasReadme) {
     return 'complete';
   }
   
@@ -118,20 +116,18 @@ export function computeSoftwareMetadataStatus(
 }
 
 export function computePublicationMetadataStatus(
-  publication: PublicationMetadata | null
+  publication: PublicationMetadata
 ): ModuleStatus {
-  if (!publication) {
-    return 'pristine';
-  }
-  
+
   const hasDoi = publication.doi.length > 0;
   const hasTitle = publication.title.length > 0;
-  
-  if (!hasDoi && !hasTitle) {
+  const hasCreators = publication.creators.length > 0;
+
+  if (!hasDoi) {
     return 'pristine';
   }
-  
-  if (hasDoi || hasTitle) {
+
+  if (hasDoi && hasTitle && hasCreators) {
     return 'complete';
   }
   
@@ -139,11 +135,8 @@ export function computePublicationMetadataStatus(
 }
 
 export function computeMiscMetadataStatus(misc: MiscMetadata | null): ModuleStatus {
-  if (!misc) {
-    return 'pristine';
-  }
-  
-  if (misc.entries.length === 0) {
+
+  if (!misc || misc.entries.length === 0) {
     return 'pristine';
   }
   

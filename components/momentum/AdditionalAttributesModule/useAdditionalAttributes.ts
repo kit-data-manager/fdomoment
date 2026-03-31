@@ -9,7 +9,7 @@ interface UseAdditionalAttributesProps {
 }
 
 export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttributesProps) {
-  const [mode, setMode] = useState<'custom' | 'typed'>('custom');
+  const [mode, setMode] = useState<'custom' | 'typed'>('typed');
   const [pendingAttribute, setPendingAttribute] = useState<{
     typeDef: TypeDefinition;
     value: any;
@@ -26,10 +26,6 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
       value: entry.value,
     }));
 
-  // Get custom attributes from misc.entries
-  const customAttributes = misc.entries
-    .filter((entry) => entry.attributeType === 'custom' || !entry.attributeType);
-
   const handleTypeSelect = useCallback((type: TypeDefinition, value: any) => {
     setPendingAttribute({
       typeDef: type,
@@ -45,6 +41,10 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
       });
     }
   }, [pendingAttribute]);
+
+  const clearPendingAttribute = useCallback(() => {
+    setPendingAttribute(null);
+  }, []);
 
   const addTypedAttribute = useCallback(() => {
     if (pendingAttribute) {
@@ -86,5 +86,6 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
     addTypedAttribute,
     removeTypedAttribute,
     getValidatorLabel,
+    clearPendingAttribute,
   };
 }

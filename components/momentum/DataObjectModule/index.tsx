@@ -40,20 +40,28 @@ export function DataObjectModule({
                 </span>
         </div>
         <div className="space-y-6">
-            <SearchableSelect
-                label="License"
+            <ValidatedInput
+                label="Data Object URL"
                 required
-                options={DATASET_LICENSES}
-                value={dataobject.license || null}
-          onChange={(option) => {
-            updateDataobject({
-              license: option.id,
-              licenseUrl: DATASET_LICENSES.find(l => l.id === option.id)?.url || '',
-            });
-          }}
-          placeholder="Choose license..."
-          quickOptions={getLicenseHint(core.researchDomain)}
-        />
+                type="url"
+                value={dataobject.dataUrl}
+                onChange={handleDataUrlChange}
+                placeholder="https://..."
+                validationState={
+                    dataobject.dataUrlValidated
+                        ? 'valid'
+                        : dataobject.dataUrl.length > 0
+                            ? 'pending'
+                            : 'none'
+                }
+                validationMessage={
+                    dataobject.dataUrlValidated
+                        ? dataobject.dataUrlRepository
+                            ? `✅ Accessible · Detected: ${dataobject.dataUrlRepository}`
+                            : '✅ Accessible'
+                        : undefined
+                }
+            />
 
         <SearchableSelect
           label="MIME-Type"
@@ -67,28 +75,20 @@ export function DataObjectModule({
           quickOptions={getCommonMimeTypes(core.researchDomain)}
         />
 
-        <ValidatedInput
-          label="Data Object URL"
-          required
-          type="url"
-          value={dataobject.dataUrl}
-          onChange={handleDataUrlChange}
-          placeholder="https://..."
-          validationState={
-            dataobject.dataUrlValidated
-              ? 'valid'
-              : dataobject.dataUrl.length > 0
-              ? 'pending'
-              : 'none'
-          }
-          validationMessage={
-            dataobject.dataUrlValidated
-              ? dataobject.dataUrlRepository
-                ? `✅ Accessible · Detected: ${dataobject.dataUrlRepository}`
-                : '✅ Accessible'
-              : undefined
-          }
-        />
+            <SearchableSelect
+                label="License"
+                required
+                options={DATASET_LICENSES}
+                value={dataobject.license || null}
+                onChange={(option) => {
+                    updateDataobject({
+                        license: option.id,
+                        licenseUrl: DATASET_LICENSES.find(l => l.id === option.id)?.url || '',
+                    });
+                }}
+                placeholder="Choose license..."
+                quickOptions={getLicenseHint(core.researchDomain)}
+            />
       </div>
 
       <NavigationButtons

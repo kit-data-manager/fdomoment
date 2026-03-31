@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { EditorState,  ModuleIdentifier } from '@/lib/momentum/types';
+import { EditorState, ModuleIdentifier, MODULE_LABELS } from '@/lib/momentum/types';
 import { NavigatorModule } from './NavigatorModule';
 import { NavigatorCreateButton } from './NavigatorCreateButton';
 import { TEMPLATES } from '../TemplateSelection/types';
@@ -13,14 +13,6 @@ interface EditorNavigatorProps {
   canCreate: boolean;
   onCreate: () => void;
 }
-
-const moduleLabels: Record<ModuleIdentifier, string> = {
-  core: 'Core',
-  dataobject: 'Data Object',
-  software: 'Software',
-  publication: 'Publication',
-  misc: 'Additional',
-};
 
 function getModulesForTemplate(templateId: string | null, enabledModules?: string[]): ModuleIdentifier[] {
   if (!templateId) return [];
@@ -50,7 +42,7 @@ export function EditorNavigator({
           key={module}
           module={module}
           status={moduleStatus[module]}
-          label={moduleLabels[module]}
+          label={MODULE_LABELS[module]}
           isActive={state.activeModule === module}
           onClick={() => setActiveModule(module)}
         />

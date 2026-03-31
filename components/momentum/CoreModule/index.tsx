@@ -23,8 +23,6 @@ export function CoreModule({
   const { handleOrcidChange } = useCoreModule(updateCore);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-
-
   return (
     <ModuleShell title="📋 Core Metadata" badge="required">
         <div className="alert alert-soft mb-4">

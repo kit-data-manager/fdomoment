@@ -1,21 +1,13 @@
 import {ResearchDomain} from "@/lib/momentum/types";
 
 export const RESEARCH_DOMAINS: ResearchDomain[] = [
-  { id: 'biology', label: 'Biology', category: 'Natural Sciences' },
-  { id: 'chemistry', label: 'Chemistry', category: 'Natural Sciences' },
-  { id: 'physics', label: 'Physics', category: 'Natural Sciences' },
-  { id: 'geosciences', label: 'Geo Sciences', category: 'Natural Sciences' },
-  { id: 'climatology', label: 'Climatology', category: 'Natural Sciences' },
-  { id: 'astronomy', label: 'Astronomy', category: 'Natural Sciences' },
-  { id: 'mathematics', label: 'Mathematics', category: 'Natural Sciences' },
-  { id: 'computer-science', label: 'Computer Science', category: 'Natural Sciences' },
-  { id: 'mechanical-engineering', label: 'Mechanical Engineering', category: 'Engineering' },
-  { id: 'electrical-engineering', label: 'Electrical Engineering', category: 'Engineering' },
-  { id: 'medicine', label: 'Medicine', category: 'Live Sciences' },
-  { id: 'pharmacy', label: 'Pharmacy', category: 'Live Sciences' },
-  { id: 'psychology', label: 'Psychology', category: 'Live Sciences' },
-  { id: 'sociology', label: 'Sociology', category: 'Arts and Humanities' },
-  { id: 'history', label: 'History', category: 'Arts and Humanities' },
+  { id: 'aeronautics_space_transport', label: 'Aeronautics, Space, and Transport'},
+  { id: 'earth_and_environment', label: 'Earth & Environment'},
+  { id: 'energy', label: 'Energy'},
+  { id: 'health', label: 'Health'},
+  { id: 'information', label: 'Information'},
+  { id: 'matter', label: 'Matter'},
+
 ];
 
 export const DATASET_LICENSES = [
@@ -54,18 +46,18 @@ export const MIME_TYPES = [
 ];
 
 export const DOMAIN_DEFAULT_LICENSE: Record<string, string> = {
-  'climatology': 'cc-by-4.0',
-  'biology': 'cc0-1.0',
-  'computer-science': 'mit',
-  'physics': 'cc-by-4.0',
+  'earth_and_environment': 'cc-by-4.0',
+  'health': 'cc-by-4.0',
+  'information': 'mit',
+  'matter': 'cc-by-4.0',
 };
 
 export const DOMAIN_COMMON_MIME_TYPES: Record<string, string[]> = {
-  'climatology': ['application/x-netcdf', 'text/csv', 'application/json'],
-  'biology': ['text/csv', 'application/xml', 'image/tiff'],
-  'computer-science': ['application/json', 'text/plain', 'application/xml'],
-  'physics': ['application/x-netcdf', 'text/csv', 'application/pdf'],
-  'chemistry': ['text/csv', 'application/xml', 'application/pdf'],
+  'earth_and_environment': ['application/x-netcdf', 'text/csv', 'application/json'],
+  'health': ['text/csv', 'application/xml', 'image/tiff'],
+  'information': ['application/json', 'text/plain', 'application/xml'],
+  'matter': ['application/x-netcdf', 'text/csv', 'application/pdf'],
+  'energy': ['application/json', 'application/xml', 'application/pdf'],
 };
 
 export const PUBLICATION_TYPES = [
@@ -80,7 +72,7 @@ export const PUBLICATION_TYPES = [
   { id: 'thesis', label: 'Thesis' },
 ];
 
-export const SUGGESTED_MISC_KEYS = [
+export const SUGGESTED_CUSTOM_KEYS = [
   'funding',
   'funder',
   'version',
@@ -90,6 +82,7 @@ export const SUGGESTED_MISC_KEYS = [
   'spatial_coverage',
   'project',
   'grant_number',
+  'URL'
 ];
 
 export const KNOWN_REPOSITORIES = [
@@ -122,13 +115,13 @@ export function getCommonMimeTypes(researchDomain: ResearchDomain | null) {
 }
 
 export function getSuggestedKeys(researchDomain: ResearchDomain | null): string[] {
-  const baseKeys = SUGGESTED_MISC_KEYS;
+  const baseKeys = SUGGESTED_CUSTOM_KEYS;
   
   const domainSpecificKeys: Record<string, string[]> = {
-    'climatology': ['temporal_coverage', 'spatial_coverage', 'variable'],
-    'biology': ['species', 'habitat', 'temporal_coverage'],
-    'medicine': ['patient_group', 'temporal_coverage', 'funding'],
-    'chemistry': ['compound', 'method', 'instrument'],
+    'earth_and_environment': ['temporal_coverage', 'spatial_coverage', 'variable'],
+    'information': ['species', 'habitat', 'temporal_coverage'],
+    'health': ['patient_group', 'temporal_coverage', 'funding'],
+    'matter': ['compound', 'method', 'instrument'],
   };
   
   if (researchDomain && domainSpecificKeys[researchDomain.id]) {

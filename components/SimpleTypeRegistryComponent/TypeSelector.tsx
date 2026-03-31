@@ -10,6 +10,7 @@ interface TypeSelectorProps {
   selectedType: TypeDefinition | null;
   onSelect: (type: TypeDefinition) => void;
   onReset: () => void;
+  onResetComplete?: () => void;
 }
 
 interface TreeSelectNode {
@@ -19,7 +20,7 @@ interface TreeSelectNode {
   children?: TreeSelectNode[];
 }
 
-const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset }: TypeSelectorProps) => {
+const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset, onResetComplete }: TypeSelectorProps) => {
   const treeData = useMemo(() => {
     const root: TreeSelectNode[] = [];
     const categoryMap = new Map<string, TreeSelectNode>();
@@ -117,9 +118,6 @@ const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset }: TypeSele
     <div className="w-full">
       {!selectedType ? (
         <fieldset className="fieldset w-full">
-          <label className="label w-full">
-            <span className="label-text">Select Type</span>
-          </label>
           <TreeSelect
             value={null}
             options={treeData}
@@ -137,12 +135,12 @@ const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset }: TypeSele
             <p className="text-xs text-base-content/40 mt-1">{selectedType.pid}</p>
           </div>
           <button
-            onClick={onReset}
-            className="btn btn-ghost btn-sm"
+            onClick={() => { onReset(); onResetComplete?.(); }}
+            className="btn btn-soft btn-primary btn-sm"
             title="Change type"
           >
           <Icon icon="material-symbols-light:change-circle-outline-rounded" className="text-xl" />
-
+          Change Type
           </button>
         </div>
       )}

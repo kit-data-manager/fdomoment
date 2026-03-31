@@ -10,6 +10,7 @@ import { PUBLICATION_TYPES } from '@/lib/momentum/constants';
 import { useDoiImport } from '@/hooks/momentum/useDoiImport';
 import { usePublicationModule } from './usePublicationModule';
 import { PublicationModuleProps, CreatorWithOrcid } from './types';
+import {Icon} from "@iconify/react";
 
 interface CreatorInputProps {
   creator: CreatorWithOrcid;
@@ -82,7 +83,12 @@ export function PublicationModule({
     <ModuleShell title="📚 Publication Metadata" badge="required">
         <div className="alert alert-soft mb-4">
                 <span className="text-xs">
-                  Add publication-related information starting with a DOI. Then,
+                  Add publication-related information starting with a DOI. Then click 📥 Import to try to automatically
+                    extract metadata from the resolved DOI. Currently, we support extraction for DOIs pointing to <span className="tooltip tooltip-bottom" data-tip="Zenodo">
+                    <Icon className="inline align-middle shrink-0" width={14} height={14} icon="academicons:zenodo"/>
+                </span> Zenodo or <span className="tooltip tooltip-bottom" data-tip="Crossref">
+                    <Icon className="inline align-middle shrink-0" width={14} height={14} icon="academicons:crossref"/>
+                </span> CrossRef. As fallback, we try to evaluate &lt;meta&gt; elements in the target landing page. Afterwards, if required, complete missing fields manually.
                 </span>
         </div>
       <div className="space-y-6">
@@ -115,7 +121,7 @@ export function PublicationModule({
 
         <>
             <div className="text-xs text-base-content/50 text-center py-2 border-t border-b border-base-200">
-              ── Try to import from DOI or enter manually ──
+              ── Try to import from DOI or enter manually below ──
             </div>
 
             <ValidatedInput

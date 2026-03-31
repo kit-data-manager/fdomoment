@@ -3,14 +3,7 @@
 import React, { useState } from 'react';
 import { useTemplateSelection } from './useTemplateSelection';
 import { TemplateSelectionProps, TEMPLATES, TemplateConfig } from './types';
-
-const moduleLabels: Record<string, string> = {
-  core: 'Core',
-  dataobject: 'Data Object',
-  software: 'Software',
-  publication: 'Publication',
-  misc: 'Additional',
-};
+import { MODULE_LABELS, ModuleIdentifier } from '@/lib/momentum/types';
 
 export function TemplateSelection({
   onSelectTemplate,
@@ -34,7 +27,7 @@ export function TemplateSelection({
 
   const toggleModule = (moduleId: string) => {
     setActiveModules(prev => {
-      const current = prev[moduleId] !== false;
+      const current = prev[moduleId];
       return {
         ...prev,
         [moduleId]: !current,
@@ -45,7 +38,7 @@ export function TemplateSelection({
   const handleConfirm = () => {
     if (selectedTemplate) {
       const enabledModules = selectedTemplate.modules
-        .filter(mod => activeModules[mod.moduleId] !== false)
+        .filter(mod => activeModules[mod.moduleId])
         .map(mod => mod.moduleId);
       handleSelectTemplate(selectedTemplate.id, enabledModules);
     }
@@ -72,13 +65,13 @@ export function TemplateSelection({
             <h3 className="font-semibold mb-2">Enabled Modules:</h3>
             <div className="flex flex-wrap gap-2">
               {selectedTemplate.modules
-                .filter(mod => activeModules[mod.moduleId] !== false)
+                .filter(mod => activeModules[mod.moduleId])
                 .map(mod => (
                   <span
                     key={mod.moduleId}
                     className="badge badge-primary badge-sm"
                   >
-                    {moduleLabels[mod.moduleId]}
+                    {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
                   </span>
                 ))}
             </div>
@@ -148,7 +141,7 @@ export function TemplateSelection({
                                 : 'badge-ghost hover:badge-info'
                             }`}
                           >
-                            {moduleLabels[mod.moduleId]}
+                            {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
                           </button>
                         );
                       }
@@ -157,7 +150,7 @@ export function TemplateSelection({
                           key={mod.moduleId}
                           className="badge badge-xs badge-outline"
                         >
-                          {moduleLabels[mod.moduleId]}
+                          {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
                         </span>
                       );
                     })}

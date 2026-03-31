@@ -8,6 +8,7 @@ import SparqlValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/
 interface SimpleTypeRegistryComponentProps {
   onTypeSelect: (type: TypeDefinition, value: any) => void;
   onValueChange?: (value: any) => void;
+  onReset?: () => void;
   initialType?: TypeDefinition | null;
   initialValue?: any;
 }
@@ -15,6 +16,7 @@ interface SimpleTypeRegistryComponentProps {
 const SimpleTypeRegistryComponent = ({ 
   onTypeSelect, 
   onValueChange,
+  onReset,
   initialType,
   initialValue 
 }: SimpleTypeRegistryComponentProps) => {
@@ -37,6 +39,7 @@ const SimpleTypeRegistryComponent = ({
         selectedType={selectedType}
         onSelect={handleTypeSelect}
         onReset={resetSelection}
+        onResetComplete={onReset}
       />
 
       {selectedType && (
