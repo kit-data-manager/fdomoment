@@ -11,6 +11,7 @@ import {
   PublicationMetadata,
   SoftwareMetadata
 } from '@/lib/momentum/types';
+import { useKeycloak } from '@/context/KeycloakContext';
 import { EditorNavigator } from '@/components/momentum/Navigator/EditorNavigator';
 import { CoreModule } from '@/components/momentum/CoreModule';
 import { FairScoreBar } from '@/components/momentum/FairScoreBar';
@@ -21,6 +22,7 @@ import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
 import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
 import {calculateFairScore} from "@/lib/momentum/fairScore";
+import { createFdoRecord, upsertFairScoreAggregation } from '@/lib/database/actions';
 
 interface EditorShellProps {
   state: EditorState;
@@ -49,7 +51,9 @@ export function EditorShell(props: EditorShellProps) {
     canCreate,
   } = props;
 
-  const handleCreate = () => {
+  const { userName } = useKeycloak();
+
+  const handleCreate = async () => {
     let fdoRecord:RecordData = createRecordData();
 
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', state['core'].orcid);
@@ -70,9 +74,27 @@ export function EditorShell(props: EditorShellProps) {
     const score = calculateFairScore(state);
     console.log("SC", score)
     console.log('Creating FDO', fdoRecord);
-    //remote call to TPIDM
     fdoRecord.pid = crypto.randomUUID();
-    //persist fdoRecord.pid in database connected to logged in user id
+
+    if (userName) {
+      try {
+        await createFdoRecord({
+          pid: fdoRecord.pid,
+          userName,
+          orcid: state.core.orcid,
+          researchDomain: state.core.researchDomain?.label || '',
+          fairScore: score.total,
+        });
+
+        for (const [criterium, value] of Object.entries(score)) {
+          if (criterium !== 'total') {
+            await upsertFairScoreAggregation(userName, criterium as 'findable' | 'accessible' | 'interoperable' | 'reusable', value as number);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to store FDO record:', error);
+      }
+    }
   };
 
   const collectSoftwareAttributes = (metadata:SoftwareMetadata, fdoRecord:RecordData):RecordData => {
@@ -240,41 +262,41 @@ export function EditorShell(props: EditorShellProps) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="hidden md:flex flex-1 overflow-hidden">
-        <EditorNavigator
-          state={state}
-          moduleStatus={state.moduleStatus}
-          setActiveModule={setActiveModule}
-          canCreate={canCreate}
-          onCreate={handleCreate}
-        />
-        <main className="flex-1 overflow-y-auto bg-base-200">
-          <div className="flex gap-6 p-8">
-            <div className="flex-1 max-w-2xl">
-              {renderActiveModule()}
+      <div className="flex flex-col h-full">
+        <div className="hidden md:flex flex-1 overflow-hidden">
+          <EditorNavigator
+              state={state}
+              moduleStatus={state.moduleStatus}
+              setActiveModule={setActiveModule}
+              canCreate={canCreate}
+              onCreate={handleCreate}
+          />
+          <main className="flex-1 overflow-y-auto bg-base-200">
+            <div className="flex gap-6 p-8">
+              <div className="flex-1 max-w-2xl">
+                {renderActiveModule()}
+              </div>
+              <div className="w-[300px] flex-shrink-0">
+                <FairScoreBar
+                    state={state}
+                    setActiveModule={setActiveModule}
+                />
+              </div>
             </div>
-            <div className="w-[300px] flex-shrink-0">
+          </main>
+        </div>
+
+        <div className="md:hidden flex flex-col flex-1 overflow-hidden">
+          <main className="flex-1 overflow-y-auto bg-base-200 p-4">
+            {renderActiveModule()}
+            <div className="mt-4">
               <FairScoreBar
-                state={state}
-                setActiveModule={setActiveModule}
+                  state={state}
+                  setActiveModule={setActiveModule as (module: string) => void}
               />
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-
-      <div className="md:hidden flex flex-col flex-1 overflow-hidden">
-        <main className="flex-1 overflow-y-auto bg-base-200 p-4">
-          {renderActiveModule()}
-          <div className="mt-4">
-            <FairScoreBar
-              state={state}
-              setActiveModule={setActiveModule as (module: string) => void}
-            />
-          </div>
-        </main>
-      </div>
-    </div>
   );
 }

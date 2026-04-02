@@ -1,7 +1,7 @@
 import Image from "next/image";
 import ThemeToggle from '@/components/ThemeToggle';
-import {Rocket} from "lucide-react";
 import { Footer } from '@/components/Footer';
+import { AppSelector } from '@/components/AppSelector';
 
 export default function Home() {
   return (
@@ -47,37 +47,41 @@ export default function Home() {
        </header>
        
        <main className="max-w-4xl mx-auto py-12 px-6">
-        <div className="text-center mb-12">
-          <p className="text-lg sm:text-xl mb-8">
+        <div className="text-center mb-8">
+          <p className="text-lg sm:text-xl mb-4">
             Create your own FAIR Digital Objects in a modular and easy way. Once created, they can be cited in your publications, processed via available FDO tooling, or just persisted for the future.
           </p>
-          <a
-            href="/momentum"
-            className="btn btn-xl btn-soft btn-primary px-6 py-3 transition-colors duration-200"
-          >
-              <Rocket/>
-            Launch Editor
-          </a>
         </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
-              <div className="hover-3d">
-                  <div className="p-6 rounded-lg">
-                      <h3 className="text-xl font-semibold mb-2">Intuitive Interface</h3>
-                      <p className="">Clean, intuitive design that makes FDO creation effortless.</p>
+        <AppSelector />
+
+          <div className="grid md:grid-cols-3 gap-8 mt-8">
+              <div className="card bg-base-100 shadow-md">
+                  <figure>
+                    <img src="https://placehold.co/400x200?text=Intuitive+Interface" alt="Intuitive Interface" />
+                  </figure>
+                  <div className="card-body">
+                      <h3 className="card-title">Intuitive Interface</h3>
+                      <p>Clean, intuitive design that makes FDO creation effortless.</p>
                   </div>
               </div>
-              <div className="hover-3d">
-                  <div className="p-6 rounded-lg">
-                      <h3 className="text-xl font-semibold mb-2">Real PIDs</h3>
-                      <p className="">Make your FDOs persistently accessible by assigning globally unique, persistent
+              <div className="card bg-base-100 shadow-md">
+                  <figure>
+                    <img src="https://placehold.co/400x200?text=Real+PIDs" alt="Real PIDs" />
+                  </figure>
+                  <div className="card-body">
+                      <h3 className="card-title">Real PIDs</h3>
+                      <p>Make your FDOs persistently accessible by assigning globally unique, persistent
                           identifiers.</p>
                   </div>
               </div>
-              <div className="hover-3d">
-                  <div className="p-6 rounded-lg">
-                      <h3 className="text-xl font-semibold mb-2">Customization</h3>
-                      <p className="">Besides kernel metadata, custom attributes can be added to your FDOs to support
+              <div className="card bg-base-100 shadow-md">
+                  <figure>
+                    <img src="https://placehold.co/400x200?text=Customization" alt="Customization" />
+                  </figure>
+                  <div className="card-body">
+                      <h3 className="card-title">Customization</h3>
+                      <p>Besides kernel metadata, custom attributes can be added to your FDOs to support
                           specific use cases or branding.</p>
                   </div>
               </div>

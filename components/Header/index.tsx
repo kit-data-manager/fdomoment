@@ -6,11 +6,13 @@ import { SettingsModal } from '@/components/SettingsModal';
 import { useKeycloak } from '@/context/KeycloakContext';
 import Image from "next/image";
 import Link from "next/link";
-import { LogIn, LogOut } from "lucide-react";
+import { usePathname } from 'next/navigation';
+import { LogIn, LogOut, FileText, BookMarked } from "lucide-react";
 
-export function EditorHeader() {
+export function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { keycloak, authenticated, login, logout, userName } = useKeycloak();
+  const { keycloak, authenticated, userName } = useKeycloak();
+  const pathname = usePathname();
 
   const handleLogin = () => {
     if (keycloak) {
@@ -47,7 +49,12 @@ export function EditorHeader() {
                   <div className="flex justify-center">
                       <h1 className="text-center text-primary">
                           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-1 font-bold">
-                            <span className="text-primary text-bold">FDO MoMEnT</span>
+                              {pathname !== '/momentum' && (
+                              <span className="text-primary text-bold">FDO MoMEnT - Memento</span>
+                                  )}
+                              {pathname !== '/memento' && (
+                                  <span className="text-primary text-bold">FDO MoMEnT - Momentum</span>
+                              )}
                           </div>
                       </h1>
                   </div>
@@ -56,6 +63,28 @@ export function EditorHeader() {
 
           </Link>
         </div>
+        
+        <div className="flex-none gap-1">
+          {pathname !== '/momentum' && (
+            <Link
+              href="/momentum"
+              className="btn btn-ghost btn-sm gap-1"
+            >
+              <FileText className="w-4 h-4" />
+              Momentum
+            </Link>
+          )}
+          {pathname !== '/memento' && (
+            <Link
+              href="/memento"
+              className="btn btn-ghost btn-sm gap-1"
+            >
+              <BookMarked className="w-4 h-4" />
+              Memento
+            </Link>
+          )}
+        </div>
+
         <div className="flex-none gap-2">
           <button
             type="button"

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import Keycloak, { KeycloakConfig, KeycloakInitOptions } from 'keycloak-js';
+import { createUser } from '@/lib/database/actions';
 
 interface KeycloakContextType {
   keycloak: Keycloak | null;
@@ -11,6 +12,8 @@ interface KeycloakContextType {
   logout: () => void;
   token: string | undefined;
   userName: string | undefined;
+  groups: string[];
+  isAdmin: boolean;
 }
 
 const KeycloakContext = createContext<KeycloakContextType | undefined>(undefined);
@@ -26,6 +29,16 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string | undefined>(undefined);
+  const [groups, setGroups] = useState<string[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const storeUser = async (userNameValue: string) => {
+    try {
+      await createUser({ userName: userNameValue, lastLogin: new Date() });
+    } catch (error) {
+      console.error('Failed to store user:', error);
+    }
+  };
 
   useEffect(() => {
     const kc = new Keycloak(keycloakConfig);
@@ -41,7 +54,12 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
       setAuthenticated(auth);
       setIsLoading(false);
       if (auth && kc.tokenParsed) {
-        setUserName(kc.tokenParsed['preferred_username'] || kc.tokenParsed['name']);
+        const userNameValue = kc.tokenParsed['preferred_username'] || kc.tokenParsed['name'];
+        const groupsValue = (kc.tokenParsed['groups'] as string[]) || [];
+        setUserName(userNameValue);
+        setGroups(groupsValue);
+        setIsAdmin(groupsValue.includes('ROLE_ADMINISTRATOR'));
+        storeUser(userNameValue);
       }
     }).catch((error) => {
       console.error('Keycloak initialization error:', error);
@@ -66,7 +84,7 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <KeycloakContext.Provider value={{ keycloak, authenticated, isLoading, login, logout, token: keycloak?.token, userName }}>
+    <KeycloakContext.Provider value={{ keycloak, authenticated, isLoading, login, logout, token: keycloak?.token, userName, groups, isAdmin }}>
       {children}
     </KeycloakContext.Provider>
   );
@@ -83,6 +101,8 @@ export function useKeycloak() {
       logout: () => {},
       token: undefined,
       userName: undefined,
+      groups: [],
+      isAdmin: false,
     };
   }
   return context;

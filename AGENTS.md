@@ -16,6 +16,69 @@
 - To add tests: Create a `__tests__` directory or use `.test.ts`/`.test.tsx` files
 - Run tests with: `npm run test` (would need to be configured)
 
+## Database Configuration
+
+### Overview
+The application uses a database abstraction layer that supports switching between in-memory (testing) and PostgreSQL (production) databases via configuration.
+
+### Environment Variables
+| Variable | Description | Values | Default |
+|----------|-------------|--------|---------|
+| `DATABASE_TYPE` | Database driver to use | `in-memory`, `postgres` | `in-memory` |
+| `DATABASE_URL` | PostgreSQL connection string (required for postgres) | PostgreSQL connection URL | - |
+
+### Usage Examples
+
+#### In-Memory (Testing/Development)
+```bash
+# Default - no configuration needed
+npm run dev
+```
+
+#### PostgreSQL (Production)
+```bash
+DATABASE_TYPE=postgres DATABASE_URL=postgresql://user:pass@localhost:5432/fdomoment npm run start
+```
+
+### Database Schema
+
+#### Users Table
+- `user_name` (VARCHAR, PK): Username from KeyCloak
+- `orcid` (VARCHAR): User's ORCID
+- `email` (VARCHAR): User's email
+- `last_login` (TIMESTAMP): Last login timestamp
+
+#### FDO Records Table
+- `pid` (VARCHAR, PK): Persistent Identifier
+- `user_name` (VARCHAR, FK): Owner's username
+- `orcid` (VARCHAR): Owner's ORCID
+- `research_domain` (VARCHAR): Research domain
+- `fair_score` (INTEGER): FAIR score (0-100)
+- `created_at` (TIMESTAMP): Creation timestamp
+
+#### FAIR Score Aggregations Table
+- `id` (SERIAL, PK): Auto-increment ID
+- `user_name` (VARCHAR, FK): Username
+- `criterium` (VARCHAR): FAIR criterium (findable, accessible, interoperable, reusable)
+- `total` (INTEGER): Summed score value
+
+### API Endpoints
+- `POST /api/database/user` - Create/update user
+- `GET /api/database/user?userName=X` - Get user by username
+- `GET /api/database/user` - Get all users
+- `POST /api/database/fdo` - Create FDO record
+- `GET /api/database/fdo?userName=X` - Get FDO records by user
+- `GET /api/database/fdo` - Get all FDO records
+- `POST /api/database/fair-score` - Upsert FAIR score aggregation
+- `GET /api/database/fair-score?userName=X` - Get aggregations by user
+- `GET /api/database/fair-score` - Get all aggregations
+
+### Client Helper Functions
+Import from `@/lib/database`:
+```typescript
+import { createUser, getUser, getAllUsers, createFdoRecord, getFdoRecords, upsertFairScoreAggregation, getFairScoreAggregations } from '@/lib/database';
+```
+
 ## Code Style Guidelines
 
 ### TypeScript Configuration
