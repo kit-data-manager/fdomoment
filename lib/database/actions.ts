@@ -26,12 +26,18 @@ export async function createFdoRecord(record: Omit<FdoRecord, 'createdAt'>): Pro
   });
 }
 
-export async function getFdoRecords(userName?: string): Promise<FdoRecord[]> {
+export async function getFdoRecords(
+  userName?: string,
+  page?: number,
+  limit?: number,
+  sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+  sortOrder?: 'asc' | 'desc'
+): Promise<FdoRecord[]> {
   const db = await getDatabase();
   if (userName) {
-    return db.fdoRecord.findByUserName(userName);
+    return db.fdoRecord.findByUserName(userName, page, limit, sortBy, sortOrder);
   }
-  return db.fdoRecord.getAll();
+  return db.fdoRecord.getAll(page, limit, sortBy, sortOrder);
 }
 
 export async function getFdoRecordByPid(pid: string): Promise<FdoRecord | null> {

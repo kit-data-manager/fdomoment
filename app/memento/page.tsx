@@ -5,6 +5,7 @@ import { useKeycloak } from '@/context/KeycloakContext';
 import { FdoRecord } from '@/lib/database/types';
 import { StatisticsOverview, FdoTable, AdminOverview } from '@/components/memento';
 import { getFdoRecords, getFairScoreAggregations, getAllUsers } from '@/lib/database/actions';
+import { NavigatorModule } from '@/components/momentum/Navigator/NavigatorModule';
 
 interface UserStats {
   totalFdos: number;
@@ -21,32 +22,72 @@ interface AdminStats {
   fdosPerUser: { userName: string; count: number; avgScore: number }[];
 }
 
+type MementoView = 'statistics' | 'fdos' | 'admin' | 'allFdos';
+
 export default function MementoPage() {
   const { authenticated, userName, isAdmin, login } = useKeycloak();
   const [userFdos, setUserFdos] = useState<FdoRecord[]>([]);
+  const [allFdos, setAllFdos] = useState<FdoRecord[]>([]);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
+  const [activeView, setActiveView] = useState<MementoView>('statistics');
   const [isLoading, setIsLoading] = useState(true);
+  const [userFdosPage, setUserFdosPage] = useState(1);
+  const [userFdosSortBy, setUserFdosSortBy] = useState<'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | undefined>(undefined);
+  const [userFdosSortOrder, setUserFdosSortOrder] = useState<'asc' | 'desc' | undefined>(undefined);
+  const [totalUserFdos, setTotalUserFdos] = useState<number | undefined>(undefined);
+  const [allFdosPage, setAllFdosPage] = useState(1);
+  const [allFdosSortBy, setAllFdosSortBy] = useState<'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | undefined>(undefined);
+  const [allFdosSortOrder, setAllFdosSortOrder] = useState<'asc' | 'desc' | undefined>(undefined);
+  const [totalAllFdos, setTotalAllFdos] = useState<number | undefined>(undefined);
+
+  const fetchUserFdos = useCallback(async (
+    page: number,
+    sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+    sortOrder?: 'asc' | 'desc'
+  ) => {
+    if (!userName) return;
+    try {
+      // Fetch all records first to get total count
+      const allUserRecords = await getFdoRecords(userName);
+      const total = allUserRecords.length;
+      
+      // Then fetch the page
+      const userRecords = await getFdoRecords(userName, page, 10, sortBy, sortOrder);
+      setUserFdos(Array.isArray(userRecords) ? userRecords : []);
+      if (sortBy !== undefined && sortOrder !== undefined) {
+        setUserFdosSortBy(sortBy);
+        setUserFdosSortOrder(sortOrder);
+      }
+      setUserFdosPage(page);
+      setTotalUserFdos(total);
+    } catch (error) {
+      console.error('Failed to fetch user FDOs:', error);
+    }
+  }, [userName]);
 
   const fetchData = useCallback(async () => {
     if (!userName) return;
     
     setIsLoading(true);
     try {
-      const fdos = await getFdoRecords(userName);
+      const allUserRecords = await getFdoRecords(userName);
+      const total = allUserRecords.length;
+      const userRecords = await getFdoRecords(userName, 1, 10, 'createdAt', 'desc');
       const aggs = await getFairScoreAggregations(userName);
 
-      setUserFdos(Array.isArray(fdos) ? fdos : []);
+      setUserFdos(Array.isArray(userRecords) ? userRecords : []);
+      setTotalUserFdos(total);
 
-      if (fdos.length > 0) {
-        const meanOverall = fdos.reduce((sum, f) => sum + f.fairScore, 0) / fdos.length;
+      if (userRecords.length > 0) {
+        const meanOverall = userRecords.reduce((sum, f) => sum + f.fairScore, 0) / userRecords.length;
         const findable = aggs.find(a => a.criterium === 'findable');
         const accessible = aggs.find(a => a.criterium === 'accessible');
         const interoperable = aggs.find(a => a.criterium === 'interoperable');
         const reusable = aggs.find(a => a.criterium === 'reusable');
 
         setUserStats({
-          totalFdos: fdos.length,
+          totalFdos: userRecords.length,
           meanOverallScore: meanOverall,
           meanFindable: findable?.total || 0,
           meanAccessible: accessible?.total || 0,
@@ -58,11 +99,13 @@ export default function MementoPage() {
       }
 
       if (isAdmin) {
-        const allFdos = await getFdoRecords();
+        const allRecords = await getFdoRecords(undefined);
+        const total = allRecords.length;
+        const pageRecords = await getFdoRecords(undefined, 1, 10, 'createdAt', 'desc');
         const users = await getAllUsers();
 
         const fdosPerUser = users.map(user => {
-          const userFdosList = allFdos.filter(f => f.userName === user.userName);
+          const userFdosList = allRecords.filter(f => f.userName === user.userName);
           return {
             userName: user.userName,
             count: userFdosList.length,
@@ -74,9 +117,12 @@ export default function MementoPage() {
 
         setAdminStats({
           totalUsers: users.length,
-          totalFdos: allFdos.length,
+          totalFdos: allRecords.length,
           fdosPerUser: fdosPerUser.sort((a, b) => b.count - a.count),
         });
+
+        setAllFdos(Array.isArray(pageRecords) ? pageRecords : []);
+        setTotalAllFdos(total);
       }
     } catch (error) {
       console.error('Failed to fetch data:', error);
@@ -84,6 +130,31 @@ export default function MementoPage() {
       setIsLoading(false);
     }
   }, [userName, isAdmin]);
+
+  const fetchAllFdos = useCallback(async (
+    page: number,
+    sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+    sortOrder?: 'asc' | 'desc'
+  ) => {
+    if (!isAdmin) return;
+    try {
+      // Fetch all records first to get total count
+      const allRecords = await getFdoRecords(undefined);
+      const total = allRecords.length;
+      
+      // Then fetch the page
+      const pageRecords = await getFdoRecords(undefined, page, 10, sortBy, sortOrder);
+      setAllFdos(Array.isArray(pageRecords) ? pageRecords : []);
+      if (sortBy !== undefined && sortOrder !== undefined) {
+        setAllFdosSortBy(sortBy);
+        setAllFdosSortOrder(sortOrder);
+      }
+      setAllFdosPage(page);
+      setTotalAllFdos(total);
+    } catch (error) {
+      console.error('Failed to fetch all FDOs:', error);
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     if (authenticated && userName) {
@@ -119,21 +190,78 @@ export default function MementoPage() {
     );
   }
 
-  return (
-    <div className="flex gap-6 p-8">
-      <div className="flex-1">
-        {userStats ? (
-          <>
-            <StatisticsOverview stats={userStats} />
-            <FdoTable fdos={userFdos} />
-          </>
-        ) : (
-          <FdoTable fdos={[]} />
-        )}
+  const views: { id: MementoView, label: string }[] = [
+    { id: 'statistics', label: 'Statistics' },
+    { id: 'fdos', label: 'Your FDOs' },
+    { id: 'allFdos', label: 'All FDOs' },
+  ];
 
-        {isAdmin && adminStats && (
-          <AdminOverview stats={adminStats} />
-        )}
+  if (isAdmin && adminStats) {
+    views.push({ id: 'admin', label: 'Admin Overview' });
+  }
+
+  const renderActiveView = () => {
+    switch (activeView) {
+      case 'statistics':
+        return userStats ? <StatisticsOverview stats={userStats} /> : null;
+      case 'fdos':
+        return (
+          <FdoTable
+            fdos={userFdos}
+            showColumns={{ orcid: false, researchDomain: false }}
+            sortBy={userFdosSortBy}
+            sortOrder={userFdosSortOrder}
+            page={userFdosPage}
+            limit={10}
+            total={totalUserFdos}
+            onSort={(field) => {
+              const newSortOrder = userFdosSortBy === field && userFdosSortOrder === 'asc' ? 'desc' : 'asc';
+              fetchUserFdos(userFdosPage, field, newSortOrder);
+            }}
+            onPageChange={(page) => fetchUserFdos(page, userFdosSortBy, userFdosSortOrder)}
+          />
+        );
+      case 'allFdos':
+        return (
+          <FdoTable
+            fdos={allFdos}
+            showColumns={{ orcid: true, researchDomain: true }}
+            sortBy={allFdosSortBy}
+            sortOrder={allFdosSortOrder}
+            page={allFdosPage}
+            limit={10}
+            total={totalAllFdos}
+            onSort={(field) => {
+              const newSortOrder = allFdosSortBy === field && allFdosSortOrder === 'asc' ? 'desc' : 'asc';
+              fetchAllFdos(1, field, newSortOrder);
+            }}
+            onPageChange={(page) => fetchAllFdos(page, allFdosSortBy, allFdosSortOrder)}
+          />
+        );
+      case 'admin':
+        return adminStats ? <AdminOverview stats={adminStats} /> : null;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex h-full">
+      <div className="w-[240px] h-full bg-base-100 border-r border-base-200 overflow-y-auto flex flex-col">
+        {views.map((view) => (
+          <NavigatorModule
+            key={view.id}
+            module={view.id}
+            status={'pristine'}
+            label={view.label}
+            isActive={activeView === view.id}
+            onClick={() => setActiveView(view.id as MementoView)}
+          />
+        ))}
+        <div className="flex-1" />
+      </div>
+      <div className="flex-1 overflow-y-auto p-8">
+        {renderActiveView()}
       </div>
     </div>
   );

@@ -20,10 +20,10 @@ export function AppSelector() {
           <div className="card-body p-4">
             <h3 className="card-title text-sm text-primary">Momentum</h3>
             <p className="text-xs text-base-content/60">
-              Create and configure your FAIR Digital Objects step by step.
+              Create and customize your FAIR Digital Objects step by step with minimum effort.
             </p>
             <div className={`flex items-center gap-1 text-xs text-primary mt-1 transition-opacity ${side === 'left' ? 'opacity-100' : 'opacity-0'}`}>
-              <span>Open Editor</span>
+              <span>Open Momentum</span>
               <ArrowRight className="w-3 h-3" />
             </div>
           </div>
@@ -65,7 +65,7 @@ export function AppSelector() {
               Review your created FDOs, track FAIR scores, and view statistics.
             </p>
             <div className={`flex items-center gap-1 text-xs text-secondary mt-1 transition-opacity ${side === 'right' ? 'opacity-100' : 'opacity-0'}`}>
-              <span>View Dashboard</span>
+              <span>Open Memento</span>
               <ArrowRight className="w-3 h-3" />
             </div>
           </div>

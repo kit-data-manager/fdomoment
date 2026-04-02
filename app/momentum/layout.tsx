@@ -1,7 +1,8 @@
-'use client';
+ 'use client';
 
 import React from 'react';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { KeycloakWrapper } from '@/components/Providers';
 
 export default function EditorLayout({
@@ -13,9 +14,10 @@ export default function EditorLayout({
     <KeycloakWrapper>
       <div className="flex flex-col h-screen overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-y-auto bg-base-200">
           {children}
         </main>
+        <Footer />
       </div>
     </KeycloakWrapper>
   );

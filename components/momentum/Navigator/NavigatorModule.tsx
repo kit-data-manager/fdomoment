@@ -5,7 +5,7 @@ import { ModuleStatus } from '@/lib/momentum/types';
 
 interface NavigatorModuleProps {
   module: string;
-  status: ModuleStatus;
+  status?: ModuleStatus;
   label: string;
   isActive: boolean;
   onClick?: () => void;
@@ -58,7 +58,9 @@ export function NavigatorModule({
       }}
     >
       <div className="flex items-center gap-2">
+        {status && (
         <span className="w-4 text-center">{icons[status]}</span>
+        )}
         <span>
           {label}
         </span>

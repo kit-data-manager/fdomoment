@@ -60,16 +60,57 @@ export const inMemoryDatabase: Database = {
       return db.fdoRecords.get(pid) || null;
     },
 
-    async findByUserName(userName: string): Promise<FdoRecord[]> {
+    async findByUserName(
+      userName: string,
+      page?: number,
+      limit?: number,
+      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortOrder?: 'asc' | 'desc'
+    ): Promise<FdoRecord[]> {
       const db = getInMemoryDb();
-      return Array.from(db.fdoRecords.values()).filter(
+      const records: FdoRecord[] = Array.from(db.fdoRecords.values()).filter(
         (record) => record.userName === userName
-      );
+      ) as FdoRecord[];
+      if (sortBy) {
+        records.sort((a, b) => {
+          let cmp = 0;
+          if (sortBy === 'orcid') cmp = (a.orcid || '').localeCompare(b.orcid || '');
+          else if (sortBy === 'researchDomain') cmp = (a.researchDomain || '').localeCompare(b.researchDomain || '');
+          else if (sortBy === 'fairScore') cmp = a.fairScore - b.fairScore;
+          else if (sortBy === 'createdAt') cmp = a.createdAt.getTime() - b.createdAt.getTime();
+          return sortOrder === 'desc' ? -cmp : cmp;
+        });
+      }
+      if (page !== undefined && limit !== undefined) {
+        const start = (page - 1) * limit;
+        return records.slice(start, start + limit);
+      }
+      return records;
     },
 
-    async getAll(): Promise<FdoRecord[]> {
+    async getAll(
+      page?: number,
+      limit?: number,
+      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortOrder?: 'asc' | 'desc'
+    ): Promise<FdoRecord[]> {
       const db = getInMemoryDb();
-      return Array.from(db.fdoRecords.values());
+      const records: FdoRecord[] = Array.from(db.fdoRecords.values()) as FdoRecord[];
+      if (sortBy) {
+        records.sort((a, b) => {
+          let cmp = 0;
+          if (sortBy === 'orcid') cmp = (a.orcid || '').localeCompare(b.orcid || '');
+          else if (sortBy === 'researchDomain') cmp = (a.researchDomain || '').localeCompare(b.researchDomain || '');
+          else if (sortBy === 'fairScore') cmp = a.fairScore - b.fairScore;
+          else if (sortBy === 'createdAt') cmp = a.createdAt.getTime() - b.createdAt.getTime();
+          return sortOrder === 'desc' ? -cmp : cmp;
+        });
+      }
+      if (page !== undefined && limit !== undefined) {
+        const start = (page - 1) * limit;
+        return records.slice(start, start + limit);
+      }
+      return records;
     },
   },
 

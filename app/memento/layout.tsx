@@ -1,7 +1,8 @@
-'use client';
+ 'use client';
 
 import React from 'react';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { KeycloakWrapper } from '@/components/Providers';
 
 export default function MementoLayout({
@@ -16,6 +17,7 @@ export default function MementoLayout({
         <main className="flex-1 overflow-y-auto bg-base-200">
           {children}
         </main>
+        <Footer />
       </div>
     </KeycloakWrapper>
   );

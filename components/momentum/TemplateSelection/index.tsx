@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useTemplateSelection } from './useTemplateSelection';
 import { TemplateSelectionProps, TEMPLATES, TemplateConfig } from './types';
 import { MODULE_LABELS, ModuleIdentifier } from '@/lib/momentum/types';
+import Footer from "@/components/Footer";
 
 export function TemplateSelection({
   onSelectTemplate,
@@ -48,6 +49,16 @@ export function TemplateSelection({
     setSelectedTemplate(null);
     setActiveModules({});
   };
+
+  const tooltipDescription = (moduleId:ModuleIdentifier)=>{
+switch(moduleId){
+  case "core": return (<div>Core module mandatory for all FAIR Digital Objects.</div>)
+  case "dataobject": return (<div>Data object module for research data-focused FAIR Digital Objects.</div>)
+  case "software": return (<div>Software module for research software-focused FAIR Digital Objects.</div>)
+  case "publication": return (<div>Publication module for scientific publication-focused FAIR Digital Objects or for additional publication information.</div>)
+  case "misc": return (<div>Miscellaneous module for adding additional attributes to FAIR Digital Objects, i.e., to increase FAIRness for for customization.</div>)
+}
+  }
 
   if (selectedTemplate) {
     return (
@@ -98,69 +109,82 @@ export function TemplateSelection({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh]">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2">
-          What do you want to describe?
-        </h2>
-        <p className="text-base-content/70">
-          Choose the template that best matches your needs
-        </p>
-      </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2">
+            What do you want to describe?
+          </h2>
+          <p className="text-base-content/70">
+            Choose the template that best matches your needs.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl w-full px-4">
-        {TEMPLATES.map((template: any) => {
-          return (
-            <div
-              key={template.id}
-              className="card bg-base-100 transition-all p-6 border border-base-200 hover:border-primary cursor-pointer"
-              onClick={() => handleTemplateClick(template)}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">{template.icon}</span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{template.label}</h3>
-                  <p className="text-xs text-base-content/70 mt-1 h-12 line-clamp-3">
-                    {template.description}
-                  </p>
-                  <div className="mt-3 flex gap-1 flex-wrap">
-                    {template.modules.map((mod: any) => {
-                      const isActive = activeModules[mod.moduleId] ?? (mod.selectable ? true : null);
-                      if (mod.selectable) {
-                        return (
-                          <button
-                            key={mod.moduleId}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleModule(mod.moduleId);
-                            }}
-                            className={`badge badge-xs cursor-pointer transition-all ${
-                              isActive
-                                ? 'badge-info hover:opacity-80'
-                                : 'badge-ghost hover:badge-info'
-                            }`}
-                          >
-                            {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
-                          </button>
-                        );
-                      }
-                      return (
-                        <span
-                          key={mod.moduleId}
-                          className="badge badge-xs badge-outline"
-                        >
-                          {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
-                        </span>
-                      );
-                    })}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl w-full px-4">
+          {TEMPLATES.map((template: any) => {
+            return (
+                <div
+                    key={template.id}
+                    className="card bg-base-100 transition-all p-6 border border-base-200 hover:border-primary cursor-pointer"
+                    onClick={() => handleTemplateClick(template)}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-3xl">{template.icon}</span>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg">{template.label}</h3>
+                      <p className="text-xs text-base-content/70 mt-1 h-12 line-clamp-3">
+                        {template.description}
+                      </p>
+                      <div className="mt-3 flex gap-1 flex-wrap">
+                        {template.modules.map((mod: any) => {
+                          const isActive = activeModules[mod.moduleId] ?? (mod.selectable ? true : null);
+                          if (mod.selectable) {
+                            return (
+                                <div key={mod.moduleId} className="tooltip tooltip-primary">
+                                  <div className="tooltip-content">
+                                    <div className="text-xs">{tooltipDescription(mod.moduleId)}
+                                    </div>
+                                  </div>
+                                  <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleModule(mod.moduleId);
+                                      }}
+                                      className={`badge badge-xs cursor-pointer transition-all ${
+                                          isActive
+                                              ? 'badge-primary hover:opacity-80'
+                                              : 'badge-primary opacity-20 hover:opacity-60'
+                                      }`}
+                                  >
+                                    {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
+                                  </button>
+                                </div>
+                            );
+                          }
+                          return (
+                              <div key={mod.moduleId} className="tooltip tooltip-primary">
+                                <div className="tooltip-content">
+                                  <div className="text-xs">{tooltipDescription(mod.moduleId)}
+                                  </div>
+                                </div>
+                                <button className="badge badge-xs badge-primary cursor-not-allowed"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                        }}
+                                >
+                                  🔒 {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
+                                </button>
+                              </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+        <span className="text-xs text-base-content/70 mt-6">💡 You may customize a template by disabling modules that are not locked.</span>
       </div>
-    </div>
   );
 }
