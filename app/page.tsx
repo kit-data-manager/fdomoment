@@ -1,12 +1,17 @@
+"use client"
+
 import Image from "next/image";
 import ThemeToggle from '@/components/ThemeToggle';
 import { Footer } from '@/components/Footer';
 import { AppSelector } from '@/components/AppSelector';
 import React from "react";
 import Link from "next/link";
+import {useTheme} from "@/context/ThemeContext";
 
 export default function Home() {
-  return (
+    const { darkMode } = useTheme();
+
+    return (
     <div className="flex flex-col h-screen transition-colors duration-200">
         <header className="py-4 px-6 border-b flex-shrink-0">
            <div className="flex justify-between items-center gap-4 mb-2">
@@ -49,14 +54,14 @@ export default function Home() {
           <div className="max-w-4xl mx-auto py-12 px-6">
             <div className="text-center mb-8">
               <p className="mb-4">
-                Create your own FAIR Digital Objects in a modular and easy way. Once created, they can be cited in your scientific publications, processed via available tooling,
-                or just kept persisted for the future.<br/>
-                Ready for creating your first FAIR Digital Object? Then proceed with <Link
+                  Create your own FAIR Digital Objects—modular, intuitive, and built your way. Once created,
+                  they’re ready to cite in your scientific publications, integrate with powerful tools, or securely preserve for the future.
+                  Ready to get started?<br/>Proceed with <Link
                   href="/momentum"
                   className="text-primary hover:text-primary-focus transition-colors font-medium"
                 >
                     Momentum →
-                </Link>, our FAIR Digital Object creation tool.
+                </Link> and build your first FAIR Digital Object today.
               </p>
             </div>
 
@@ -65,31 +70,46 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8 mt-8">
                 <div className="card bg-base-100 shadow-md">
                     <figure>
-                        <img src="https://placehold.co/400x200?text=Intuitive+Interface" alt="Intuitive Interface" />
+                        {darkMode && (
+                        <img src="feature_supportive_dark.png" alt="Supportive" />
+                        )}
+                        {!darkMode && (
+                            <img src="feature_supportive_light.png" alt="Supportive" />
+                        )}
                     </figure>
                     <div className="card-body">
-                        <h3 className="card-title">Intuitive Interface</h3>
-                        <p>Clean, intuitive design that makes FDO creation effortless.</p>
+                        <h3 className="card-title">Supportive</h3>
+                        <p>A clean and supportive user interface allows an effortless creation of FAIR Digital Objects, even for beginners,
+                            while offering enough customizability for experts.</p>
                     </div>
                 </div>
                 <div className="card bg-base-100 shadow-md">
                     <figure>
-                        <img src="https://placehold.co/400x200?text=Real+PIDs" alt="Real PIDs" />
+                        {darkMode && (
+                        <img src="feature_supportive_dark.png" alt="Versatile" />
+                            )}
+                        {!darkMode && (
+                            <img src="feature_supportive_light.png" alt="Versatile" />
+                        )}
                     </figure>
                     <div className="card-body">
-                        <h3 className="card-title">Real PIDs</h3>
-                        <p>Make your FDOs persistently accessible by assigning globally unique, persistent
-                            identifiers.</p>
+                        <h3 className="card-title">Versatile</h3>
+                        <p>Assignment of true PIDs allows versatile use of created FAIR Digital Objects, e.g., in your publications, for available tooling,
+                            or just for long-term persistence.</p>
                     </div>
                 </div>
                 <div className="card bg-base-100 shadow-md">
                     <figure>
-                        <img src="https://placehold.co/400x200?text=Customization" alt="Customization" />
+                        {darkMode && (
+                        <img src="feature_transparent_dark.png" alt="Transparent" />
+                            )}
+                        {!darkMode && (
+                            <img src="feature_transparent_light.png" alt="Transparent" />
+                        )}
                     </figure>
                     <div className="card-body">
-                        <h3 className="card-title">Customization</h3>
-                        <p>Besides kernel metadata, custom attributes can be added to your FDOs to support
-                            specific use cases or branding.</p>
+                        <h3 className="card-title">Transparent</h3>
+                        <p>Access all your FAIR Digital Objects as well as comprehensive status information easily, at any time.</p>
                     </div>
                 </div>
             </div>
