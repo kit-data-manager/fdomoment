@@ -1,11 +1,28 @@
 import { RadialProgress } from './ui/RadialProgress';
 import type { UserStats } from './types';
+import Link from "next/link";
 
 interface StatisticsOverviewProps {
-  stats: UserStats;
+  stats?: UserStats;
 }
 
 export function StatisticsOverview({ stats }: StatisticsOverviewProps) {
+ if(!stats){
+     return (
+         <div className="card bg-base-100 shadow-lg">
+           <div className="card-body items-center text-center py-12">
+             <h2 className="card-title text-2xl mb-4">No FDOs Yet</h2>
+             <p className="text-base-content/70 mb-6">
+               No FDOs found. Create your first FDO now.
+             </p>
+             <Link href="/momentum" className="btn btn-primary">
+               Create FDO
+             </Link>
+           </div>
+         </div>
+     );
+ }
+
   return (
     <div className="card bg-base-100 shadow-lg mb-6">
       <div className="card-body">

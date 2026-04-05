@@ -37,13 +37,11 @@ export function FdoTable({
         <div className="card-body items-center text-center py-12">
           <h2 className="card-title text-2xl mb-4">No FDOs Yet</h2>
           <p className="text-base-content/70 mb-6">
-            {showOrcid && showResearchDomain ? 'No FDOs available in the system.' : 'Create your first FDO to see your statistics here.'}
+            No FDOs found. Create your first FDO now.
           </p>
-          {!showOrcid && showResearchDomain && (
             <Link href="/momentum" className="btn btn-primary">
               Create FDO
             </Link>
-          )}
         </div>
       </div>
     );

@@ -203,7 +203,7 @@ export default function MementoPage() {
   const renderActiveView = () => {
     switch (activeView) {
       case 'statistics':
-        return userStats ? <StatisticsOverview stats={userStats} /> : null;
+        return <StatisticsOverview stats={userStats} /> ;
       case 'fdos':
         return (
           <FdoTable
