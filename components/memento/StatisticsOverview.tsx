@@ -3,7 +3,7 @@ import type { UserStats } from './types';
 import Link from "next/link";
 
 interface StatisticsOverviewProps {
-  stats?: UserStats;
+  stats: UserStats | null;
 }
 
 export function StatisticsOverview({ stats }: StatisticsOverviewProps) {
