@@ -263,20 +263,19 @@ export function EditorShell(props: EditorShellProps) {
 
   return (
       <div className="flex flex-col h-full">
-        <div className="hidden md:flex flex-1 overflow-hidden">
-          <EditorNavigator
-              state={state}
-              moduleStatus={state.moduleStatus}
-              setActiveModule={setActiveModule}
-              canCreate={canCreate}
-              onCreate={handleCreate}
-          />
+        <EditorNavigator
+            state={state}
+            moduleStatus={state.moduleStatus}
+            setActiveModule={setActiveModule}
+            canCreate={canCreate}
+            onCreate={handleCreate}
+        >
           <main className="flex-1 overflow-y-auto bg-base-200">
-            <div className="flex gap-6 p-8">
+            <div className="flex flex-col md:flex-row gap-6 p-4 md:p-8">
               <div className="flex-1 max-w-2xl">
                 {renderActiveModule()}
               </div>
-              <div className="w-[300px] flex-shrink-0">
+              <div className="w-full md:w-[300px] flex-shrink-0">
                 <FairScoreBar
                     state={state}
                     setActiveModule={setActiveModule}
@@ -284,19 +283,7 @@ export function EditorShell(props: EditorShellProps) {
               </div>
             </div>
           </main>
-        </div>
-
-        <div className="md:hidden flex flex-col flex-1 overflow-hidden">
-          <main className="flex-1 overflow-y-auto bg-base-200 p-4">
-            {renderActiveModule()}
-            <div className="mt-4">
-              <FairScoreBar
-                  state={state}
-                  setActiveModule={setActiveModule as (module: string) => void}
-              />
-            </div>
-          </main>
-        </div>
+        </EditorNavigator>
       </div>
   );
 }
