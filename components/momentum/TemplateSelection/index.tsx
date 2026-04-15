@@ -98,7 +98,7 @@ switch(moduleId){
             <button
               type="button"
               onClick={handleConfirm}
-              className="btn btn-primary btn-soft"
+              className="btn btn-primary"
             >
               Confirm →
             </button>

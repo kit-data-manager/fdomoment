@@ -170,7 +170,7 @@ export default function MementoPage() {
         <div className="card bg-base-100 shadow-xl max-w-md w-full">
           <div className="card-body items-center text-center">
             <h2 className="card-title text-2xl">Login Required</h2>
-            <p className="py-4">Please log in to view your FDO Memento.</p>
+            <p className="py-4">Please log in to access FDO Memento.</p>
             <div className="card-actions">
               <button onClick={login} className="btn btn-primary">
                 Login
@@ -203,7 +203,7 @@ export default function MementoPage() {
   const renderActiveView = () => {
     switch (activeView) {
       case 'statistics':
-        return userStats ? <StatisticsOverview stats={userStats} /> : null;
+        return <StatisticsOverview stats={userStats} /> ;
       case 'fdos':
         return (
           <FdoTable
