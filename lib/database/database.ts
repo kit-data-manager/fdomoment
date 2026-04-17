@@ -12,8 +12,19 @@ export interface Database {
   fdoRecord: {
     create(record: FdoRecord): Promise<void>;
     findByPid(pid: string): Promise<FdoRecord | null>;
-    findByUserName(userName: string): Promise<FdoRecord[]>;
-    getAll(): Promise<FdoRecord[]>;
+    findByUserName(
+      userName: string,
+      page?: number,
+      limit?: number,
+      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortOrder?: 'asc' | 'desc'
+    ): Promise<FdoRecord[]>;
+    getAll(
+      page?: number,
+      limit?: number,
+      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortOrder?: 'asc' | 'desc'
+    ): Promise<FdoRecord[]>;
   };
   
   fairScore: {

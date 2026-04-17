@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useId, useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useKeycloak } from '@/context/KeycloakContext';
 import { FdoRecord } from '@/lib/database/types';
 import { StatisticsOverview, FdoTable, AdminOverview } from '@/components/memento';
@@ -27,11 +28,14 @@ type MementoView = 'statistics' | 'fdos' | 'admin' | 'allFdos';
 
 export default function MementoPage() {
   const { authenticated, userName, isAdmin, login } = useKeycloak();
+  const searchParams = useSearchParams();
+  const initialView = searchParams.get('view') as MementoView | null;
+  const initialPid = searchParams.get('pid');
   const [userFdos, setUserFdos] = useState<FdoRecord[]>([]);
   const [allFdos, setAllFdos] = useState<FdoRecord[]>([]);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
-  const [activeView, setActiveView] = useState<MementoView>('statistics');
+  const [activeView, setActiveView] = useState<MementoView>(initialView || 'statistics');
   const [isLoading, setIsLoading] = useState(true);
   const [userFdosPage, setUserFdosPage] = useState(1);
   const [userFdosSortBy, setUserFdosSortBy] = useState<'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | undefined>(undefined);
@@ -234,6 +238,7 @@ export default function MementoPage() {
             page={userFdosPage}
             limit={10}
             total={totalUserFdos}
+            initialSelectedPid={initialPid}
             onSort={(field) => {
               const newSortOrder = userFdosSortBy === field && userFdosSortOrder === 'asc' ? 'desc' : 'asc';
               fetchUserFdos(userFdosPage, field, newSortOrder);

@@ -9,18 +9,26 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+function getInitialDarkMode(): boolean {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem('fdmoment-theme');
+    if (stored !== null) {
+      return stored === 'dark';
+    }
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  return false;
+}
+
 export const ThemeProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(getInitialDarkMode);
 
-  // Check for user's preferred color scheme on mount
-  useEffect(() => {
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setDarkMode(prefersDark);
-  }, []);
-
-  // Toggle theme function
   const toggleTheme = () => {
-    setDarkMode(!darkMode);
+    setDarkMode(prev => {
+      const next = !prev;
+      localStorage.setItem('fdmoment-theme', next ? 'dark' : 'light');
+      return next;
+    });
   };
 
   // Apply theme to document body using data-theme attribute

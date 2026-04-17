@@ -1,0 +1,52 @@
+[
+  {
+    "pid": "https://hdl.handle.net/hqm0yt3ghs526zftroblil",
+    "record": [
+      {
+        "key": "test",
+        "value": "value"
+      }
+    ]
+  },
+  {
+    "pid": "https://hdl.handle.net/jyb9y3twk3og1hsufb2f",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "200f918b-33be-4710-b25b-ae22a24f8c68"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "f8ad0a4f-7d63-4842-9aa1-fc1b0afe8dff"
+      },
+      {
+        "key": "funding",
+        "value": "asd"
+      },
+      {
+        "key": "funder",
+        "value": "asd"
+      }
+    ]
+  }
+]

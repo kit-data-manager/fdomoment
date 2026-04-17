@@ -39,6 +39,7 @@ export default function EditorPage() {
       setTemplate={editorState.setTemplate}
       setActiveModule={editorState.setActiveModule as (module: string) => void}
       canCreate={editorState.canCreate}
+      resetState={editorState.resetState}
     />
   );
 }

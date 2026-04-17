@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Creator,
   DataObjectMetadata,
@@ -21,8 +21,9 @@ import {SoftwareModule} from "@/components/momentum/SoftwareModule";
 import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
 import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
-import {calculateFairScore} from "@/lib/momentum/fairScore";
-import { createFdoRecord, upsertFairScoreAggregation } from '@/lib/database/actions';
+import { FdoCreatedDialog } from '@/components/momentum/FdoCreatedDialog';
+
+const FDO_SERVICE_ENDPOINT = process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT || '/api/fdoservice';
 
 interface EditorShellProps {
   state: EditorState;
@@ -34,6 +35,7 @@ interface EditorShellProps {
   setTemplate: (type: EditorState['template'], enabledModules?: string[]) => void;
   setActiveModule: (module: string) => void;
   canCreate: boolean;
+  resetState?: () => void;
   onNextModule?: () => void;
   onPrevModule?: () => void;
 }
@@ -49,9 +51,10 @@ export function EditorShell(props: EditorShellProps) {
     setTemplate,
     setActiveModule,
     canCreate,
+    resetState,
   } = props;
 
-  const { userName } = useKeycloak();
+  const [createdPid, setCreatedPid] = useState<string | null>(null);
 
   const handleCreate = async () => {
     let fdoRecord:RecordData = createRecordData();
@@ -71,30 +74,33 @@ export function EditorShell(props: EditorShellProps) {
         default: console.log("Unknown/unhandled module: ", module);
       }
     })
-    const score = calculateFairScore(state);
-    console.log("SC", score)
-    console.log('Creating FDO', fdoRecord);
-    fdoRecord.pid = crypto.randomUUID();
+//    const score = calculateFairScore(state);
+//    console.log("SC", score)
+//    console.log('Creating FDO', fdoRecord);
+    
+       try {
+         const response: Response = await fetch(FDO_SERVICE_ENDPOINT, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(fdoRecord),
+           });
+           
+           if (!response.ok) {
+             throw new Error('Failed to create FDO via service');
+           }
+           
+           const createdFdo = await response.json();
+           fdoRecord.pid = createdFdo.pid;
 
-    if (userName) {
-      try {
-        await createFdoRecord({
-          pid: fdoRecord.pid,
-          userName,
-          orcid: state.core.orcid,
-          researchDomain: state.core.researchDomain?.label || '',
-          fairScore: score.total,
-        });
+         setCreatedPid(fdoRecord.pid);
+       } catch (error) {
+         console.error('Failed to store FDO record:', error);
+       }
+   };
 
-        for (const [criterium, value] of Object.entries(score)) {
-          if (criterium !== 'total') {
-            await upsertFairScoreAggregation(userName, criterium as 'findable' | 'accessible' | 'interoperable' | 'reusable', value as number);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to store FDO record:', error);
-      }
-    }
+  const handleStartOver = () => {
+    setCreatedPid(null);
+    resetState?.();
   };
 
   const collectSoftwareAttributes = (metadata:SoftwareMetadata, fdoRecord:RecordData):RecordData => {
@@ -258,7 +264,16 @@ export function EditorShell(props: EditorShellProps) {
   };
 
   if (!showFullInterface) {
-    return renderActiveModule();
+    return (
+      <>
+        {renderActiveModule()}
+        <FdoCreatedDialog
+          isOpen={createdPid !== null}
+          pid={createdPid || ''}
+          onStartOver={handleStartOver}
+        />
+      </>
+    );
   }
 
   return (
@@ -284,6 +299,11 @@ export function EditorShell(props: EditorShellProps) {
             </div>
           </main>
         </EditorNavigator>
+        <FdoCreatedDialog
+          isOpen={createdPid !== null}
+          pid={createdPid || ''}
+          onStartOver={handleStartOver}
+        />
       </div>
   );
 }
