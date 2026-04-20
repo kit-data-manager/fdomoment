@@ -67,6 +67,7 @@ export type SoftwareMetadata = {
 export type Creator = {
   id: string;
   name: string;
+  orcid?: string;
 };
 
 export type PublicationMetadata = {

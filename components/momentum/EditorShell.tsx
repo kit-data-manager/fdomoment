@@ -22,6 +22,8 @@ import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
 import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
 import { FdoCreatedDialog } from '@/components/momentum/FdoCreatedDialog';
+import { createFdoRecord } from '@/lib/database/actions';
+import { calculateFairScore } from '@/lib/momentum/fairScore';
 
 const FDO_SERVICE_ENDPOINT = process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT || '/api/fdoservice';
 
@@ -54,49 +56,65 @@ export function EditorShell(props: EditorShellProps) {
     resetState,
   } = props;
 
+  const { userName } = useKeycloak();
   const [createdPid, setCreatedPid] = useState<string | null>(null);
 
-  const handleCreate = async () => {
-    let fdoRecord:RecordData = createRecordData();
+   const handleCreate = async () => {
+     const orcid = state['core'].orcid;
+     const researchDomain = state['core'].researchDomain?.label || '';
 
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', state['core'].orcid);
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HelmholtzResearchField', state['core'].researchDomain?.label);
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/CORE');
+     let fdoRecord:RecordData = createRecordData();
 
-    state['enabledModules'].
-    filter((module) => module != 'core').
-    forEach(module => {
-      switch (module as ModuleIdentifier) {
-        case "software": fdoRecord = collectSoftwareAttributes(state['software'], fdoRecord);break;
-        case "dataobject": fdoRecord = collectDataObjectAttributes(state['dataobject'], fdoRecord);break;
-        case "publication": fdoRecord = collectPublicationAttributes(state['publication'], fdoRecord);break;
-        case "misc": fdoRecord = collectMiscAttributes(state['misc'], fdoRecord);break;
-        default: console.log("Unknown/unhandled module: ", module);
-      }
-    })
-//    const score = calculateFairScore(state);
-//    console.log("SC", score)
-//    console.log('Creating FDO', fdoRecord);
-    
-       try {
-         const response: Response = await fetch(FDO_SERVICE_ENDPOINT, {
-             method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify(fdoRecord),
-           });
-           
-           if (!response.ok) {
-             throw new Error('Failed to create FDO via service');
-           }
-           
-           const createdFdo = await response.json();
-           fdoRecord.pid = createdFdo.pid;
+     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', orcid);
+     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HelmholtzResearchField', researchDomain);
+     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/CORE');
 
-         setCreatedPid(fdoRecord.pid);
-       } catch (error) {
-         console.error('Failed to store FDO record:', error);
+     state['enabledModules'].
+     filter((module) => module != 'core').
+     forEach(module => {
+       switch (module as ModuleIdentifier) {
+         case "software": fdoRecord = collectSoftwareAttributes(state['software'], fdoRecord);break;
+         case "dataobject": fdoRecord = collectDataObjectAttributes(state['dataobject'], fdoRecord);break;
+         case "publication": fdoRecord = collectPublicationAttributes(state['publication'], fdoRecord);break;
+         case "misc": fdoRecord = collectMiscAttributes(state['misc'], fdoRecord);break;
+         default: console.log("Unknown/unhandled module: ", module);
        }
-   };
+     })
+    const score = calculateFairScore(state);
+    console.log('SC', score);
+    console.log('Creating FDO', fdoRecord);
+      
+        try {
+          const response: Response = await fetch(FDO_SERVICE_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(fdoRecord),
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to create FDO via service');
+            }
+            
+            const createdFdo = await response.json();
+            fdoRecord.pid = createdFdo.pid;
+
+            try {
+              await createFdoRecord({
+                pid: createdFdo.pid,
+                userName: userName || '',
+                orcid: orcid || '',
+                researchDomain: researchDomain,
+                fairScore: score.total,
+              });
+            } catch (dbError) {
+              console.error('Failed to store FDO in database:', dbError);
+            }
+
+          setCreatedPid(fdoRecord.pid);
+        } catch (error) {
+          console.error('Failed to store FDO record:', error);
+        }
+    };
 
   const handleStartOver = () => {
     setCreatedPid(null);
@@ -125,7 +143,8 @@ export function EditorShell(props: EditorShellProps) {
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_TITLE', metadata.title);
 
     metadata.creators.forEach((creator:Creator) => {
-      fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_CREATOR', creator.id);
+      const creatorValue = creator.orcid || creator.name || creator.id;
+      fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_CREATOR', creatorValue);
     })
   return fdoRecord;
   }

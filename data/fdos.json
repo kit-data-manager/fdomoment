@@ -1,15 +1,6 @@
 [
   {
-    "pid": "https://hdl.handle.net/hqm0yt3ghs526zftroblil",
-    "record": [
-      {
-        "key": "test",
-        "value": "value"
-      }
-    ]
-  },
-  {
-    "pid": "https://hdl.handle.net/jyb9y3twk3og1hsufb2f",
+    "pid": "yguujdcm2va38buyjsqtxr",
     "record": [
       {
         "key": "0.SIMPLE/OWNER",
@@ -33,19 +24,118 @@
       },
       {
         "key": "0.SIMPLE/PUBLICATION_CREATOR",
-        "value": "200f918b-33be-4710-b25b-ae22a24f8c68"
+        "value": "85fa722b-fcc3-4e0d-8499-c683a66a43dd"
       },
       {
         "key": "0.SIMPLE/PUBLICATION_CREATOR",
-        "value": "f8ad0a4f-7d63-4842-9aa1-fc1b0afe8dff"
+        "value": "d6d921f4-1bc8-4853-92fd-6831c46edadb"
       },
       {
-        "key": "funding",
-        "value": "asd"
+        "key": "version",
+        "value": "1.0"
+      }
+    ]
+  },
+  {
+    "pid": "7ri7xl2at1kqd2y9wglcwc",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
       },
       {
-        "key": "funder",
-        "value": "asd"
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "dffe40b3-5f2f-4fab-bee3-c54f0e6d19f1"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "022a075d-b70f-487a-8e88-7ac02e9bdb25"
+      }
+    ]
+  },
+  {
+    "pid": "rng9cuw995tbo8teqyc",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "c83e411d-5868-4e26-b565-6400cd19bc4e"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "f5c50923-4a49-413b-b0cd-41d79153bded"
+      },
+      {
+        "key": "version",
+        "value": "1.0"
+      }
+    ]
+  },
+  {
+    "pid": "1m3ujx7nou4v35b0te8j8",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
       }
     ]
   }
