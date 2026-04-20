@@ -6,6 +6,7 @@ import { X, Copy, Image as ImageIcon, Link as LinkIcon, Check, BookOpen, Image, 
 import { PidComponent } from '@kit-data-manager/react-pid-component';
 import type { FdoRecord } from '@/lib/database/types';
 import {useTheme} from "@/context/ThemeContext";
+import { getOrcidMetadata } from '@/utils/orcid-client';
 
 interface FdoTableProps {
   fdos: FdoRecord[];
@@ -33,7 +34,7 @@ function FdoDetailPanel({ fdo, onClose }: { fdo: FdoRecord; onClose: () => void 
   const [customLabel, setCustomLabel] = useState('');
   const [customMessage, setCustomMessage] = useState('');
   const [customUseLogo, setCustomUseLogo] = useState(true);
-  const [fullFdo, setFullFdo] = useState<FdoRecord & { record: Record<string, string> } | null>(null);
+  const [fullFdo, setFullFdo] = useState<FdoRecord & { record: Record<string, string | string[]> } | null>(null);
   const [citationStyle, setCitationStyle] = useState<'apa' | 'ieee' | 'harvard' | 'bibtex'>('apa');
   const [citationText, setCitationText] = useState('');
   const [manualAuthor, setManualAuthor] = useState('');
@@ -92,14 +93,20 @@ function FdoDetailPanel({ fdo, onClose }: { fdo: FdoRecord; onClose: () => void 
     const fetchFullFdo = async () => {
       setIsCitationLoading(true);
       try {
-        console.log("Obtaining FDO ", fdo.pid)
         const response = await fetch(`${process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT}/${fdo.pid}`);
-        console.log("RES", response)
         if (response.ok) {
           const data = await response.json();
-          const recordObj: Record<string, string> = {};
+          const recordObj: Record<string, string | string[]> = {};
           data.record.forEach((entry: { key: string; value: string }) => {
-            recordObj[entry.key] = entry.value;
+            if (recordObj[entry.key]) {
+              // Convert to array if key already exists
+              if (!Array.isArray(recordObj[entry.key])) {
+                recordObj[entry.key] = [recordObj[entry.key] as string];
+              }
+              recordObj[entry.key] = [...(recordObj[entry.key] as string[]), entry.value];
+            } else {
+              recordObj[entry.key] = entry.value;
+            }
           });
           setFullFdo({ ...data, record: recordObj });
         }
@@ -115,11 +122,36 @@ function FdoDetailPanel({ fdo, onClose }: { fdo: FdoRecord; onClose: () => void 
   useEffect(() => {
     if (fullFdo) {
       const record = fullFdo.record;
-      setManualAuthor(manualAuthor || (record['0.SIMPLE/PUBLICATION_CREATOR'] || ''));
-      setManualTitle(manualTitle || (record['0.SIMPLE/PUBLICATION_TITLE'] || ''));
-      setManualDoi(manualDoi || (record['0.SIMPLE/DOI'] || ''));
-      setManualUrl(manualUrl || (record['0.SIMPLE/DATA_OBJECT_LOCATION'] || record['0.SIMPLE/SOFTWARE_LOCATION'] || ''));
-      setManualVersion(manualVersion || (record['0.SIMPLE/VERSION'] || ''));
+      
+      // Fetch ORCID metadata for author if available (supporting multiple authors)
+      const orcidValue = record['0.SIMPLE/PUBLICATION_CREATOR'];
+      if (orcidValue && !manualAuthor) {
+        const orcidList = Array.isArray(orcidValue) ? orcidValue : [orcidValue];
+        
+        // Fetch name for first ORCID if available
+        const firstOrcid = orcidList[0];
+        if (firstOrcid) {
+          getOrcidMetadata(firstOrcid).then((metadata) => {
+            if (metadata && metadata.name) {
+              setManualAuthor(metadata.name);
+            } else {
+              setManualAuthor(firstOrcid);
+            }
+          }).catch(() => {
+            setManualAuthor(firstOrcid);
+          });
+        }
+      }
+      
+      // Extract first value if it's an array for these fields
+      const extractFirst = (value: string | string[]): string => {
+        return Array.isArray(value) ? value[0] : value;
+      };
+
+      setManualTitle(manualTitle || extractFirst(record['0.SIMPLE/PUBLICATION_TITLE'] || ''));
+      setManualDoi(manualDoi || extractFirst(record['0.SIMPLE/DOI'] || ''));
+      setManualUrl(manualUrl || (extractFirst(record['0.SIMPLE/DATA_OBJECT_LOCATION'] || record['0.SIMPLE/SOFTWARE_LOCATION'] || '')));
+      setManualVersion(manualVersion || extractFirst(record['0.SIMPLE/VERSION'] || ''));
     }
   }, [fullFdo]);
 
@@ -134,21 +166,37 @@ function FdoDetailPanel({ fdo, onClose }: { fdo: FdoRecord; onClose: () => void 
 
       const getAuthor = async (): Promise<string> => {
         if (manualAuthor) return manualAuthor;
-        const orcid = record['0.SIMPLE/PUBLICATION_CREATOR'];
-        if (orcid) {
-          try {
-            const response = await fetch(`https://orcid.org/${orcid.split('/').pop()}/person`);
-            if (response.ok) {
-              const data = await response.json();
-                const firstName = data?.names?.find((n: { 'preferred-name'?: { 'given-names'?: string; 'family-name'?: string } }) => n?.['preferred-name'])?.['preferred-name']?.['given-names'] || '';
-                const lastName = data?.names?.find((n: { 'preferred-name'?: { 'given-names'?: string; 'family-name'?: string } }) => n?.['preferred-name'])?.['preferred-name']?.['family-name'] || '';
-              return `${firstName} ${lastName}`.trim() || orcid;
+        const orcidValue = record['0.SIMPLE/PUBLICATION_CREATOR'];
+        
+        // Handle multiple ORCIDs - resolve all and format as "Doe, J., Maier, P."
+        const orcidList = Array.isArray(orcidValue) ? orcidValue : [orcidValue];
+        
+        const authorNames: string[] = [];
+        for (const orcid of orcidList) {
+          if (orcid) {
+            try {
+              const metadata = await getOrcidMetadata(orcid);
+              if (metadata && metadata.name) {
+                // Format as "Last, F." with abbreviated first name
+                const parts = metadata.name.split(' ');
+                if (parts.length > 1) {
+                  const last = parts[parts.length - 1];
+                  const firstInitial = parts[0].charAt(0).toUpperCase() + '.';
+                  authorNames.push(`${last}, ${firstInitial}`);
+                } else {
+                  authorNames.push(metadata.name);
+                }
+              } else {
+                authorNames.push(orcid);
+              }
+            } catch (error) {
+              console.error('Failed to fetch ORCID:', error);
+              authorNames.push(orcid);
             }
-          } catch (error) {
-            console.error('Failed to fetch ORCID:', error);
           }
         }
-        return '';
+        
+        return authorNames.join(', ');
       };
 
       const getTitle = () => manualTitle;
@@ -156,8 +204,9 @@ function FdoDetailPanel({ fdo, onClose }: { fdo: FdoRecord; onClose: () => void 
       const getUrl = () => manualUrl;
       const getVersion = () => manualVersion;
       const getYear = () => {
-        const date = record['0.SIMPLE/PUBLICATION_DATE'] || record['0.SIMPLE/CREATION_DATE'] || '';
-        return date ? new Date(date).getFullYear().toString() : '';
+        const dateValue = record['0.SIMPLE/PUBLICATION_DATE'] || record['0.SIMPLE/CREATION_DATE'] || '';
+        const dateStr = Array.isArray(dateValue) ? dateValue[0] : dateValue;
+        return dateStr ? new Date(dateStr).getFullYear().toString() : '';
       };
 
       const author = await getAuthor();

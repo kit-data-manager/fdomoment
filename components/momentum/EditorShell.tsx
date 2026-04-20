@@ -22,7 +22,7 @@ import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
 import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
 import { FdoCreatedDialog } from '@/components/momentum/FdoCreatedDialog';
-import { createFdoRecord } from '@/lib/database/actions';
+import { createFdoRecord, upsertFairScoreAggregation } from '@/lib/database/actions';
 import { calculateFairScore } from '@/lib/momentum/fairScore';
 
 const FDO_SERVICE_ENDPOINT = process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT || '/api/fdoservice';
@@ -66,7 +66,7 @@ export function EditorShell(props: EditorShellProps) {
      let fdoRecord:RecordData = createRecordData();
 
      fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', orcid);
-     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HelmholtzResearchField', researchDomain);
+     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD', researchDomain);
      fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/CORE');
 
      state['enabledModules'].
@@ -106,6 +106,13 @@ export function EditorShell(props: EditorShellProps) {
                 researchDomain: researchDomain,
                 fairScore: score.total,
               });
+
+              // Store individual FAIR criteria scores
+              for (const [criterium, value] of Object.entries(score)) {
+                if (criterium !== 'total') {
+                  await upsertFairScoreAggregation(userName || '', criterium as 'findable' | 'accessible' | 'interoperable' | 'reusable', value as number);
+                }
+              }
             } catch (dbError) {
               console.error('Failed to store FDO in database:', dbError);
             }
@@ -146,6 +153,7 @@ export function EditorShell(props: EditorShellProps) {
       const creatorValue = creator.orcid || creator.name || creator.id;
       fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_CREATOR', creatorValue);
     })
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/PUBLICATION');
   return fdoRecord;
   }
   const collectMiscAttributes = (metadata:MiscMetadata | null, fdoRecord:RecordData):RecordData => {

@@ -90,13 +90,14 @@ export default function MementoPage() {
       const allUserRecords = await getFdoRecords(userName);
       const total = allUserRecords.length;
       const userRecords = await getFdoRecords(userName, 1, 10, 'createdAt', 'desc');
-      const aggs = await getFairScoreAggregations(userName);
 
       setUserFdos(Array.isArray(userRecords) ? userRecords : []);
       setTotalUserFdos(total);
 
       if (userRecords.length > 0) {
         const meanOverall = userRecords.reduce((sum, f) => sum + f.fairScore, 0) / userRecords.length;
+        const aggs = await getFairScoreAggregations(userName);
+
         const findable = aggs.find(a => a.criterium === 'findable');
         const accessible = aggs.find(a => a.criterium === 'accessible');
         const interoperable = aggs.find(a => a.criterium === 'interoperable');

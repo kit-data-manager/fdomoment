@@ -138,5 +138,316 @@
         "value": "0000-0001-6383-5214"
       }
     ]
+  },
+  {
+    "pid": "ss8jjt3efcf5mj5jlw66db",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Earth & Environment"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      }
+    ]
+  },
+  {
+    "pid": "vgzd0iw455rx9rko37lqet",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Earth & Environment"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "version",
+        "value": ""
+      },
+      {
+        "key": "funder",
+        "value": ""
+      },
+      {
+        "key": "funding",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "pid": "67ubq49bnto5gpqgnuahry",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Earth & Environment"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DATA_OBJECT_LOCATION",
+        "value": "https://doi.org/10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/DATA_OBJECT_LICENCE",
+        "value": "cc0-1.0"
+      },
+      {
+        "key": "0.SIMPLE/MIME_TYPE",
+        "value": "text/csv"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/DATA_OBJECT"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "version",
+        "value": ""
+      },
+      {
+        "key": "funder",
+        "value": ""
+      },
+      {
+        "key": "funding",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "pid": "xh79hepkesanwkx59fsxhr",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Earth & Environment"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DATA_OBJECT_LOCATION",
+        "value": "https://doi.org/10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/DATA_OBJECT_LICENCE",
+        "value": "cc0-1.0"
+      },
+      {
+        "key": "0.SIMPLE/MIME_TYPE",
+        "value": "text/plain"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/DATA_OBJECT"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      }
+    ]
+  },
+  {
+    "pid": "z32jq7ekubkb87ebmtmcew",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Earth & Environment"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "funder",
+        "value": ""
+      },
+      {
+        "key": "funding",
+        "value": ""
+      },
+      {
+        "key": "variable",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "pid": "7686nfmdr0j7ug7n6gs2bw",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Earth & Environment"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      }
+    ]
+  },
+  {
+    "pid": "i6y4uhmld7r27eql1pv1t",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HelmholtzResearchField",
+        "value": "Earth & Environment"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "funding",
+        "value": ""
+      },
+      {
+        "key": "variable",
+        "value": ""
+      },
+      {
+        "key": "version",
+        "value": ""
+      }
+    ]
   }
 ]

@@ -49,7 +49,7 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
       pkceMethod: 'S256',
     };
     
-    kc.init(initOptions).then((auth) => {
+    kc.init(initOptions).then((auth: boolean) => {
       setKeycloak(kc);
       setAuthenticated(auth);
       setIsLoading(false);
@@ -61,13 +61,59 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
         setIsAdmin(groupsValue.includes('ROLE_ADMINISTRATOR'));
         storeUser(userNameValue);
       }
-    }).catch((error) => {
+      
+      // Set up token refresh handlers after initialization
+      if (auth && kc) {
+        kc.onTokenExpired = () => {
+          kc.updateToken(30)
+            .then((updated: boolean) => {
+              if (updated) {
+                console.log('Token refreshed successfully');
+              } else {
+                console.log('Token is still valid');
+              }
+            })
+            .catch((error: unknown) => {
+              console.error('Failed to refresh token, user may need to re-authenticate:', error);
+            });
+        };
+        
+        kc.onAuthRefreshSuccess = () => {
+          console.log('Token refresh successful');
+        };
+        
+        kc.onAuthRefreshError = () => {
+          console.error('Token refresh error');
+        };
+      }
+    }).catch((error: unknown) => {
       console.error('Keycloak initialization error:', error);
       setKeycloak(kc);
       setAuthenticated(false);
       setIsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (keycloak && authenticated) {
+      // Set up periodic token refresh check
+      const intervalId = setInterval(() => {
+        if (keycloak.isTokenExpired()) {
+          keycloak.updateToken(30)
+            .then((updated: boolean) => {
+              if (updated) {
+                console.log('Token refreshed proactively');
+              }
+            })
+            .catch((error: unknown) => {
+              console.error('Proactive token refresh failed:', error);
+            });
+        }
+      }, 30000); // Check every 30 seconds
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [keycloak, authenticated]);
 
   const login = () => {
     if (keycloak) {
