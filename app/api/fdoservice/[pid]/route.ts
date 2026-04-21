@@ -93,7 +93,6 @@ export async function GET(
   
   console.log('GET params:', { pid });
   console.log('GET request.url:', request.url);
-  
   if (!pid) {
     return NextResponse.json({ error: 'PID required' }, { status: 400 });
   }

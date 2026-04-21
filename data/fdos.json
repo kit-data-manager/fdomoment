@@ -449,5 +449,198 @@
         "value": ""
       }
     ]
+  },
+  {
+    "pid": "tl1xx7f20hhdxcp6cil28q",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
+  },
+  {
+    "pid": "wbkq1u85qjt1g2upmg8p",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "version",
+        "value": "1.0.0"
+      },
+      {
+        "key": "URL",
+        "value": "https://doi.org/10.5281/zenodo.14747443"
+      }
+    ]
+  },
+  {
+    "pid": "ulj6d9xmn8nzn0x69go77k",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DATA_OBJECT_LOCATION",
+        "value": "https://doi.org/10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/DATA_OBJECT_LICENCE",
+        "value": "cc0-1.0"
+      },
+      {
+        "key": "0.SIMPLE/MIME_TYPE",
+        "value": "text/csv"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/DATA_OBJECT"
+      },
+      {
+        "key": "version",
+        "value": "1"
+      }
+    ]
+  },
+  {
+    "pid": "1nrngk9miymdijjysvzrt6",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
+  },
+  {
+    "pid": "pd01m05hdyprdtdqiszxta",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
   }
 ]
