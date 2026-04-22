@@ -3,7 +3,7 @@ export interface TypeDefinition {
   name: string;
   description: string;
   category: string;
-  validator: "JSON" | "SPARQL";
+  validator: "JSON" | "SPARQL" | "LINK";
   validatorInput?: string;
   validatorEndpoint?: string;
   validatorArguments?: ValidatorArgument[];

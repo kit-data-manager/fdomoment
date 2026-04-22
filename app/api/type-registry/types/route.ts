@@ -8,14 +8,14 @@ interface TypeDefinition {
     pid: string;
     name: string;
     description: string;
-    validator: "JSON" | "SPARQL";
+    validator: "JSON" | "SPARQL" | "LINK";
     validatorInput?: string;
     validatorEndpoint?: string;
     validatorArguments?: Array<{ key: string; value: string }>;
 }
 
 const isValidValidator = (validator: string): validator is "JSON" | "SPARQL" => {
-    return validator === "JSON" || validator === "SPARQL";
+    return validator === "JSON" || validator === "SPARQL" || validator === "LINK";
 };
 
 const cache = {

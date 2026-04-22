@@ -4,6 +4,7 @@ import { useSimpleTypeRegistry } from "@/components/SimpleTypeRegistryComponent/
 import TypeSelector from "@/components/SimpleTypeRegistryComponent/TypeSelector";
 import JsonValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/JsonValidatorForm";
 import SparqlValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/SparqlValidatorForm";
+import LinkValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/LinkValidatorForm";
 
 interface SimpleTypeRegistryComponentProps {
   onTypeSelect: (type: TypeDefinition, value: any) => void;
@@ -60,6 +61,16 @@ const SimpleTypeRegistryComponent = ({
                 onSelect={handleSparqlSelect}
               />
             </div>
+          ) : selectedType.validator === "LINK" ? (
+            <LinkValidatorForm
+              typePid={selectedType.pid}
+              typeName={selectedType.name}
+              onValueChange={(data) => {
+                if (typeof handleFormChange === 'function') {
+                  handleFormChange({ formData: data });
+                }
+              }}
+            />
           ) : (
             <div className="text-sm text-base-content/60">
               Loading validator configuration...

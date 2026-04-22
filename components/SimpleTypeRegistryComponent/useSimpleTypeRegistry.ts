@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { TypeDefinition } from "@/components/SimpleTypeRegistryComponent/types";
 
-const isValidValidator = (validator: string): validator is "JSON" | "SPARQL" => {
-  return validator === "JSON" || validator === "SPARQL";
-};
+const isValidValidator = (validator: string): validator is "JSON" | "SPARQL" | "LINK" => {
+  return validator === "JSON" || validator === "SPARQL" || validator === "LINK";
+}
 
 export const useSimpleTypeRegistry = (
   initialType?: TypeDefinition | null,
@@ -71,6 +71,9 @@ export const useSimpleTypeRegistry = (
       } catch (error) {
         console.error("Error loading SPARQL query:", error);
       }
+    } else if (type.validator === "LINK") {
+      setJsonSchema(null);
+      setSparqlQuery("");
     }
   }, []);
 
