@@ -18,7 +18,7 @@ export function useManualFields({ fullFdo }: UseManualFieldsProps) {
 
   useEffect(() => {
     if (!fullFdo) return;
-
+console.log(fullFdo);
     const record = fullFdo.record;
     
     const extractFirst = (value: string | string[]): string => {
@@ -82,7 +82,6 @@ export function useManualFields({ fullFdo }: UseManualFieldsProps) {
         }
       }
     };
-    
     populateManualFields();
   }, [fullFdo]);
 

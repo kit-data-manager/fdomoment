@@ -136,7 +136,6 @@ export function useCitationGeneration({
       } else if (citationStyle === 'harvard') {
         citation = `${authorsStr} ${yearStr} ${titlePart} Available at: ${doiPart || url}`;
       }
-
       setCitationText(citation.trim());
     }
   }, [fullFdo, citationStyle, manualAuthor, manualTitle, manualDoi, manualUrl, manualVersion, fdoPid]);

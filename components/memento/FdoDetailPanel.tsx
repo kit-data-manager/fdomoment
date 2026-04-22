@@ -35,19 +35,18 @@ export default function FdoDetailPanel({ fdo, onClose }: FdoDetailPanelProps) {
   const [copied, setCopied] = React.useState<'md' | 'url' | 'image' | 'citation' | null>(null);
 
   const { fullFdo, isFdoLoading } = useFdoDetails(fdo.pid);
+  const manualFields = useManualFields({ fullFdo });
   const badgePreview = useBadgeGeneration({ fdo, badgeStyle, customLabel, customMessage, customUseLogo });
   const { citationText } = useCitationGeneration({
     fullFdo,
     citationStyle,
-    manualAuthor: '', 
-    manualTitle: '',
-    manualDoi: '',
-    manualUrl: '',
-    manualVersion: '',
+    manualAuthor: manualFields.manualAuthor,
+    manualTitle: manualFields.manualTitle,
+    manualDoi: manualFields.manualDoi,
+    manualUrl: manualFields.manualUrl,
+    manualVersion: manualFields.manualVersion,
     fdoPid: fdo.pid
   });
-  
-  const manualFields = useManualFields({ fullFdo });
 
   React.useEffect(() => {
     if (badgeStyle === 'custom') {
@@ -125,21 +124,21 @@ export default function FdoDetailPanel({ fdo, onClose }: FdoDetailPanelProps) {
               <div>
                 <span className="text-xs text-base-content/50">PID</span>
                 <div className="text-sm">
-                  <PidComponent value={fdo.pid} darkMode={darkMode ? 'dark' : 'light'}/>
+                  <PidComponent value={fdo.pid} emphasizeComponent={false} hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
                 </div>
               </div>
               {fdo.orcid && (
                 <div>
                   <span className="text-xs text-base-content/50">ORCiD</span>
                   <div className="text-sm">
-                    <PidComponent value={fdo.orcid} hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
+                    <PidComponent value={fdo.orcid} emphasizeComponent={false}  hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
                   </div>
                 </div>
               )}
               <div>
                 <span className="text-xs text-base-content/50">Research Domain</span>
                 <div className="text-sm">
-                  <PidComponent value={fdo.researchDomain} hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
+                  <PidComponent value={fdo.researchDomain} emphasizeComponent={false}  hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
                 </div>
               </div>
             </div>
