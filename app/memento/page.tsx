@@ -239,7 +239,6 @@ export default function MementoPage() {
             page={userFdosPage}
             limit={10}
             total={totalUserFdos}
-            initialSelectedPid={initialPid}
             onSort={(field) => {
               const newSortOrder = userFdosSortBy === field && userFdosSortOrder === 'asc' ? 'desc' : 'asc';
               fetchUserFdos(userFdosPage, field, newSortOrder);

@@ -46,6 +46,13 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
     setPendingAttribute(null);
   }, []);
 
+  const resetSelectionInternal = useCallback(() => {
+    setPendingAttribute(null);
+    if (typeRegistryRef.current && typeRegistryRef.current.reset) {
+      typeRegistryRef.current.reset();
+    }
+  }, []);
+
   const addTypedAttribute = useCallback(() => {
     if (pendingAttribute) {
       const newEntry: MiscEntry = {
@@ -58,12 +65,9 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
       };
       updateMisc([...misc.entries, newEntry]);
       setPendingAttribute(null);
-      
-      if (typeRegistryRef.current) {
-        typeRegistryRef.current.reset();
-      }
+      resetSelectionInternal();
     }
-  }, [pendingAttribute, misc.entries, updateMisc]);
+  }, [pendingAttribute, misc.entries, updateMisc, resetSelectionInternal]);
 
   const removeTypedAttribute = useCallback((id: string) => {
     updateMisc(misc.entries.filter((entry) => entry.id !== id));
@@ -87,5 +91,6 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
     removeTypedAttribute,
     getValidatorLabel,
     clearPendingAttribute,
+    resetSelectionInternal,
   };
 }

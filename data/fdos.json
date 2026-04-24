@@ -888,5 +888,592 @@
         "value": "[object Object]"
       }
     ]
+  },
+  {
+    "pid": "5ro488fld52ob48qrjwl8",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
+  },
+  {
+    "pid": "zw00wo3v9w2fi8mqf1vhl",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "MimeType",
+        "value": "text/html"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "zw00wo3v9w2fi8mqf1vhl"
+      }
+    ]
+  },
+  {
+    "pid": "eyzf9uvlr5rpooaak7cu1",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Is Metadata",
+        "value": "5ro488fld52ob48qrjwl8"
+      }
+    ]
+  },
+  {
+    "pid": "cq803nj0dcdcsrpgo8p5uo",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
+  },
+  {
+    "pid": "ady2elhf6hh4mf604l4qpg",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "cq803nj0dcdcsrpgo8p5uo"
+      }
+    ]
+  },
+  {
+    "pid": "p3l2k86286hyg0lebilk",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Is Metadata",
+        "value": "5ro488fld52ob48qrjwl8"
+      }
+    ]
+  },
+  {
+    "pid": "v13j1zb1d6f10ts2h0s8",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "zw00wo3v9w2fi8mqf1vhl"
+      }
+    ]
+  },
+  {
+    "pid": "onag5xu21ta634vyfxz9hj",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "zw00wo3v9w2fi8mqf1vhl"
+      }
+    ]
+  },
+  {
+    "pid": "63wuqr1abdtp0tayxtrjn9",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "5ro488fld52ob48qrjwl8"
+      },
+      {
+        "key": "UNESCO Thesaurus Concept",
+        "value": "http"
+      }
+    ]
+  },
+  {
+    "pid": "sit4s18j13mor8x6051f2",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
+  },
+  {
+    "pid": "ecys5i8n3tjol8gi2lnp9",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "UNESCO Thesaurus Concept",
+        "value": "http://vocabularies.unesco.org/thesaurus/concept17094"
+      }
+    ]
+  },
+  {
+    "pid": "sm975y9i0ksz31w4b6e0r",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.19709303"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "LINF_360050000"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-7550-0198"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "5ro488fld52ob48qrjwl8"
+      }
+    ]
+  },
+  {
+    "pid": "14942whm2c3hf3xkfinno",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.19709303"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "LINF_360050000"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-7550-0198"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
+  },
+  {
+    "pid": "qnadgx1kx29g91or3jy37",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.19709303"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "LINF_360050000"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-7550-0198"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "5ro488fld52ob48qrjwl8"
+      }
+    ]
+  },
+  {
+    "pid": "p9j7dndsqpc5mwk4opzp2",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.19709303"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "LINF_360050000"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-7550-0198"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      }
+    ]
   }
 ]

@@ -18,11 +18,8 @@ interface FdoRecord {
 }
 
 const fdoRecords: Map<string, FdoRecord> = new Map();
-let isInitialized = false;
 
 async function initializeRecords() {
-  if (isInitialized) return;
-  
   const dataPath = path.join(process.cwd(), 'data', 'fdos.json');
   
   try {
@@ -38,8 +35,6 @@ async function initializeRecords() {
   } catch (error) {
     console.log('No existing FDO records found, starting fresh');
   }
-  
-  isInitialized = true;
 }
 
 async function saveRecords() {

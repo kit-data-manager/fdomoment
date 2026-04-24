@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useImperativeHandle, forwardRef } from "react";
 import { TypeDefinition } from "@/components/SimpleTypeRegistryComponent/types";
 import { useSimpleTypeRegistry } from "@/components/SimpleTypeRegistryComponent/useSimpleTypeRegistry";
 import TypeSelector from "@/components/SimpleTypeRegistryComponent/TypeSelector";
@@ -14,13 +14,17 @@ interface SimpleTypeRegistryComponentProps {
   initialValue?: any;
 }
 
-const SimpleTypeRegistryComponent = ({ 
+export interface SimpleTypeRegistryRef {
+  reset: () => void;
+}
+
+const SimpleTypeRegistryComponent = forwardRef<SimpleTypeRegistryRef, SimpleTypeRegistryComponentProps>(({ 
   onTypeSelect, 
   onValueChange,
   onReset,
   initialType,
   initialValue 
-}: SimpleTypeRegistryComponentProps) => {
+}: SimpleTypeRegistryComponentProps, ref) => {
   const {
     typeOptions,
     selectedType,
@@ -32,6 +36,12 @@ const SimpleTypeRegistryComponent = ({
     handleSparqlSelect,
     resetSelection
   } = useSimpleTypeRegistry(initialType, initialValue, onValueChange, onTypeSelect);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      resetSelection();
+    }
+  }), [resetSelection]);
 
   return (
     <div className="w-full">
@@ -65,9 +75,9 @@ const SimpleTypeRegistryComponent = ({
             <LinkValidatorForm
               typePid={selectedType.pid}
               typeName={selectedType.name}
-              onValueChange={(data) => {
+              onValueChange={(pid) => {
                 if (typeof handleFormChange === 'function') {
-                  handleFormChange({ formData: data });
+                  handleFormChange({ formData: pid });
                 }
               }}
             />
@@ -80,7 +90,9 @@ const SimpleTypeRegistryComponent = ({
       )}
     </div>
   );
-};
+});
+
+SimpleTypeRegistryComponent.displayName = "SimpleTypeRegistryComponent";
 
 export { SimpleTypeRegistryComponent };
 export default SimpleTypeRegistryComponent;

@@ -1,11 +1,64 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, memo } from 'react';
 import Link from 'next/link';
 import FdoDetailPanel from './FdoDetailPanel';
 import type { FdoRecord } from '@/lib/database/types';
 import { Eye } from 'lucide-react';
 import { useFdoDetails } from './hooks/useFdoDetails';
+
+interface PreviewContentProps {
+  pid: string;
+}
+
+const PreviewContent = memo(({ pid }: PreviewContentProps) => {
+  const { fullFdo, isFdoLoading } = useFdoDetails(pid);
+  
+  if (isFdoLoading) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <span className="loading loading-spinner loading-xs"></span>
+        <span className="ml-2 text-xs">Loading FDO details...</span>
+      </div>
+    );
+  }
+  
+  if (!fullFdo) {
+    return (
+      <div className="text-xs text-base-content/70 p-4">
+        Unable to load FDO record
+      </div>
+    );
+  }
+  
+  return (
+    <table className="table table-compact">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.entries(fullFdo.record).map(([key, value]) => {
+          const displayValue = Array.isArray(value) 
+            ? value.join(', ') 
+            : value;
+          return (
+            <tr key={key}>
+              <td className="text-xs font-mono text-base-content/70">
+                {key}
+              </td>
+              <td className="text-xs">
+                {displayValue || '-'}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+});
 
 interface FdoTableProps {
   fdos: FdoRecord[];
@@ -20,7 +73,6 @@ interface FdoTableProps {
   limit?: number;
   total?: number;
   onPageChange?: (page: number) => void;
-  initialSelectedPid?: string | null;
 }
 
 export function FdoTable({ 
@@ -33,39 +85,13 @@ export function FdoTable({
   limit = 10,
   total,
   onPageChange,
-  initialSelectedPid,
 }: FdoTableProps) {
   const [selectedFdo, setSelectedFdo] = useState<FdoRecord | null>(null);
   const [hoveredPid, setHoveredPid] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (initialSelectedPid && fdos.length > 0) {
-      const fdo = fdos.find(f => f.pid === initialSelectedPid);
-      if (fdo) {
-        setSelectedFdo(fdo);
-      }
-    }
-  }, [initialSelectedPid, fdos]);
-
   const showOrcid = showColumns?.orcid ?? false;
   const showResearchDomain = showColumns?.researchDomain ?? false;
   const totalPages = total ? Math.ceil(total / limit) : 1;
-
-  if (fdos.length === 0) {
-    return (
-      <div className="card bg-base-100 shadow-lg">
-        <div className="card-body items-center text-center py-12">
-          <h2 className="card-title text-2xl mb-4">No FDOs Yet</h2>
-          <p className="text-base-content/70 mb-6">
-            Nothing to see here. Create your first FDO now.
-          </p>
-            <Link href="/momentum" className="btn btn-primary">
-              Create FDO
-            </Link>
-        </div>
-      </div>
-    );
-  }
 
   const renderSortIndicator = (field: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt') => {
     if (sortBy !== field) return null;
@@ -78,7 +104,6 @@ export function FdoTable({
 
   const renderPreviewCell = (fdo: FdoRecord) => {
     const isHovered = hoveredPid === fdo.pid;
-    
     return (
       <td 
         className="relative overflow-visible"
@@ -90,7 +115,7 @@ export function FdoTable({
         </button>
         
         {isHovered && (
-          <div className="fixed z-999 left-100 top-0 ml-2 w-[600px] max-h-[500px] overflow-hidden">
+          <div className="absolute left-full top-0 ml-2 w-[600px] max-h-[500px] z-50">
             <div className="card bg-base-100 shadow-xl border border-base-300 max-h-[500px] overflow-y-auto">
               <div className="card-body p-4">
                 <h3 className="card-title text-sm mb-2 sticky top-0 bg-base-100 pb-2 border-b">
@@ -104,55 +129,6 @@ export function FdoTable({
       </td>
     );
   };
-
-  function PreviewContent({ pid }: { pid: string }) {
-    const { fullFdo, isFdoLoading } = useFdoDetails(pid);
-    
-    if (isFdoLoading) {
-      return (
-        <div className="flex items-center justify-center p-4">
-          <span className="loading loading-spinner loading-xs"></span>
-          <span className="ml-2 text-xs">Loading FDO details...</span>
-        </div>
-      );
-    }
-    
-    if (!fullFdo) {
-      return (
-        <div className="text-xs text-base-content/70 p-4">
-          Unable to load FDO record
-        </div>
-      );
-    }
-    
-    return (
-      <table className="table table-compact">
-        <thead>
-          <tr>
-            <th>Key</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(fullFdo.record).map(([key, value]) => {
-            const displayValue = Array.isArray(value) 
-              ? value.join(', ') 
-              : value;
-            return (
-              <tr key={key}>
-                <td className="text-xs font-mono text-base-content/70">
-                  {key}
-                </td>
-                <td className="text-xs">
-                  {displayValue || '-'}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  }
 
   return (
     <div className="flex gap-4">

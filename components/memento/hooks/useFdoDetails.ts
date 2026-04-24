@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { FdoRecord } from '@/lib/database/types';
 
 interface FullFdoRecord extends FdoRecord {
@@ -8,8 +8,14 @@ interface FullFdoRecord extends FdoRecord {
 export function useFdoDetails(fdoPid: string) {
   const [fullFdo, setFullFdo] = useState<FullFdoRecord | null>(null);
   const [isFdoLoading, setIsFdoLoading] = useState(false);
+  const pidRef = useRef<string | null>(null);
 
   useEffect(() => {
+    if (fdoPid === pidRef.current) {
+      return;
+    }
+
+    pidRef.current = fdoPid;
     const fetchFullFdo = async () => {
       setIsFdoLoading(true);
       try {

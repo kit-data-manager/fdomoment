@@ -1,12 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo, useRef } from "react";
 import { Eye } from "lucide-react";
 import { useFdoDetails } from "@/components/memento/hooks/useFdoDetails";
 import type { FdoRecord } from '@/lib/database/types';
 
+function PreviewContent({ pid }: { pid: string }) {
+  const { fullFdo, isFdoLoading } = useFdoDetails(pid);
+  
+  if (isFdoLoading) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <span className="loading loading-spinner loading-xs"></span>
+        <span className="ml-2 text-xs">Loading FDO details...</span>
+      </div>
+    );
+  }
+  
+  if (!fullFdo) {
+    return (
+      <div className="text-xs text-base-content/70 p-4">
+        Unable to load FDO record
+      </div>
+    );
+  }
+  
+  return (
+    <table className="table table-compact">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.entries(fullFdo.record).map(([key, value]) => {
+          const displayValue = Array.isArray(value) 
+            ? value.join(', ') 
+            : value;
+          return (
+            <tr key={key}>
+              <td className="text-xs font-mono text-base-content/70">
+                {key}
+              </td>
+              <td className="text-xs">
+                {displayValue || '-'}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+const MemoizedPreviewContent = memo(PreviewContent);
+
 interface LinkValidatorFormProps {
   typePid: string;
   typeName: string;
-  onValueChange: (value: { [key: string]: string }) => void;
+  onValueChange: (value: string) => void;
 }
 
 const LinkValidatorForm = ({ typePid, typeName, onValueChange }: LinkValidatorFormProps) => {
@@ -15,6 +66,7 @@ const LinkValidatorForm = ({ typePid, typeName, onValueChange }: LinkValidatorFo
   const [selectedFdo, setSelectedFdo] = useState<FdoRecord | null>(null);
   const [hoveredPid, setHoveredPid] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const formValueRef = useRef<string | null>(null);
 
   useEffect(() => {
     const fetchAllFdos = async () => {
@@ -34,11 +86,18 @@ const LinkValidatorForm = ({ typePid, typeName, onValueChange }: LinkValidatorFo
     fetchAllFdos();
   }, []);
 
+  const onValueChangeRef = useRef(onValueChange);
+  
   useEffect(() => {
-    if (selectedFdo) {
-      onValueChange({ [typePid]: selectedFdo.pid });
+    onValueChangeRef.current = onValueChange;
+  }, [onValueChange]);
+
+  useEffect(() => {
+    if (selectedFdo && formValueRef.current !== selectedFdo.pid) {
+      formValueRef.current = selectedFdo.pid;
+      onValueChangeRef.current?.(selectedFdo.pid);
     }
-  }, [selectedFdo, typePid, onValueChange]);
+  }, [selectedFdo]);
 
   const renderPreviewCell = (fdo: FdoRecord) => {
     const isHovered = hoveredPid === fdo.pid;
@@ -60,7 +119,7 @@ const LinkValidatorForm = ({ typePid, typeName, onValueChange }: LinkValidatorFo
                 <h3 className="card-title text-sm mb-2 sticky top-0 bg-base-100 pb-2 border-b">
                   Full FDO Record Preview
                 </h3>
-                <PreviewContent pid={fdo.pid} />
+                <MemoizedPreviewContent pid={fdo.pid} />
               </div>
             </div>
           </div>
@@ -68,55 +127,6 @@ const LinkValidatorForm = ({ typePid, typeName, onValueChange }: LinkValidatorFo
       </td>
     );
   };
-
-  function PreviewContent({ pid }: { pid: string }) {
-    const { fullFdo, isFdoLoading } = useFdoDetails(pid);
-    
-    if (isFdoLoading) {
-      return (
-        <div className="flex items-center justify-center p-4">
-          <span className="loading loading-spinner loading-xs"></span>
-          <span className="ml-2 text-xs">Loading FDO details...</span>
-        </div>
-      );
-    }
-    
-    if (!fullFdo) {
-      return (
-        <div className="text-xs text-base-content/70 p-4">
-          Unable to load FDO record
-        </div>
-      );
-    }
-    
-    return (
-      <table className="table table-compact">
-        <thead>
-          <tr>
-            <th>Key</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(fullFdo.record).map(([key, value]) => {
-            const displayValue = Array.isArray(value) 
-              ? value.join(', ') 
-              : value;
-            return (
-              <tr key={key}>
-                <td className="text-xs font-mono text-base-content/70">
-                  {key}
-                </td>
-                <td className="text-xs">
-                  {displayValue || '-'}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  }
 
   return (
     <div className="mt-4">
