@@ -271,6 +271,12 @@ export const inMemoryDatabase: Database = {
       }
       return records;
     },
+
+    async count(): Promise<number> {
+      await loadData();
+      const db = getInMemoryDb();
+      return db.fdoRecords.size;
+    },
   },
 
   fairScore: {

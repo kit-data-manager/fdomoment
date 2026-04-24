@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { TypeDefinition } from '@/components/SimpleTypeRegistryComponent/types';
 import { MiscEntry } from '@/lib/momentum/types';
 import { TypedAttribute } from './types';
+import { SimpleTypeRegistryRef } from '@/components/SimpleTypeRegistryComponent';
 
 interface UseAdditionalAttributesProps {
   misc: { entries: MiscEntry[] };
@@ -14,7 +15,7 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
     typeDef: TypeDefinition;
     value: any;
   } | null>(null);
-  const typeRegistryRef = useRef<{ reset: () => void } | null>(null);
+  const typeRegistryRef = useRef<SimpleTypeRegistryRef | null>(null);
 
   // Get typed attributes from misc.entries
   const typedAttributes: TypedAttribute[] = misc.entries
@@ -44,21 +45,33 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
 
   const clearPendingAttribute = useCallback(() => {
     setPendingAttribute(null);
-  }, []);
+    // Clear selection for LINK validator if needed
+    if (pendingAttribute?.typeDef.validator === 'LINK') {
+      typeRegistryRef.current?.reset();
+    }
+  }, [pendingAttribute]);
 
   const resetSelectionInternal = useCallback(() => {
     setPendingAttribute(null);
-    if (typeRegistryRef.current && typeRegistryRef.current.reset) {
-      typeRegistryRef.current.reset();
-    }
+    typeRegistryRef.current?.reset();
   }, []);
 
   const addTypedAttribute = useCallback(() => {
     if (pendingAttribute) {
+      let value = pendingAttribute.value;
+      
+      // Accept selection for LINK validator first to get the selected PID
+      if (pendingAttribute.typeDef.validator === 'LINK') {
+        const selectedPid = typeRegistryRef.current?.acceptSelection();
+        if (selectedPid) {
+          value = selectedPid;
+        }
+      }
+      
       const newEntry: MiscEntry = {
         id: crypto.randomUUID(),
         key: pendingAttribute.typeDef.name,
-        value: pendingAttribute.value,
+        value,
         attributeType: 'typed',
         isTyped: true,
         typeDef: pendingAttribute.typeDef,

@@ -1475,5 +1475,46 @@
         "value": "0.SIMPLE/PUBLICATION"
       }
     ]
+  },
+  {
+    "pid": "et354g3xdok34yx0ig1s5g",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.19709303"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "LINF_360050000"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-7550-0198"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "Readme Location",
+        "value": "https://heise.de"
+      },
+      {
+        "key": "Has Metadata",
+        "value": "v13j1zb1d6f10ts2h0s8"
+      }
+    ]
   }
 ]

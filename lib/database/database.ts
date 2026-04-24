@@ -25,6 +25,7 @@ export interface Database {
       sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]>;
+    count(): Promise<number>;
   };
   
   fairScore: {

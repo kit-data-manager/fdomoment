@@ -168,6 +168,11 @@ export function createPostgresDatabase(connectionString: string): Database {
           createdAt: row.created_at,
         }));
       },
+
+      async count(): Promise<number> {
+        const result = await pool.query('SELECT COUNT(*) as total FROM fdo_records');
+        return parseInt(result.rows[0].total) || 0;
+      },
     },
 
     fairScore: {

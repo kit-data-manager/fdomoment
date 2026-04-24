@@ -20,3 +20,7 @@ export interface SimpleTypeRegistryComponentProps {
   initialType?: TypeDefinition | null;
   initialValue?: any;
 }
+
+export interface LinkValidatorFormRef {
+  acceptSelection: () => string | null;
+}
