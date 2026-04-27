@@ -187,18 +187,18 @@ export function FdoTable({
                     onClick={() => handleRowClick(fdo)}
                   >
                     {renderPreviewCell(fdo)}
-                    <td className="max-w-[192px]">
-                      <div className="truncate">
+                    <td className="whitespace-nowrap w-0">
                         <PidComponent value={fdo.pid} emphasizeComponent={false} hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
-                      </div>
                     </td>
-                    <td className={selectedFdo ? 'hidden max-w-[128px] xl:table-cell' : ''}>{fdo.researchDomain || '-'}</td>
+                    <td className={selectedFdo ? 'w-full xl:table-cell' : 'w-full'}>{fdo.researchDomain || '-'}</td>
                     <td>
                       <div className="badge badge-primary">{fdo.fairScore}%</div>
                     </td>
-                    <td className={selectedFdo ? 'hidden lg:table-cell' : ''}>{new Date(fdo.createdAt).toLocaleDateString("de",{year:"2-digit",month:"2-digit", day:"2-digit"})}</td>
+                    <td className={selectedFdo ? 'whitespace-nowrap w-0 hidden lg:table-cell' : ''}>{new Date(fdo.createdAt).toLocaleDateString("de",{year:"2-digit",month:"2-digit", day:"2-digit"})}</td>
                     {showOrcid && <td className={selectedFdo ? 'hidden 2xl:table-cell' : ''}>
-                      {fdo.orcid || '-'}
+                      <PidComponent value={fdo.orcid} emphasizeComponent={false} hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
+
+
                     </td>}
                   </tr>
                 ))}
