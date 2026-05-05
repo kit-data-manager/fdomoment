@@ -7,25 +7,24 @@ export const RESEARCH_DOMAINS: ResearchDomain[] = [
   { id: 'health', label: 'Health'},
   { id: 'information', label: 'Information'},
   { id: 'matter', label: 'Matter'},
-
 ];
 
 export const DATASET_LICENSES = [
-  { id: 'cc0-1.0', label: 'CC0 1.0', url: 'https://spdx.org/licenses/CC0-1.0', recommended: true },
-  { id: 'cc-by-4.0', label: 'CC BY 4.0', url: 'https://spdx.org/licenses/CC-BY-4.0', recommended: true },
-  { id: 'cc-by-sa-4.0', label: 'CC BY-SA 4.0', url: 'https://spdx.org/licenses/CC-BY-SA-4.0', recommended: false },
-  { id: 'cc-by-nc-4.0', label: 'CC BY-NC 4.0', url: 'https://spdx.org/licenses/CC-BY-NC-4.0', recommended: false },
-  { id: 'odc-by-1.0', label: 'ODC-By 1.0', url: 'https://spdx.org/licenses/ODC-By-1.0', recommended: false },
-  { id: 'odbl-1.0', label: 'ODbL 1.0', url: 'https://spdx.org/licenses/ODbL-1.0', recommended: false },
+  { id: 'cc0-1.0', label: 'CC0 1.0', url: 'https://spdx.org/licenses/CC0-1.0', recommended: true, hint: '✅ Use for maximum reuse and waiver of all rights.<br/>⛔ Not suitable when attribution or provenance tracking is required.' },
+  { id: 'cc-by-4.0', label: 'CC BY 4.0', url: 'https://spdx.org/licenses/CC-BY-4.0', recommended: true, hint: '✅ Use for open data requiring attribution.<br/>⛔ Not suitable for databases with share-alike requirements.' },
+  { id: 'cc-by-sa-4.0', label: 'CC BY-SA 4.0', url: 'https://spdx.org/licenses/CC-BY-SA-4.0', recommended: false, hint: '✅ Use when derivative works must be shared under the same license.<br/>⛔ Not suitable for proprietary or closed derivatives.' },
+  { id: 'cc-by-nc-4.0', label: 'CC BY-NC 4.0', url: 'https://spdx.org/licenses/CC-BY-NC-4.0', recommended: false, hint: '✅ Use to restrict commercial use while allowing academic reuse.<br/>⛔ Not suitable for industry partnerships or commercial applications.' },
+  { id: 'odc-by-1.0', label: 'ODC-By 1.0', url: 'https://spdx.org/licenses/ODC-By-1.0', recommended: false, hint: '✅ Use specifically for database contents requiring attribution.<br/>⛔ Not suitable for non-database creative works.' },
+  { id: 'odbl-1.0', label: 'ODbL 1.0', url: 'https://spdx.org/licenses/ODbL-1.0', recommended: false, hint: '✅ Use for open databases requiring share-alike of derived databases.<br/>⛔ Not suitable when derived databases should remain proprietary.' },
 ];
 
 export const SOFTWARE_LICENSES = [
-  { id: 'mit', label: 'MIT', url: 'https://spdx.org/licenses/MIT' },
-  { id: 'apache-2.0', label: 'Apache 2.0', url: 'https://spdx.org/licenses/Apache-2.0' },
-  { id: 'gpl-3.0-only', label: 'GPL-3.0 only', url: 'https://spdx.org/licenses/GPL-3.0-only' },
-  { id: 'bsd-3-clause', label: 'BSD-3-Clause', url: 'https://spdx.org/licenses/BSD-3-Clause' },
-  { id: 'lgpl-2.1-only', label: 'LGPL-2.1 only', url: 'https://spdx.org/licenses/LGPL-2.1-only' },
-  { id: 'eupl-1.2', label: 'EUPL-1.2', url: 'https://spdx.org/licenses/EUPL-1.2' },
+  { id: 'mit', label: 'MIT', url: 'https://spdx.org/licenses/MIT', hint: '✅ Use for simple permissive licensing with minimal restrictions.<br/>⛔ Not suitable when patent protection or copyleft is needed.' },
+  { id: 'apache-2.0', label: 'Apache 2.0', url: 'https://spdx.org/licenses/Apache-2.0', hint: '✅ Use for projects needing explicit patent grants and permissive terms.<br/>⛔ Not suitable when strong copyleft enforcement is required.' },
+  { id: 'gpl-3.0-only', label: 'GPL-3.0 only', url: 'https://spdx.org/licenses/GPL-3.0-only', hint: '✅ Use to ensure all derivative works remain open source.<br/>⛔ Not suitable for linking with proprietary software.' },
+  { id: 'bsd-3-clause', label: 'BSD-3-Clause', url: 'https://spdx.org/licenses/BSD-3-Clause', hint: '✅ Use for permissive licensing with endorsement protection.<br/>⛔ Not suitable when copyleft or patent clauses are needed.' },
+  { id: 'lgpl-2.1-only', label: 'LGPL-2.1 only', url: 'https://spdx.org/licenses/LGPL-2.1-only', hint: '✅ Use for libraries allowing linking with proprietary code.<br/>⛔ Not suitable when the entire application must be open source.' },
+  { id: 'eupl-1.2', label: 'EUPL-1.2', url: 'https://spdx.org/licenses/EUPL-1.2', hint: '✅ Use for EU public sector projects requiring copyleft under EU law.<br/>⛔ Not suitable for non-EU jurisdictions or permissive licensing needs.' },
 ];
 
 export const MIME_TYPES = [
@@ -104,6 +103,14 @@ export function getLicenseHint(researchDomain: ResearchDomain | null) {
     }
   }
   return [];
+}
+
+export function getLicenseById(licenseId:string):string{
+    const license = DATASET_LICENSES.find(l => l.id === licenseId);
+    if (license) {
+        return license.url;
+    }
+    return ''
 }
 
 export function getCommonMimeTypes(researchDomain: ResearchDomain | null) {

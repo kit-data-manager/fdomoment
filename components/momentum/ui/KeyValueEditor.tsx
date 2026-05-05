@@ -51,7 +51,7 @@ export function KeyValueEditor({
               <button
                 key={key}
                 onClick={() => addSuggestedKey(key)}
-                className="text-xs badge badge-primary"
+                className="text-xs badge badge-primary cursor-pointer"
               >
                 {key}
               </button>

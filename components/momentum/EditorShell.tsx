@@ -24,6 +24,7 @@ import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilde
 import { FdoCreatedDialog } from '@/components/momentum/FdoCreatedDialog';
 import { createFdoRecord, upsertFairScoreAggregation } from '@/lib/database/actions';
 import { calculateFairScore } from '@/lib/momentum/fairScore';
+import {getLicenseById} from "@/lib/momentum/constants";
 
 const FDO_SERVICE_ENDPOINT = process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT || '/api/fdoservice';
 
@@ -131,7 +132,7 @@ export function EditorShell(props: EditorShellProps) {
   const collectSoftwareAttributes = (metadata:SoftwareMetadata, fdoRecord:RecordData):RecordData => {
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_REPOSITORY_TYPE', metadata.repositoryType);
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_LOCATION', metadata.repositoryUrl);
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_LICENCE', metadata.license);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_LICENSE', getLicenseById(metadata.license));
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/README_LOCATION', metadata.readmeUrl);
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/SOFTWARE');
     return fdoRecord;
@@ -139,7 +140,7 @@ export function EditorShell(props: EditorShellProps) {
 
   const collectDataObjectAttributes = (metadata:DataObjectMetadata, fdoRecord:RecordData):RecordData => {
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DATA_OBJECT_LOCATION', metadata.dataUrl);
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DATA_OBJECT_LICENCE', metadata.license);
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DATA_OBJECT_LICENSE', getLicenseById(metadata.license));
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/MIME_TYPE', metadata.mimeType);
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/DATA_OBJECT');
     return fdoRecord;

@@ -1553,5 +1553,135 @@
         "value": "0.SIMPLE/PUBLICATION"
       }
     ]
+  },
+  {
+    "pid": "tceqi9plnvpdpkzd29q5",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/SOFTWARE_REPOSITORY_TYPE",
+        "value": "GitHub"
+      },
+      {
+        "key": "0.SIMPLE/SOFTWARE_LOCATION",
+        "value": "https://github.com/ThomasJejkal/simple-type-registry"
+      },
+      {
+        "key": "0.SIMPLE/SOFTWARE_LICENCE",
+        "value": "apache-2.0"
+      },
+      {
+        "key": "0.SIMPLE/README_LOCATION",
+        "value": "https://github.com/ThomasJejkal/simple-type-registry/blob/main/README.md"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/SOFTWARE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "UNESCO Thesaurus Concept",
+        "value": "http://vocabularies.unesco.org/thesaurus/concept6081"
+      }
+    ]
+  },
+  {
+    "pid": "uffonkzili6rgd9xeg8j",
+    "record": [
+      {
+        "key": "0.SIMPLE/OWNER",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD",
+        "value": "Information"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/CORE"
+      },
+      {
+        "key": "0.SIMPLE/SOFTWARE_REPOSITORY_TYPE",
+        "value": "GitHub"
+      },
+      {
+        "key": "0.SIMPLE/SOFTWARE_LOCATION",
+        "value": "https://github.com/ThomasJejkal/simple-type-registry"
+      },
+      {
+        "key": "0.SIMPLE/SOFTWARE_LICENCE",
+        "value": "apache-2.0"
+      },
+      {
+        "key": "0.SIMPLE/README_LOCATION",
+        "value": "https://github.com/ThomasJejkal/simple-type-registry/blob/main/README.md"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/SOFTWARE"
+      },
+      {
+        "key": "0.SIMPLE/DOI",
+        "value": "10.5281/zenodo.14747443"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_TITLE",
+        "value": "base-repo"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0003-2804-688X"
+      },
+      {
+        "key": "0.SIMPLE/PUBLICATION_CREATOR",
+        "value": "0000-0001-6383-5214"
+      },
+      {
+        "key": "0.SIMPLE/PROFILE",
+        "value": "0.SIMPLE/PUBLICATION"
+      },
+      {
+        "key": "0.SIMPLE/GEO_LOCATION",
+        "value": "[object Object]"
+      },
+      {
+        "key": "URL",
+        "value": "https://www.heise.de"
+      },
+      {
+        "key": "",
+        "value": ""
+      }
+    ]
   }
 ]

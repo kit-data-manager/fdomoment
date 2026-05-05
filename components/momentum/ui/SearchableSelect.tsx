@@ -120,7 +120,7 @@ export function SearchableSelect({
               >
                 <div className="text-sm">{option.label}</div>
                 {option.hint && (
-                  <div className="text-xs text-base-content/70 mt-0.5">{option.hint}</div>
+                  <div className="text-xs text-base-content/70 mt-0.5" dangerouslySetInnerHTML={{ __html: option.hint }} />
                 )}
               </div>
             ))

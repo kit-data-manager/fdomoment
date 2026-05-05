@@ -70,7 +70,7 @@ export function useAdditionalAttributes({ misc, updateMisc }: UseAdditionalAttri
       
       const newEntry: MiscEntry = {
         id: crypto.randomUUID(),
-        key: pendingAttribute.typeDef.name,
+        key: pendingAttribute.typeDef.pid,
         value,
         attributeType: 'typed',
         isTyped: true,
