@@ -1,5 +1,5 @@
 import { Database } from './database';
-import { FdoRecord, FairCriteriumAggregation, User } from './types';
+import { FdoRecord, FairCriteriumAggregation, User, AttributeTemplate } from './types';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -8,6 +8,7 @@ declare global {
     users: Map<string, User>;
     fdoRecords: Map<string, FdoRecord>;
     aggregations: Map<string, FairCriteriumAggregation>;
+    attributeTemplates: Map<string, AttributeTemplate>;
   } | undefined;
 }
 
@@ -17,12 +18,14 @@ interface FileData {
   users: Record<string, User>;
   fdoRecords: Record<string, FdoRecord>;
   aggregations: Record<string, FairCriteriumAggregation>;
+  attributeTemplates: Record<string, AttributeTemplate>;
 }
 
 let fileData: FileData = {
   users: {},
   fdoRecords: {},
   aggregations: {},
+  attributeTemplates: {},
 };
 
 let isInitialized = false;
@@ -36,15 +39,18 @@ async function loadData(): Promise<void> {
     const usersPath = path.join(DATA_DIR, 'users.json');
     const fdoRecordsPath = path.join(DATA_DIR, 'fdo_records.json');
     const aggregationsPath = path.join(DATA_DIR, 'aggregations.json');
+    const templatesPath = path.join(DATA_DIR, 'attribute_templates.json');
 
     const usersFile = await fs.readFile(usersPath, 'utf8').catch(() => '{}');
     const fdoRecordsFile = await fs.readFile(fdoRecordsPath, 'utf8').catch(() => '{}');
     const aggregationsFile = await fs.readFile(aggregationsPath, 'utf8').catch(() => '{}');
+    const templatesFile = await fs.readFile(templatesPath, 'utf8').catch(() => '{}');
 
     fileData = {
       users: parseUsers(JSON.parse(usersFile)),
       fdoRecords: parseFdoRecords(JSON.parse(fdoRecordsFile)),
       aggregations: JSON.parse(aggregationsFile),
+      attributeTemplates: parseAttributeTemplates(JSON.parse(templatesFile)),
     };
   } catch {
     console.log('No existing database files found, starting fresh');
@@ -52,6 +58,7 @@ async function loadData(): Promise<void> {
       users: {},
       fdoRecords: {},
       aggregations: {},
+      attributeTemplates: {},
     };
   }
 
@@ -87,6 +94,21 @@ function parseFdoRecords(data: Record<string, any>): Record<string, FdoRecord> {
   return records;
 }
 
+function parseAttributeTemplates(data: Record<string, any>): Record<string, AttributeTemplate> {
+  const templates: Record<string, AttributeTemplate> = {};
+  for (const [key, value] of Object.entries(data)) {
+    templates[key] = {
+      id: value.id,
+      userName: value.userName,
+      name: value.name,
+      entries: value.entries || [],
+      createdAt: value.createdAt ? new Date(value.createdAt) : new Date(),
+      updatedAt: value.updatedAt ? new Date(value.updatedAt) : new Date(),
+    };
+  }
+  return templates;
+}
+
 function initializeGlobalDb(): void {
   const db = getInMemoryDb();
   
@@ -101,6 +123,10 @@ function initializeGlobalDb(): void {
   for (const [key, value] of Object.entries(fileData.aggregations)) {
     db.aggregations.set(key, value);
   }
+  
+  for (const [key, value] of Object.entries(fileData.attributeTemplates)) {
+    db.attributeTemplates.set(key, value);
+  }
 }
 
 async function saveData(): Promise<void> {
@@ -110,13 +136,16 @@ async function saveData(): Promise<void> {
     const usersPath = path.join(DATA_DIR, 'users.json');
     const fdoRecordsPath = path.join(DATA_DIR, 'fdo_records.json');
     const aggregationsPath = path.join(DATA_DIR, 'aggregations.json');
+    const templatesPath = path.join(DATA_DIR, 'attribute_templates.json');
 
     const saveUsers = serializeUsers(fileData.users);
     const saveFdoRecords = serializeFdoRecords(fileData.fdoRecords);
+    const saveTemplates = serializeAttributeTemplates(fileData.attributeTemplates);
 
     await fs.writeFile(usersPath, JSON.stringify(saveUsers, null, 2));
     await fs.writeFile(fdoRecordsPath, JSON.stringify(saveFdoRecords, null, 2));
     await fs.writeFile(aggregationsPath, JSON.stringify(fileData.aggregations, null, 2));
+    await fs.writeFile(templatesPath, JSON.stringify(saveTemplates, null, 2));
   } catch (error) {
     console.error('Failed to save database files:', error);
   }
@@ -150,12 +179,28 @@ function serializeFdoRecords(records: Record<string, FdoRecord>): Record<string,
   return result;
 }
 
+function serializeAttributeTemplates(templates: Record<string, AttributeTemplate>): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [key, value] of Object.entries(templates)) {
+    result[key] = {
+      id: value.id,
+      userName: value.userName,
+      name: value.name,
+      entries: value.entries,
+      createdAt: value.createdAt ? value.createdAt.toISOString() : new Date().toISOString(),
+      updatedAt: value.updatedAt ? value.updatedAt.toISOString() : new Date().toISOString(),
+    };
+  }
+  return result;
+}
+
 function getInMemoryDb() {
   if (!global._inMemoryDb) {
     global._inMemoryDb = {
       users: new Map(),
       fdoRecords: new Map(),
       aggregations: new Map(),
+      attributeTemplates: new Map(),
     };
   }
   return global._inMemoryDb;
@@ -315,6 +360,65 @@ export const inMemoryDatabase: Database = {
       await loadData();
       const db = getInMemoryDb();
       return Array.from(db.aggregations.values());
+    },
+  },
+
+  attributeTemplate: {
+    async create(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate> {
+      await loadData();
+      const db = getInMemoryDb();
+      const id = crypto.randomUUID();
+      const now = new Date();
+      const newTemplate: AttributeTemplate = {
+        ...template,
+        id,
+        createdAt: now,
+        updatedAt: now,
+      };
+      db.attributeTemplates.set(id, newTemplate);
+      fileData.attributeTemplates[id] = newTemplate;
+      await saveData();
+      return newTemplate;
+    },
+
+    async update(template: Partial<AttributeTemplate> & { id: string }): Promise<AttributeTemplate> {
+      await loadData();
+      const db = getInMemoryDb();
+      const existing = db.attributeTemplates.get(template.id);
+      if (!existing) {
+        throw new Error(`Template with id ${template.id} not found`);
+      }
+      const updated: AttributeTemplate = {
+        ...existing,
+        ...template,
+        updatedAt: new Date(),
+      };
+      db.attributeTemplates.set(template.id, updated);
+      fileData.attributeTemplates[template.id] = updated;
+      await saveData();
+      return updated;
+    },
+
+    async delete(id: string): Promise<void> {
+      await loadData();
+      const db = getInMemoryDb();
+      db.attributeTemplates.delete(id);
+      delete fileData.attributeTemplates[id];
+      await saveData();
+    },
+
+    async findById(id: string): Promise<AttributeTemplate | null> {
+      await loadData();
+      const db = getInMemoryDb();
+      return db.attributeTemplates.get(id) || null;
+    },
+
+    async findByUserName(userName: string): Promise<AttributeTemplate[]> {
+      await loadData();
+      const db = getInMemoryDb();
+      return Array.from(db.attributeTemplates.values()).filter(
+        (template) => template.userName === userName
+      );
     },
   },
 };

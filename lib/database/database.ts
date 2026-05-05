@@ -1,4 +1,4 @@
-import { FdoRecord, FairCriteriumAggregation, User } from './types';
+import { FdoRecord, FairCriteriumAggregation, User, AttributeTemplate } from './types';
 
 export interface Database {
   initialize(): Promise<void>;
@@ -32,5 +32,13 @@ export interface Database {
     upsertAggregation(userName: string, criterium: FairCriteriumAggregation['criterium'], value: number): Promise<void>;
     getAggregationsByUser(userName: string): Promise<FairCriteriumAggregation[]>;
     getAllAggregations(): Promise<FairCriteriumAggregation[]>;
+  };
+
+  attributeTemplate: {
+    create(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate>;
+    update(template: Partial<AttributeTemplate> & { id: string }): Promise<AttributeTemplate>;
+    delete(id: string): Promise<void>;
+    findById(id: string): Promise<AttributeTemplate | null>;
+    findByUserName(userName: string): Promise<AttributeTemplate[]>;
   };
 }

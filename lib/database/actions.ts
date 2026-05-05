@@ -1,7 +1,7 @@
 'use server';
 
 import { getDatabase } from '@/lib/database';
-import { FdoRecord, FairCriteriumAggregation, User } from '@/lib/database/types';
+import { FdoRecord, FairCriteriumAggregation, User, AttributeTemplate } from '@/lib/database/types';
 
 export async function createUser(user: User): Promise<void> {
   const db = await getDatabase();
@@ -60,4 +60,29 @@ export async function getFairScoreAggregations(userName?: string): Promise<FairC
     return db.fairScore.getAggregationsByUser(userName);
   }
   return db.fairScore.getAllAggregations();
+}
+
+export async function createAttributeTemplate(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate> {
+  const db = await getDatabase();
+  return db.attributeTemplate.create(template);
+}
+
+export async function updateAttributeTemplate(template: Partial<AttributeTemplate> & { id: string }): Promise<AttributeTemplate> {
+  const db = await getDatabase();
+  return db.attributeTemplate.update(template);
+}
+
+export async function deleteAttributeTemplate(id: string): Promise<void> {
+  const db = await getDatabase();
+  await db.attributeTemplate.delete(id);
+}
+
+export async function getAttributeTemplateById(id: string): Promise<AttributeTemplate | null> {
+  const db = await getDatabase();
+  return db.attributeTemplate.findById(id);
+}
+
+export async function getAttributeTemplatesByUserName(userName: string): Promise<AttributeTemplate[]> {
+  const db = await getDatabase();
+  return db.attributeTemplate.findByUserName(userName);
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { ModuleShell } from '../ModuleShell';
 import { KeyValueEditor } from '../ui/KeyValueEditor';
 import { getSuggestedKeys } from '@/lib/momentum/constants';
@@ -9,6 +9,9 @@ import { NavigationButtons } from '../ui/NavigationButtons';
 import { Trash2 } from "lucide-react";
 import { useAdditionalAttributes } from './useAdditionalAttributes';
 import { AdditionalAttributesModuleProps } from './types';
+import { AttributeTemplatesTab } from './AttributeTemplatesTab';
+import { AttributeTemplate } from '@/lib/database/types';
+import { MiscEntry } from '@/lib/momentum/types';
 
 export function AdditionalAttributesModule({
   misc,
@@ -20,8 +23,6 @@ export function AdditionalAttributesModule({
   onPrevModule,
 }: AdditionalAttributesModuleProps) {
   const {
-    mode,
-    setMode,
     typedAttributes,
     pendingAttribute,
     typeRegistryRef,
@@ -33,18 +34,38 @@ export function AdditionalAttributesModule({
     clearPendingAttribute,
   } = useAdditionalAttributes({ misc, updateMisc });
 
+  const [activeTab, setActiveTab] = useState<'typed' | 'custom' | 'templates'>('typed');
   const suggestedKeys = getSuggestedKeys(researchDomain);
+
+  const customAttributes = misc.entries.filter((entry) => entry.attributeType === 'custom');
+
+  const handleLoadTemplate = useCallback((template: AttributeTemplate) => {
+    // Separate typed and custom entries from the template
+    const typedEntries = template.entries.filter((e: any) => e.attributeType === 'typed');
+    const customEntries = template.entries.filter((e: any) => e.attributeType === 'custom');
+    
+    // Add all entries to misc
+    const newEntries = [...template.entries];
+    updateMisc(newEntries);
+    
+    // Select the appropriate tab based on template content
+    if (typedEntries.length > 0) {
+      setActiveTab('typed');
+    } else if (customEntries.length > 0) {
+      setActiveTab('custom');
+    }
+  }, [updateMisc]);
 
   return (
       <ModuleShell
-          title="🔧 Additional Metadata"
+          title="🔧 Additional Attributes"
           badge="optional"
       >
         <div className="alert alert-soft mb-4">
                 <span className="text-xs">
-                  Additional attributes allow you to further customize your FAIR Digital Object. You may add
-                  typed attributes selected from a searchable list, or custom attributes, either from a list or
-                  by adding own key-value-pairs.
+                  Additional attributes allow you to customize your FAIR Digital Object. You may add
+                  typed attributes selected from a searchable list, custom key-value pairs, or save and load
+                  attribute templates for reuse.
                   <br/><br/>
                     💡 Depending on the selected Research Domain, there may be suggested custom attributes available.
                 </span>
@@ -53,21 +74,28 @@ export function AdditionalAttributesModule({
           <div className="tabs tabs-border">
             <button
                 type="button"
-                onClick={() => setMode('typed')}
-                className={`tab ${mode === 'typed' ? 'tab-active' : ''}`}
+                onClick={() => setActiveTab('typed')}
+                className={`tab ${activeTab === 'typed' ? 'tab-active' : ''}`}
             >
-              Typed Attributes
+              Additional Attributes
             </button>
             <button
                 type="button"
-                onClick={() => setMode('custom')}
-                className={`tab ${mode === 'custom' ? 'tab-active' : ''}`}
+                onClick={() => setActiveTab('custom')}
+                className={`tab ${activeTab === 'custom' ? 'tab-active' : ''}`}
             >
               Custom Attributes
             </button>
+            <button
+                type="button"
+                onClick={() => setActiveTab('templates')}
+                className={`tab ${activeTab === 'templates' ? 'tab-active' : ''}`}
+            >
+              Attribute Templates
+            </button>
           </div>
 
-          {mode === 'custom' && (
+          {activeTab === 'custom' && (
               <div>
                 <KeyValueEditor
                     entries={misc.entries}
@@ -77,7 +105,7 @@ export function AdditionalAttributesModule({
               </div>
           )}
 
-          {mode === 'typed' && (
+          {activeTab === 'typed' && (
               <div className="space-y-4">
                 <SimpleTypeRegistryComponent
                     ref={typeRegistryRef}
@@ -97,10 +125,10 @@ export function AdditionalAttributesModule({
                       </button>
                     </div>
                 )}
-                <h4 className="font-medium text-sm">Typed Attributes:</h4>
+                <h4 className="font-medium text-sm">Additional Attributes:</h4>
                 <div className="card bg-base-200 border border-base-200 p-4 gap-2">
                   {typedAttributes.length == 0 && (
-                      <p className="text-sm font-medium text-gray-500">No typed attributes, yet.</p>
+                      <p className="text-sm font-medium text-gray-500">No additional attributes, yet.</p>
                   )}
 
                   {typedAttributes.length > 0 && (
@@ -135,6 +163,14 @@ export function AdditionalAttributesModule({
                   )}
                 </div>
               </div>
+          )}
+
+          {activeTab === 'templates' && (
+            <AttributeTemplatesTab
+              typedAttributes={typedAttributes}
+              customAttributes={customAttributes}
+              onLoadTemplate={handleLoadTemplate}
+            />
           )}
         </div>
 

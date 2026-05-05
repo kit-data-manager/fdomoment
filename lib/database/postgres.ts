@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import { Database } from './database';
-import { FdoRecord, FairCriteriumAggregation, User } from './types';
+import { FdoRecord, FairCriteriumAggregation, User, AttributeTemplate } from './types';
 
 export function createPostgresDatabase(connectionString: string): Database {
   const pool = new Pool({ connectionString });
@@ -37,6 +37,18 @@ export function createPostgresDatabase(connectionString: string): Database {
             criterium VARCHAR(50) NOT NULL,
             total INTEGER NOT NULL,
             UNIQUE(user_name, criterium),
+            FOREIGN KEY (user_name) REFERENCES users(user_name)
+          )
+        `);
+
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS attribute_templates (
+            id VARCHAR(255) PRIMARY KEY,
+            user_name VARCHAR(255) NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            entries JSONB NOT NULL,
+            created_at TIMESTAMP NOT NULL,
+            updated_at TIMESTAMP NOT NULL,
             FOREIGN KEY (user_name) REFERENCES users(user_name)
           )
         `);
@@ -212,6 +224,107 @@ export function createPostgresDatabase(connectionString: string): Database {
           userName: row.user_name,
           criterium: row.criterium as FairCriteriumAggregation['criterium'],
           total: row.total,
+        }));
+      },
+    },
+
+    attributeTemplate: {
+      async create(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate> {
+        const id = crypto.randomUUID();
+        const now = new Date();
+        const result = await pool.query(
+          `INSERT INTO attribute_templates (id, user_name, name, entries, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING *`,
+          [id, template.userName, template.name, JSON.stringify(template.entries), now, now]
+        );
+        const row = result.rows[0];
+        return {
+          id: row.id,
+          userName: row.user_name,
+          name: row.name,
+          entries: row.entries,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        };
+      },
+
+      async update(template: Partial<AttributeTemplate> & { id: string }): Promise<AttributeTemplate> {
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramIndex = 1;
+
+        if (template.name !== undefined) {
+          updates.push(`name = $${paramIndex++}`);
+          values.push(template.name);
+        }
+        if (template.entries !== undefined) {
+          updates.push(`entries = $${paramIndex++}`);
+          values.push(JSON.stringify(template.entries));
+        }
+        if (template.userName !== undefined) {
+          updates.push(`user_name = $${paramIndex++}`);
+          values.push(template.userName);
+        }
+
+        updates.push(`updated_at = $${paramIndex++}`);
+        values.push(new Date());
+
+        values.push(template.id);
+
+        const result = await pool.query(
+          `UPDATE attribute_templates SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
+          values
+        );
+
+        if (result.rows.length === 0) {
+          throw new Error(`Template with id ${template.id} not found`);
+        }
+
+        const row = result.rows[0];
+        return {
+          id: row.id,
+          userName: row.user_name,
+          name: row.name,
+          entries: row.entries,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        };
+      },
+
+      async delete(id: string): Promise<void> {
+        await pool.query('DELETE FROM attribute_templates WHERE id = $1', [id]);
+      },
+
+      async findById(id: string): Promise<AttributeTemplate | null> {
+        const result = await pool.query(
+          'SELECT * FROM attribute_templates WHERE id = $1',
+          [id]
+        );
+        if (result.rows.length === 0) return null;
+        const row = result.rows[0];
+        return {
+          id: row.id,
+          userName: row.user_name,
+          name: row.name,
+          entries: row.entries,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        };
+      },
+
+      async findByUserName(userName: string): Promise<AttributeTemplate[]> {
+        const result = await pool.query(
+          'SELECT * FROM attribute_templates WHERE user_name = $1 ORDER BY created_at DESC',
+          [userName]
+        );
+        return result.rows.map((row) => ({
+          id: row.id,
+          userName: row.user_name,
+          name: row.name,
+          entries: row.entries,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
         }));
       },
     },

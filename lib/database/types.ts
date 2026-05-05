@@ -19,3 +19,21 @@ export interface User {
   email?: string;
   lastLogin: Date;
 }
+
+export interface AttributeTemplateEntry {
+  id: string;
+  key: string;
+  value: string | any;
+  attributeType: 'custom' | 'typed';
+  isTyped?: boolean;
+  typeDef?: any;
+}
+
+export interface AttributeTemplate {
+  id: string;
+  userName: string;
+  name: string;
+  entries: AttributeTemplateEntry[];
+  createdAt: Date;
+  updatedAt: Date;
+}
