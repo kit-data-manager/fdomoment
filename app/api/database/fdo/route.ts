@@ -37,6 +37,10 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userName = searchParams.get('userName');
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const sortBy = searchParams.get('sortBy') as 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | null;
+    const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | null;
 
     const db = await getDatabase();
 
@@ -45,8 +49,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(records);
     }
 
-    const records = await db.fdoRecord.getAll();
-    return NextResponse.json(records);
+    const records = await db.fdoRecord.getAll(page, limit, sortBy || 'createdAt', sortOrder || 'desc');
+    const total = await db.fdoRecord.count();
+    return NextResponse.json({
+      items: records,
+      total: total || 0,
+      page,
+      limit
+    });
   } catch (error) {
     console.error('Error fetching FDO records:', error);
     return NextResponse.json(

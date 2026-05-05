@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useId, useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useKeycloak } from '@/context/KeycloakContext';
 import { FdoRecord } from '@/lib/database/types';
 import { StatisticsOverview, FdoTable, AdminOverview } from '@/components/memento';
 import { getFdoRecords, getFairScoreAggregations, getAllUsers } from '@/lib/database/actions';
 import { NavigatorModule } from '@/components/momentum/Navigator/NavigatorModule';
+import { Menu } from 'lucide-react';
 
 interface UserStats {
   totalFdos: number;
@@ -26,11 +28,14 @@ type MementoView = 'statistics' | 'fdos' | 'admin' | 'allFdos';
 
 export default function MementoPage() {
   const { authenticated, userName, isAdmin, login } = useKeycloak();
+  const searchParams = useSearchParams();
+  const initialView = searchParams.get('view') as MementoView | null;
+  const initialPid = searchParams.get('pid');
   const [userFdos, setUserFdos] = useState<FdoRecord[]>([]);
   const [allFdos, setAllFdos] = useState<FdoRecord[]>([]);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
-  const [activeView, setActiveView] = useState<MementoView>('statistics');
+  const [activeView, setActiveView] = useState<MementoView>(initialView || 'statistics');
   const [isLoading, setIsLoading] = useState(true);
   const [userFdosPage, setUserFdosPage] = useState(1);
   const [userFdosSortBy, setUserFdosSortBy] = useState<'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | undefined>(undefined);
@@ -40,6 +45,17 @@ export default function MementoPage() {
   const [allFdosSortBy, setAllFdosSortBy] = useState<'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | undefined>(undefined);
   const [allFdosSortOrder, setAllFdosSortOrder] = useState<'asc' | 'desc' | undefined>(undefined);
   const [totalAllFdos, setTotalAllFdos] = useState<number | undefined>(undefined);
+  const drawerId = useId();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    setDrawerOpen(mq.matches);
+
+    const handler = (e: MediaQueryListEvent) => setDrawerOpen(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const fetchUserFdos = useCallback(async (
     page: number,
@@ -74,13 +90,14 @@ export default function MementoPage() {
       const allUserRecords = await getFdoRecords(userName);
       const total = allUserRecords.length;
       const userRecords = await getFdoRecords(userName, 1, 10, 'createdAt', 'desc');
-      const aggs = await getFairScoreAggregations(userName);
 
       setUserFdos(Array.isArray(userRecords) ? userRecords : []);
       setTotalUserFdos(total);
 
       if (userRecords.length > 0) {
         const meanOverall = userRecords.reduce((sum, f) => sum + f.fairScore, 0) / userRecords.length;
+        const aggs = await getFairScoreAggregations(userName);
+
         const findable = aggs.find(a => a.criterium === 'findable');
         const accessible = aggs.find(a => a.criterium === 'accessible');
         const interoperable = aggs.find(a => a.criterium === 'interoperable');
@@ -164,6 +181,14 @@ export default function MementoPage() {
     }
   }, [authenticated, userName, isAdmin, fetchData]);
 
+  const handleViewClick = (viewId: MementoView) => {
+    setActiveView(viewId);
+    const mq = window.matchMedia('(min-width: 1024px)');
+    if (!mq.matches) {
+      setDrawerOpen(false);
+    }
+  };
+
   if (!authenticated) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -246,22 +271,41 @@ export default function MementoPage() {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="w-[240px] h-full bg-base-100 border-r border-base-200 overflow-y-auto flex flex-col">
-        {views.map((view) => (
-          <NavigatorModule
-            key={view.id}
-            module={view.id}
-            status={'pristine'}
-            label={view.label}
-            isActive={activeView === view.id}
-            onClick={() => setActiveView(view.id as MementoView)}
-          />
-        ))}
-        <div className="flex-1" />
+    <div className="drawer lg:drawer-open h-full">
+      <input
+        id={drawerId}
+        type="checkbox"
+        className="drawer-toggle"
+        checked={drawerOpen}
+        onChange={(e) => setDrawerOpen(e.target.checked)}
+      />
+
+      <div className="drawer-content flex flex-col h-full">
+        <div className="lg:hidden p-2">
+          <label htmlFor={drawerId} className="btn btn-ghost btn-sm btn-square">
+            <Menu className="w-5 h-5" />
+          </label>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+          {renderActiveView()}
+        </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-8">
-        {renderActiveView()}
+
+      <div className="drawer-side h-full z-20">
+        <label htmlFor={drawerId} className="drawer-overlay" aria-label="Close sidebar" />
+        <div className="w-[240px] h-full bg-base-100 border-r border-base-200 overflow-y-auto flex flex-col">
+          {views.map((view) => (
+            <NavigatorModule
+              key={view.id}
+              module={view.id}
+              status={'pristine'}
+              label={view.label}
+              isActive={activeView === view.id}
+              onClick={() => handleViewClick(view.id)}
+            />
+          ))}
+          <div className="flex-1" />
+        </div>
       </div>
     </div>
   );

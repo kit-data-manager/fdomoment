@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from 'react';
-import { CoreMetadata, ResearchDomain } from '@/lib/momentum/types';
+import { ResearchDomain } from '@/lib/momentum/types';
 import { ModuleShell } from '../ModuleShell';
 import { SearchableSelect } from '../ui/SearchableSelect';
 import { ValidatedInput } from '../ui/ValidatedInput';

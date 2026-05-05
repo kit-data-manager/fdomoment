@@ -11,6 +11,7 @@ interface TypeSelectorProps {
   onSelect: (type: TypeDefinition) => void;
   onReset: () => void;
   onResetComplete?: () => void;
+  loading?: boolean;
 }
 
 interface TreeSelectNode {
@@ -20,7 +21,7 @@ interface TreeSelectNode {
   children?: TreeSelectNode[];
 }
 
-const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset, onResetComplete }: TypeSelectorProps) => {
+const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset, onResetComplete, loading }: TypeSelectorProps) => {
   const treeData = useMemo(() => {
     const root: TreeSelectNode[] = [];
     const categoryMap = new Map<string, TreeSelectNode>();
@@ -118,14 +119,21 @@ const TypeSelector = ({ typeOptions, selectedType, onSelect, onReset, onResetCom
     <div className="w-full">
       {!selectedType ? (
         <fieldset className="fieldset w-full">
-          <TreeSelect
-            value={null}
-            options={treeData}
-            onChange={handleOnChange}
-            placeholder="Choose a type..."
-            className="w-full bg-primary"
-            filter
-          />
+          {loading ? (
+            <div className="flex items-center justify-center p-8 gap-3">
+              <span className="loading loading-spinner loading-md"></span>
+              <span className="text-sm">Loading type definitions...</span>
+            </div>
+          ) : (
+            <TreeSelect
+              value={null}
+              options={treeData}
+              onChange={handleOnChange}
+              placeholder="Choose a type..."
+              className="w-full bg-primary"
+              filter
+            />
+          )}
         </fieldset>
       ) : (
         <div className="mb-4 flex items-center justify-between">

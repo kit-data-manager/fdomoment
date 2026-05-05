@@ -19,7 +19,7 @@ const SparqlValidatorForm = ({ query, endpoint, arguments: validatorArgs = [], o
 
   const handleSelect = (result: any) => {
     setSelected(result);
-    onSelect(result);
+    onSelect(result.uri || result);
   };
 
   const handleClear = () => {
@@ -49,14 +49,15 @@ interface SparqlAutocompleteProps {
 }
 
 const SparqlAutocomplete = ({ query, endpoint, arguments: validatorArgs = [], onSelect, onClear, initialSelected }: SparqlAutocompleteProps) => {
-  const [searchTerm, setSearchTerm] = useState(initialSelected?.label || "");
+  const [searchTerm, setSearchTerm] = useState('');
   const [options, setOptions] = useState<any[]>([]);
-  const [selected, setSelected] = useState<any>(initialSelected || null);
+  const [selected, setSelected] = useState<any>(null);
 
   useEffect(() => {
-    if (initialSelected && initialSelected.label && initialSelected.uri) {
-      setSelected(initialSelected);
-      setSearchTerm(initialSelected.label || "");
+    if (initialSelected) {
+      const initialObj = typeof initialSelected === 'string' ? { label: initialSelected, uri: initialSelected } : initialSelected;
+      setSelected(initialObj);
+      setSearchTerm(initialObj.label || '');
     }
   }, [initialSelected]);
 

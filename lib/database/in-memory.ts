@@ -1,13 +1,153 @@
 import { Database } from './database';
 import { FdoRecord, FairCriteriumAggregation, User } from './types';
+import fs from 'fs/promises';
+import path from 'path';
 
 declare global {
-  // eslint-disable-next-line no-var
   var _inMemoryDb: {
     users: Map<string, User>;
     fdoRecords: Map<string, FdoRecord>;
     aggregations: Map<string, FairCriteriumAggregation>;
   } | undefined;
+}
+
+const DATA_DIR = path.join(process.cwd(), 'data', 'database');
+
+interface FileData {
+  users: Record<string, User>;
+  fdoRecords: Record<string, FdoRecord>;
+  aggregations: Record<string, FairCriteriumAggregation>;
+}
+
+let fileData: FileData = {
+  users: {},
+  fdoRecords: {},
+  aggregations: {},
+};
+
+let isInitialized = false;
+
+async function loadData(): Promise<void> {
+  if (isInitialized) return;
+
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+
+    const usersPath = path.join(DATA_DIR, 'users.json');
+    const fdoRecordsPath = path.join(DATA_DIR, 'fdo_records.json');
+    const aggregationsPath = path.join(DATA_DIR, 'aggregations.json');
+
+    const usersFile = await fs.readFile(usersPath, 'utf8').catch(() => '{}');
+    const fdoRecordsFile = await fs.readFile(fdoRecordsPath, 'utf8').catch(() => '{}');
+    const aggregationsFile = await fs.readFile(aggregationsPath, 'utf8').catch(() => '{}');
+
+    fileData = {
+      users: parseUsers(JSON.parse(usersFile)),
+      fdoRecords: parseFdoRecords(JSON.parse(fdoRecordsFile)),
+      aggregations: JSON.parse(aggregationsFile),
+    };
+  } catch {
+    console.log('No existing database files found, starting fresh');
+    fileData = {
+      users: {},
+      fdoRecords: {},
+      aggregations: {},
+    };
+  }
+
+  initializeGlobalDb();
+  isInitialized = true;
+}
+
+function parseUsers(data: Record<string, any>): Record<string, User> {
+  const users: Record<string, User> = {};
+  for (const [key, value] of Object.entries(data)) {
+    users[key] = {
+      userName: value.userName,
+      orcid: value.orcid,
+      email: value.email,
+      lastLogin: value.lastLogin ? new Date(value.lastLogin) : new Date(),
+    };
+  }
+  return users;
+}
+
+function parseFdoRecords(data: Record<string, any>): Record<string, FdoRecord> {
+  const records: Record<string, FdoRecord> = {};
+  for (const [key, value] of Object.entries(data)) {
+    records[key] = {
+      pid: value.pid,
+      userName: value.userName,
+      orcid: value.orcid,
+      researchDomain: value.researchDomain,
+      fairScore: value.fairScore,
+      createdAt: value.createdAt ? new Date(value.createdAt) : new Date(),
+    };
+  }
+  return records;
+}
+
+function initializeGlobalDb(): void {
+  const db = getInMemoryDb();
+  
+  for (const [key, value] of Object.entries(fileData.users)) {
+    db.users.set(key, value);
+  }
+  
+  for (const [key, value] of Object.entries(fileData.fdoRecords)) {
+    db.fdoRecords.set(key, value);
+  }
+  
+  for (const [key, value] of Object.entries(fileData.aggregations)) {
+    db.aggregations.set(key, value);
+  }
+}
+
+async function saveData(): Promise<void> {
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+
+    const usersPath = path.join(DATA_DIR, 'users.json');
+    const fdoRecordsPath = path.join(DATA_DIR, 'fdo_records.json');
+    const aggregationsPath = path.join(DATA_DIR, 'aggregations.json');
+
+    const saveUsers = serializeUsers(fileData.users);
+    const saveFdoRecords = serializeFdoRecords(fileData.fdoRecords);
+
+    await fs.writeFile(usersPath, JSON.stringify(saveUsers, null, 2));
+    await fs.writeFile(fdoRecordsPath, JSON.stringify(saveFdoRecords, null, 2));
+    await fs.writeFile(aggregationsPath, JSON.stringify(fileData.aggregations, null, 2));
+  } catch (error) {
+    console.error('Failed to save database files:', error);
+  }
+}
+
+function serializeUsers(users: Record<string, User>): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [key, value] of Object.entries(users)) {
+    result[key] = {
+      userName: value.userName,
+      orcid: value.orcid,
+      email: value.email,
+      lastLogin: value.lastLogin ? value.lastLogin.toISOString() : new Date().toISOString(),
+    };
+  }
+  return result;
+}
+
+function serializeFdoRecords(records: Record<string, FdoRecord>): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [key, value] of Object.entries(records)) {
+    result[key] = {
+      pid: value.pid,
+      userName: value.userName,
+      orcid: value.orcid,
+      researchDomain: value.researchDomain,
+      fairScore: value.fairScore,
+      createdAt: value.createdAt ? value.createdAt.toISOString() : new Date().toISOString(),
+    };
+  }
+  return result;
 }
 
 function getInMemoryDb() {
@@ -23,24 +163,34 @@ function getInMemoryDb() {
 
 export const inMemoryDatabase: Database = {
   async initialize(): Promise<void> {
+    console.log('InMemoryDatabase initializing...');
+    await loadData();
     console.log('InMemoryDatabase initialized');
   },
 
   user: {
     async createOrUpdate(user: User): Promise<void> {
+      await loadData();
       const db = getInMemoryDb();
       db.users.set(user.userName, {
         ...user,
         lastLogin: new Date(),
       });
+      fileData.users[user.userName] = {
+        ...user,
+        lastLogin: new Date(),
+      };
+      await saveData();
     },
 
     async findByUserName(userName: string): Promise<User | null> {
+      await loadData();
       const db = getInMemoryDb();
       return db.users.get(userName) || null;
     },
 
     async getAll(): Promise<User[]> {
+      await loadData();
       const db = getInMemoryDb();
       return Array.from(db.users.values());
     },
@@ -48,14 +198,21 @@ export const inMemoryDatabase: Database = {
 
   fdoRecord: {
     async create(record: FdoRecord): Promise<void> {
+      await loadData();
       const db = getInMemoryDb();
       db.fdoRecords.set(record.pid, {
         ...record,
         createdAt: new Date(),
       });
+      fileData.fdoRecords[record.pid] = {
+        ...record,
+        createdAt: new Date(),
+      };
+      await saveData();
     },
 
     async findByPid(pid: string): Promise<FdoRecord | null> {
+      await loadData();
       const db = getInMemoryDb();
       return db.fdoRecords.get(pid) || null;
     },
@@ -67,6 +224,7 @@ export const inMemoryDatabase: Database = {
       sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]> {
+      await loadData();
       const db = getInMemoryDb();
       const records: FdoRecord[] = Array.from(db.fdoRecords.values()).filter(
         (record) => record.userName === userName
@@ -94,6 +252,7 @@ export const inMemoryDatabase: Database = {
       sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]> {
+      await loadData();
       const db = getInMemoryDb();
       const records: FdoRecord[] = Array.from(db.fdoRecords.values()) as FdoRecord[];
       if (sortBy) {
@@ -112,6 +271,12 @@ export const inMemoryDatabase: Database = {
       }
       return records;
     },
+
+    async count(): Promise<number> {
+      await loadData();
+      const db = getInMemoryDb();
+      return db.fdoRecords.size;
+    },
   },
 
   fairScore: {
@@ -120,6 +285,7 @@ export const inMemoryDatabase: Database = {
       criterium: FairCriteriumAggregation['criterium'],
       value: number
     ): Promise<void> {
+      await loadData();
       const db = getInMemoryDb();
       const key = `${userName}:${criterium}`;
       db.aggregations.set(key, {
@@ -127,11 +293,18 @@ export const inMemoryDatabase: Database = {
         criterium,
         total: value,
       });
+      fileData.aggregations[key] = {
+        userName,
+        criterium,
+        total: value,
+      };
+      await saveData();
     },
 
     async getAggregationsByUser(
       userName: string
     ): Promise<FairCriteriumAggregation[]> {
+      await loadData();
       const db = getInMemoryDb();
       return Array.from(db.aggregations.values()).filter(
         (agg) => agg.userName === userName
@@ -139,6 +312,7 @@ export const inMemoryDatabase: Database = {
     },
 
     async getAllAggregations(): Promise<FairCriteriumAggregation[]> {
+      await loadData();
       const db = getInMemoryDb();
       return Array.from(db.aggregations.values());
     },

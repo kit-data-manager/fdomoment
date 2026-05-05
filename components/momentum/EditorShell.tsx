@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Creator,
   DataObjectMetadata,
@@ -21,8 +21,11 @@ import {SoftwareModule} from "@/components/momentum/SoftwareModule";
 import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
 import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
-import {calculateFairScore} from "@/lib/momentum/fairScore";
+import { FdoCreatedDialog } from '@/components/momentum/FdoCreatedDialog';
 import { createFdoRecord, upsertFairScoreAggregation } from '@/lib/database/actions';
+import { calculateFairScore } from '@/lib/momentum/fairScore';
+
+const FDO_SERVICE_ENDPOINT = process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT || '/api/fdoservice';
 
 interface EditorShellProps {
   state: EditorState;
@@ -34,6 +37,7 @@ interface EditorShellProps {
   setTemplate: (type: EditorState['template'], enabledModules?: string[]) => void;
   setActiveModule: (module: string) => void;
   canCreate: boolean;
+  resetState?: () => void;
   onNextModule?: () => void;
   onPrevModule?: () => void;
 }
@@ -49,52 +53,79 @@ export function EditorShell(props: EditorShellProps) {
     setTemplate,
     setActiveModule,
     canCreate,
+    resetState,
   } = props;
 
   const { userName } = useKeycloak();
+  const [createdPid, setCreatedPid] = useState<string | null>(null);
 
-  const handleCreate = async () => {
-    let fdoRecord:RecordData = createRecordData();
+   const handleCreate = async () => {
+     const orcid = state['core'].orcid;
+     const researchDomain = state['core'].researchDomain?.label || '';
 
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', state['core'].orcid);
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HelmholtzResearchField', state['core'].researchDomain?.label);
-    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/CORE');
+     let fdoRecord:RecordData = createRecordData();
 
-    state['enabledModules'].
-    filter((module) => module != 'core').
-    forEach(module => {
-      switch (module as ModuleIdentifier) {
-        case "software": fdoRecord = collectSoftwareAttributes(state['software'], fdoRecord);break;
-        case "dataobject": fdoRecord = collectDataObjectAttributes(state['dataobject'], fdoRecord);break;
-        case "publication": fdoRecord = collectPublicationAttributes(state['publication'], fdoRecord);break;
-        case "misc": fdoRecord = collectMiscAttributes(state['misc'], fdoRecord);break;
-        default: console.log("Unknown/unhandled module: ", module);
-      }
-    })
+     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', orcid);
+     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD', researchDomain);
+     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/CORE');
+
+     state['enabledModules'].
+     filter((module) => module != 'core').
+     forEach(module => {
+       switch (module as ModuleIdentifier) {
+         case "software": fdoRecord = collectSoftwareAttributes(state['software'], fdoRecord);break;
+         case "dataobject": fdoRecord = collectDataObjectAttributes(state['dataobject'], fdoRecord);break;
+         case "publication": fdoRecord = collectPublicationAttributes(state['publication'], fdoRecord);break;
+         case "misc": fdoRecord = collectMiscAttributes(state['misc'], fdoRecord);break;
+         default: console.log("Unknown/unhandled module: ", module);
+       }
+     })
     const score = calculateFairScore(state);
-    console.log("SC", score)
+    console.log('SC', score);
     console.log('Creating FDO', fdoRecord);
-    fdoRecord.pid = crypto.randomUUID();
+      
+        try {
+          const response: Response = await fetch(FDO_SERVICE_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(fdoRecord),
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to create FDO via service');
+            }
+            
+            const createdFdo = await response.json();
+            fdoRecord.pid = createdFdo.pid;
 
-    if (userName) {
-      try {
-        await createFdoRecord({
-          pid: fdoRecord.pid,
-          userName,
-          orcid: state.core.orcid,
-          researchDomain: state.core.researchDomain?.label || '',
-          fairScore: score.total,
-        });
+            try {
+              await createFdoRecord({
+                pid: createdFdo.pid,
+                userName: userName || '',
+                orcid: orcid || '',
+                researchDomain: researchDomain,
+                fairScore: score.total,
+              });
 
-        for (const [criterium, value] of Object.entries(score)) {
-          if (criterium !== 'total') {
-            await upsertFairScoreAggregation(userName, criterium as 'findable' | 'accessible' | 'interoperable' | 'reusable', value as number);
-          }
+              // Store individual FAIR criteria scores
+              for (const [criterium, value] of Object.entries(score)) {
+                if (criterium !== 'total') {
+                  await upsertFairScoreAggregation(userName || '', criterium as 'findable' | 'accessible' | 'interoperable' | 'reusable', value as number);
+                }
+              }
+            } catch (dbError) {
+              console.error('Failed to store FDO in database:', dbError);
+            }
+
+          setCreatedPid(fdoRecord.pid);
+        } catch (error) {
+          console.error('Failed to store FDO record:', error);
         }
-      } catch (error) {
-        console.error('Failed to store FDO record:', error);
-      }
-    }
+    };
+
+  const handleStartOver = () => {
+    setCreatedPid(null);
+    resetState?.();
   };
 
   const collectSoftwareAttributes = (metadata:SoftwareMetadata, fdoRecord:RecordData):RecordData => {
@@ -119,8 +150,10 @@ export function EditorShell(props: EditorShellProps) {
     fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_TITLE', metadata.title);
 
     metadata.creators.forEach((creator:Creator) => {
-      fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_CREATOR', creator.id);
+      const creatorValue = creator.orcid || creator.name || creator.id;
+      fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_CREATOR', creatorValue);
     })
+    fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/PUBLICATION');
   return fdoRecord;
   }
   const collectMiscAttributes = (metadata:MiscMetadata | null, fdoRecord:RecordData):RecordData => {
@@ -258,25 +291,33 @@ export function EditorShell(props: EditorShellProps) {
   };
 
   if (!showFullInterface) {
-    return renderActiveModule();
+    return (
+      <>
+        {renderActiveModule()}
+        <FdoCreatedDialog
+          isOpen={createdPid !== null}
+          pid={createdPid || ''}
+          onStartOver={handleStartOver}
+        />
+      </>
+    );
   }
 
   return (
       <div className="flex flex-col h-full">
-        <div className="hidden md:flex flex-1 overflow-hidden">
-          <EditorNavigator
-              state={state}
-              moduleStatus={state.moduleStatus}
-              setActiveModule={setActiveModule}
-              canCreate={canCreate}
-              onCreate={handleCreate}
-          />
+        <EditorNavigator
+            state={state}
+            moduleStatus={state.moduleStatus}
+            setActiveModule={setActiveModule}
+            canCreate={canCreate}
+            onCreate={handleCreate}
+        >
           <main className="flex-1 overflow-y-auto bg-base-200">
-            <div className="flex gap-6 p-8">
+            <div className="flex flex-col md:flex-row gap-6 p-4 md:p-8">
               <div className="flex-1 max-w-2xl">
                 {renderActiveModule()}
               </div>
-              <div className="w-[300px] flex-shrink-0">
+              <div className="w-full md:w-[300px] flex-shrink-0">
                 <FairScoreBar
                     state={state}
                     setActiveModule={setActiveModule}
@@ -284,19 +325,12 @@ export function EditorShell(props: EditorShellProps) {
               </div>
             </div>
           </main>
-        </div>
-
-        <div className="md:hidden flex flex-col flex-1 overflow-hidden">
-          <main className="flex-1 overflow-y-auto bg-base-200 p-4">
-            {renderActiveModule()}
-            <div className="mt-4">
-              <FairScoreBar
-                  state={state}
-                  setActiveModule={setActiveModule as (module: string) => void}
-              />
-            </div>
-          </main>
-        </div>
+        </EditorNavigator>
+        <FdoCreatedDialog
+          isOpen={createdPid !== null}
+          pid={createdPid || ''}
+          onStartOver={handleStartOver}
+        />
       </div>
   );
 }

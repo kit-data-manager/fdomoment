@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useRef, useImperativeHandle, forwardRef } from "react";
 import { TypeDefinition } from "@/components/SimpleTypeRegistryComponent/types";
 import { useSimpleTypeRegistry } from "@/components/SimpleTypeRegistryComponent/useSimpleTypeRegistry";
 import TypeSelector from "@/components/SimpleTypeRegistryComponent/TypeSelector";
 import JsonValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/JsonValidatorForm";
 import SparqlValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/SparqlValidatorForm";
+import LinkValidatorForm from "@/components/SimpleTypeRegistryComponent/forms/LinkValidatorForm";
+import type { LinkValidatorFormRef } from "@/components/SimpleTypeRegistryComponent/types";
 
 interface SimpleTypeRegistryComponentProps {
   onTypeSelect: (type: TypeDefinition, value: any) => void;
@@ -13,13 +15,18 @@ interface SimpleTypeRegistryComponentProps {
   initialValue?: any;
 }
 
-const SimpleTypeRegistryComponent = ({ 
+export interface SimpleTypeRegistryRef {
+  reset: () => void;
+  acceptSelection: () => string | null;
+}
+
+const SimpleTypeRegistryComponent = forwardRef<SimpleTypeRegistryRef, SimpleTypeRegistryComponentProps>(({ 
   onTypeSelect, 
   onValueChange,
   onReset,
   initialType,
   initialValue 
-}: SimpleTypeRegistryComponentProps) => {
+}: SimpleTypeRegistryComponentProps, ref) => {
   const {
     typeOptions,
     selectedType,
@@ -29,8 +36,29 @@ const SimpleTypeRegistryComponent = ({
     handleTypeSelect,
     handleFormChange,
     handleSparqlSelect,
-    resetSelection
+    resetSelection,
+    loading
   } = useSimpleTypeRegistry(initialType, initialValue, onValueChange, onTypeSelect);
+
+  const linkValidatorRef = useRef<LinkValidatorFormRef | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      resetSelection();
+    },
+    acceptSelection: (): string | null => {
+      console.log('SimpleTypeRegistryComponent: acceptSelection called, selectedType.validator:', selectedType?.validator);
+      if (selectedType?.validator === 'LINK' && linkValidatorRef.current) {
+        console.log('SimpleTypeRegistryComponent: calling linkValidatorRef.current.acceptSelection()');
+        const result = linkValidatorRef.current.acceptSelection();
+        console.log('SimpleTypeRegistryComponent: acceptSelection returned:', result);
+        return result;
+      } else {
+        console.log('SimpleTypeRegistryComponent: condition not met, selectedType?.validator === LINK:', selectedType?.validator === 'LINK', 'linkValidatorRef.current:', !!linkValidatorRef.current);
+        return null;
+      }
+    }
+  }), [resetSelection, selectedType]);
 
   return (
     <div className="w-full">
@@ -40,6 +68,7 @@ const SimpleTypeRegistryComponent = ({
         onSelect={handleTypeSelect}
         onReset={resetSelection}
         onResetComplete={onReset}
+        loading={loading}
       />
 
       {selectedType && (
@@ -60,7 +89,20 @@ const SimpleTypeRegistryComponent = ({
                 onSelect={handleSparqlSelect}
               />
             </div>
-          ) : (
+           ) : selectedType.validator === "LINK" ? (
+             <div className="mt-4">
+               <LinkValidatorForm
+                 ref={linkValidatorRef}
+                 typePid={selectedType.pid}
+                 typeName={selectedType.name}
+                 onValueChange={(pid) => {
+                   if (typeof handleFormChange === 'function') {
+                     handleFormChange({ formData: pid });
+                   }
+                 }}
+               />
+             </div>
+           ) : (
             <div className="text-sm text-base-content/60">
               Loading validator configuration...
             </div>
@@ -69,7 +111,9 @@ const SimpleTypeRegistryComponent = ({
       )}
     </div>
   );
-};
+});
+
+SimpleTypeRegistryComponent.displayName = "SimpleTypeRegistryComponent";
 
 export { SimpleTypeRegistryComponent };
 export default SimpleTypeRegistryComponent;

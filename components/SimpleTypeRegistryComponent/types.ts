@@ -3,7 +3,7 @@ export interface TypeDefinition {
   name: string;
   description: string;
   category: string;
-  validator: "JSON" | "SPARQL";
+  validator: "JSON" | "SPARQL" | "LINK";
   validatorInput?: string;
   validatorEndpoint?: string;
   validatorArguments?: ValidatorArgument[];
@@ -19,4 +19,8 @@ export interface SimpleTypeRegistryComponentProps {
   onValueChange?: (value: any) => void;
   initialType?: TypeDefinition | null;
   initialValue?: any;
+}
+
+export interface LinkValidatorFormRef {
+  acceptSelection: () => string | null;
 }

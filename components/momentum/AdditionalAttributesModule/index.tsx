@@ -4,7 +4,7 @@ import React from 'react';
 import { ModuleShell } from '../ModuleShell';
 import { KeyValueEditor } from '../ui/KeyValueEditor';
 import { getSuggestedKeys } from '@/lib/momentum/constants';
-import { SimpleTypeRegistryComponent } from '@/components/SimpleTypeRegistryComponent';
+import { SimpleTypeRegistryComponent, SimpleTypeRegistryRef } from '@/components/SimpleTypeRegistryComponent';
 import { NavigationButtons } from '../ui/NavigationButtons';
 import { Trash2 } from "lucide-react";
 import { useAdditionalAttributes } from './useAdditionalAttributes';
@@ -24,6 +24,7 @@ export function AdditionalAttributesModule({
     setMode,
     typedAttributes,
     pendingAttribute,
+    typeRegistryRef,
     handleTypeSelect,
     handleValueChange,
     addTypedAttribute,
@@ -78,23 +79,24 @@ export function AdditionalAttributesModule({
 
           {mode === 'typed' && (
               <div className="space-y-4">
-                    <SimpleTypeRegistryComponent
-                        onTypeSelect={handleTypeSelect}
-                        onValueChange={handleValueChange}
-                        onReset={clearPendingAttribute}
-                    />
+                <SimpleTypeRegistryComponent
+                    ref={typeRegistryRef}
+                    onTypeSelect={handleTypeSelect}
+                    onValueChange={handleValueChange}
+                    onReset={clearPendingAttribute}
+                />
 
-                    {pendingAttribute && (
-                        <div className="mt-4 flex justify-end">
-                          <button
-                              type="button"
-                              onClick={addTypedAttribute}
-                              className="btn btn-soft btn-primary btn-sm"
-                          >
-                            Add Typed Attribute
-                          </button>
-                        </div>
-                    )}
+                {pendingAttribute && (
+                    <div className="mt-4 flex justify-end">
+                      <button
+                          type="button"
+                          onClick={addTypedAttribute}
+                          className="btn btn-soft btn-primary btn-sm"
+                      >
+                        Add Typed Attribute
+                      </button>
+                    </div>
+                )}
                 <h4 className="font-medium text-sm">Typed Attributes:</h4>
                 <div className="card bg-base-200 border border-base-200 p-4 gap-2">
                   {typedAttributes.length == 0 && (

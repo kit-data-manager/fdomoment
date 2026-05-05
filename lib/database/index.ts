@@ -24,7 +24,7 @@ export async function getDatabase(): Promise<Database> {
       }
       dbInstance = createPostgresDatabase(process.env.DATABASE_URL);
       break;
-    case 'in-memory':
+      case 'in-memory':
     default:
       dbInstance = inMemoryDatabase;
       break;

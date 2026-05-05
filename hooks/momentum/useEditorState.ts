@@ -223,6 +223,10 @@ export function useEditorState() {
     return false;
   };
 
+  const resetState = () => {
+    setState(createInitialState());
+  };
+
   return {
     state: { ...state, moduleStatus },
     updateBasis,
@@ -233,5 +237,6 @@ export function useEditorState() {
     setTemplate,
     setActiveModule,
     canCreate,
+    resetState,
   };
 }

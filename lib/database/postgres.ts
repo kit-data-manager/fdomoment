@@ -118,10 +118,21 @@ export function createPostgresDatabase(connectionString: string): Database {
         };
       },
 
-      async findByUserName(userName: string): Promise<FdoRecord[]> {
+      async findByUserName(
+        userName: string,
+        page?: number,
+        limit?: number,
+        sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+        sortOrder?: 'asc' | 'desc'
+      ): Promise<FdoRecord[]> {
+        const orderBy = sortBy || 'created_at';
+        const order = sortOrder || 'DESC';
+        const offset = page ? (page - 1) * (limit || 100) : 0;
+        const queryLimit = limit || 100;
+
         const result = await pool.query(
-          'SELECT * FROM fdo_records WHERE user_name = $1 ORDER BY created_at DESC',
-          [userName]
+          `SELECT * FROM fdo_records WHERE user_name = $1 ORDER BY ${orderBy} ${order} LIMIT $2 OFFSET $3`,
+          [userName, queryLimit, offset]
         );
         return result.rows.map((row) => ({
           pid: row.pid,
@@ -133,9 +144,20 @@ export function createPostgresDatabase(connectionString: string): Database {
         }));
       },
 
-      async getAll(): Promise<FdoRecord[]> {
+      async getAll(
+        page?: number,
+        limit?: number,
+        sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+        sortOrder?: 'asc' | 'desc'
+      ): Promise<FdoRecord[]> {
+        const orderBy = sortBy || 'created_at';
+        const order = sortOrder || 'DESC';
+        const offset = page ? (page - 1) * (limit || 100) : 0;
+        const queryLimit = limit || 100;
+
         const result = await pool.query(
-          'SELECT * FROM fdo_records ORDER BY created_at DESC'
+          `SELECT * FROM fdo_records ORDER BY ${orderBy} ${order} LIMIT $1 OFFSET $2`,
+          [queryLimit, offset]
         );
         return result.rows.map((row) => ({
           pid: row.pid,
@@ -145,6 +167,11 @@ export function createPostgresDatabase(connectionString: string): Database {
           fairScore: row.fair_score,
           createdAt: row.created_at,
         }));
+      },
+
+      async count(): Promise<number> {
+        const result = await pool.query('SELECT COUNT(*) as total FROM fdo_records');
+        return parseInt(result.rows[0].total) || 0;
       },
     },
 
