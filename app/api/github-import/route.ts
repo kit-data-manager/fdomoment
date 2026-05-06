@@ -115,6 +115,7 @@ export async function POST(request: NextRequest) {
       let license: string = '';
       let readmeUrl: string = '';
       let projectId: number | null = null;
+      let hasMetadata: boolean = false;
 
       if (repoType === 'GitHub') {
         const repoResponse = await fetch(`${apiBase}/${owner}/${repo}`, {
@@ -144,7 +145,26 @@ export async function POST(request: NextRequest) {
 
         const defaultBranch = repoData.default_branch || 'main';
         readmeUrl = `${repoBase}/${owner}/${repo}/blob/${defaultBranch}/README.md`;
-
+        
+        try {
+          const codemetaResponse = await fetch(`${apiBase}/${owner}/${repo}/contents/codemeta.json`, {
+            signal: controller.signal,
+            headers,
+          });
+          if (codemetaResponse.ok) {
+            hasMetadata = true;
+          }
+        } catch {}
+        
+        try {
+          const citationResponse = await fetch(`${apiBase}/${owner}/${repo}/contents/CITATION.cff`, {
+            signal: controller.signal,
+            headers,
+          });
+          if (citationResponse.ok) {
+            hasMetadata = true;
+          }
+        } catch {}
       } else if (repoType === 'GitLab.com' || repoType === 'GitLab@Kit' || repoType === 'Codebase@Helmholtz') {
         const searchResponse = await fetch(`${apiBase}/projects?search=${encodeURIComponent(owner + '/' + repo)}`, {
           signal: controller.signal,
@@ -191,6 +211,26 @@ export async function POST(request: NextRequest) {
         }
 
         readmeUrl = `${repoBase}/${owner}/${repo}/-/blob/${defaultBranch}/README.md`;
+        
+        try {
+          const codemetaFile = await fetch(`${apiBase}/projects/${projectId}/repository/files/codemeta.json?ref=${defaultBranch}`, {
+            signal: controller.signal,
+            headers,
+          });
+          if (codemetaFile.ok) {
+            hasMetadata = true;
+          }
+        } catch {}
+        
+        try {
+          const citationFile = await fetch(`${apiBase}/projects/${projectId}/repository/files/CITATION.cff?ref=${defaultBranch}`, {
+            signal: controller.signal,
+            headers,
+          });
+          if (citationFile.ok) {
+            hasMetadata = true;
+          }
+        } catch {}
       }
 
       clearTimeout(timeoutId);
@@ -199,6 +239,7 @@ export async function POST(request: NextRequest) {
         license,
         readmeUrl,
         repositoryType: repoType,
+        hasMetadata,
       });
     } catch (error) {
       clearTimeout(timeoutId);

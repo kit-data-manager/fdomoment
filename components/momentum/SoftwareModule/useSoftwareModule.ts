@@ -115,6 +115,7 @@ export function useSoftwareModule(
         licenseImported: !!data.license,
         readmeUrl: data.readmeUrl || software.readmeUrl,
         readmeImported: !!data.readmeUrl,
+        hasMetadata: data.hasMetadata || false,
       });
     } catch (err) {
       setAutoImportError(err instanceof Error ? err.message : 'Connection failed');

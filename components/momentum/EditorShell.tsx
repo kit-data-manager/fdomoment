@@ -81,6 +81,7 @@ export function EditorShell(props: EditorShellProps) {
          default: console.log("Unknown/unhandled module: ", module);
        }
      })
+       console.log("STATE ", state);
     const score = calculateFairScore(state);
     console.log('SC', score);
     console.log('Creating FDO', fdoRecord);

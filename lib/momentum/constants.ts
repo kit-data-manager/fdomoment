@@ -69,6 +69,8 @@ export const PUBLICATION_TYPES = [
   { id: 'preprint', label: 'Preprint' },
   { id: 'report', label: 'Report' },
   { id: 'thesis', label: 'Thesis' },
+  { id: 'posted-content', label: 'Blog Post' },
+
 ];
 
 export const SUGGESTED_CUSTOM_KEYS = [

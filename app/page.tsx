@@ -86,10 +86,10 @@ export default function Home() {
                 <div className="card bg-base-100 shadow-md">
                     <figure>
                         {darkMode && (
-                        <img src="feature_supportive_dark.png" alt="Versatile" />
+                        <img src="feature_versatile_dark.png" alt="Versatile" />
                             )}
                         {!darkMode && (
-                            <img src="feature_supportive_light.png" alt="Versatile" />
+                            <img src="feature_versatile_light.png" alt="Versatile" />
                         )}
                     </figure>
                     <div className="card-body">

@@ -241,7 +241,7 @@ const resolveCrossref = async (doi: string): Promise<DoiMetadata | null> => {
     }
     
     const data = (await response.json()) as CrossrefResponse;
-
+console.log("DATA", data);
     const item = data.message;
     const metadata: DoiMetadata = {};
     

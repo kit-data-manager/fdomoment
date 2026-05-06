@@ -10,8 +10,7 @@ import {
   SoftwareMetadata,
   PublicationMetadata,
   MiscEntry,
-  TemplateType,
-  ResearchDomain,
+  TemplateType
 } from '@/lib/momentum/types';
 import { RESEARCH_DOMAINS } from '@/lib/momentum/constants';
 import {
@@ -69,13 +68,14 @@ function createInitialState(): EditorState {
       dataUrlRepository: null,
     },
     software: {
-      repositoryType: 'GitHub',
+      repositoryType: 'Other',
       repositoryUrl: '',
       repositoryUrlValidated: false,
       license: '',
       licenseImported: false,
       readmeUrl: '',
       readmeImported: false,
+      hasMetadata: false,
     },
     publication: {
         doi: '',
@@ -188,40 +188,6 @@ export function useEditorState() {
 
     return result;
   }, [moduleStatus, state.enabledModules]);
-
-  const getNextModule = (currentModule: ModuleIdentifier): ModuleIdentifier | null => {
-    const currentIndex = MODULE_ORDER.indexOf(currentModule);
-    for (let i = currentIndex + 1; i < MODULE_ORDER.length; i++) {
-      if (state.enabledModules.includes(MODULE_ORDER[i])) {
-        return MODULE_ORDER[i];
-      }
-    }
-    return null;
-  };
-
-  const getPrevModule = (currentModule: ModuleIdentifier): ModuleIdentifier | null => {
-    const currentIndex = MODULE_ORDER.indexOf(currentModule);
-    for (let i = currentIndex - 1; i >= 0; i--) {
-      if (state.enabledModules.includes(MODULE_ORDER[i]) || MODULE_ORDER[i] === 'core') {
-        return MODULE_ORDER[i];
-      }
-    }
-    return null;
-  };
-
-  const isModuleEnabled = (moduleId: ModuleIdentifier): boolean => {
-    return state.enabledModules.includes(moduleId);
-  };
-
-  const hasSubsequentModule = (currentModule: ModuleIdentifier): boolean => {
-    const currentIndex = MODULE_ORDER.indexOf(currentModule);
-    for (let i = currentIndex + 1; i < MODULE_ORDER.length; i++) {
-      if (state.enabledModules.includes(MODULE_ORDER[i])) {
-        return true;
-      }
-    }
-    return false;
-  };
 
   const resetState = () => {
     setState(createInitialState());

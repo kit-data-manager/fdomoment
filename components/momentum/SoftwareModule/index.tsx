@@ -30,7 +30,7 @@ export function SoftwareModule({
   } = useSoftwareModule(software, updateSoftware, activatePublication, setActiveModule);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const repoType = parseRepoType(software.repositoryUrl);
+  const repoType = software.repositoryType || parseRepoType(software.repositoryUrl);
 
   return (
     <ModuleShell title="💻 Software Metadata" badge="required">
@@ -69,7 +69,8 @@ export function SoftwareModule({
               else if (type === 'GitLab@Kit') baseUrl = 'https://gitlab.kit.edu/';
               
               updateSoftware({ 
-                repositoryUrl: baseUrl || software.repositoryUrl,
+                repositoryType: type,
+                repositoryUrl: type === 'Other' ? '' : baseUrl,
               });
             }}
           >

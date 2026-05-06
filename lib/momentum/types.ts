@@ -62,6 +62,7 @@ export type SoftwareMetadata = {
   licenseImported: boolean;
   readmeUrl: string;
   readmeImported: boolean;
+  hasMetadata: boolean;
 };
 
 export type Creator = {
