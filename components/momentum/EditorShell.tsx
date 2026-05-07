@@ -81,10 +81,9 @@ export function EditorShell(props: EditorShellProps) {
          default: console.log("Unknown/unhandled module: ", module);
        }
      })
-       console.log("STATE ", state);
     const score = calculateFairScore(state);
-    console.log('SC', score);
-    console.log('Creating FDO', fdoRecord);
+   // console.log('SC', score);
+    //console.log('Creating FDO', fdoRecord);
       
         try {
           const response: Response = await fetch(FDO_SERVICE_ENDPOINT, {

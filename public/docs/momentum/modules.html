@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Descriptions - FDO MoMEnT Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <header class="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
+        <div class="flex-1">
+            <div class="flex gap-4">
+                <a href="../index.html" class="btn btn-ghost btn-sm">Home</a>
+                <a href="index.html" class="btn btn-ghost btn-sm">Momentum</a>
+                <span class="text-lg font-bold text-primary">Modules</span>
+            </div>
+        </div>
+        <div class="flex-none">
+            <a href="/momentum" class="btn btn-primary btn-sm">Open Momentum</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-10 px-6">
+        <a href="index.html" class="text-5xl font-bold text-primary hover:text-primary-focus transition-colors block mb-3">Modules</a>
+        <nav class="text-sm text-base-content/60 mb-10 pb-4 border-b border-base-200">
+            <a href="../index.html" class="hover:text-primary transition-colors">Documentation</a>
+            <span class="mx-2">/</span>
+            <a href="index.html" class="hover:text-primary transition-colors">Momentum</a>
+            <span class="mx-2">/</span>
+            <span>Modules</span>
+        </nav>
+        
+        <div class="prose max-w-none">
+            <p class="text-base leading-relaxed mb-10">
+                FDO MoMenT organizes FDO attributes into six modules. Each module contains
+                specific fields that contribute to the overall FAIRness of the created FDO. Depending on the selected
+                template, some modules may or may not be available.
+            </p>
+            <br/>
+            <div class="space-y-8">
+                <p class="text-2xl font-bold text-primary mb-4">📋 Core Metadata</p>
+                <br/>
+                <img src="../images/core_metadata.png" alt="Core Metadata Module" class="rounded-lg bg-base-300 mx-auto" />
+                <p class="text-base leading-relaxed mb-10">
+                   There are two attributes in core metadata: <i>Research Domain</i> and <i>ORCID</i>. Both attributes are supposed
+                    to give context about the FAIR Digital Object, and it's creator. The research domain can be selected from a dropdown, which contains
+                    all research fields of the Helmholtz Association, for now. In the ORCID field, you have to paste your ORCiD (without base URL), which will
+                    then be resolved and validated automatically. As these two attributes rarely change, you may
+                    pre-configure them in your <a href="profile-settings.html" class="bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    → Profile Settings</a>
+                </p>
+                <br/>
+                <p class="text-2xl font-bold text-primary mb-4">🗄 Data Object Metadata</p>
+                <br/>
+                <img src="../images/data_object_metadata.png" alt="Data Object Metadata Module" class="rounded-lg bg-base-300 mx-auto" />
+                <p class="text-base leading-relaxed mb-10">
+                    For data objects, FDO MoMenT provides the attributes <i>Data Object URL</i>, <i>MIME-Type</i>, and <i>License</i>. The URL will be checked
+                    for accessibility after pasting it. The other two attributes must be manually selected, for now. Depending on the research domain selected in
+                    the Core Metadata, domain-specific values may be suggested below the attribute inputs (see MIME-Types in screenshot). In the license
+                    selection component you will also find some information on which license to use in case there is no license assigned to the data referred by
+                    Data Object URL, yet.
+                </p>
+                <br/>
+                <p class="text-2xl font-bold text-primary mb-4">💻 Software Metadata</p>
+                <br/>
+                <img src="../images/software_metadata.png" alt="Software Metadata Module" class="rounded-lg bg-base-300 mx-auto" />
+                <p class="text-base leading-relaxed mb-10">
+                    For software, there are four attributes: <i>Repository Platform</i>, <i>Repository URL</i>, <i>License</i>, and <i>README URL</i>.
+                    First, select the Repository Platform where your software is located. Currently, four platforms are supported. If your platform is not in the list,
+                    you may select "Other", but you will lose the possibility to auto-detect other attributes. Then, add the Repository URL where your software is located.
+                    After clicking "Import", FDO MoMenT will try to obtain information about License and README URL. If this fails or if you selected "Other" before,
+                    you have to provide these information manually.
+                </p>
+                <br/>
+                <div class="alert bg-base-200 shadow-md mb-10">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">💡</span>
+                        <span class="text-sm">For protected repositories and for some platforms, API access tokens are required to read from a repository. Therefor, FDO MoMenT allows to add API tokens
+                    for all supported repository platforms in your <a href="profile-settings.html" class="bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    → Profile Settings</a>. </span>
+                    </div>
+                </div>
+                <p class="text-2xl font-bold text-primary mb-4">📚 Publication Metadata</p>
+                <br/>
+                <img src="../images/publication_metadata.png" alt="Publication Metadata Module" class="rounded-lg bg-base-300 mx-auto" />
+                <p class="text-base leading-relaxed mb-10">
+                    Attributes in the publication module can typically be obtained via DOI. Therefor, add your publication's DOI in the <i>DOI</i> input
+                    field and click "Import". You may either only add the DOI or the full DOI URL. On import, FDO MoMenT will check Zenodo, Crossref, and
+                    as fallback &lt;Meta&gt; tags in the referred landing page to obtain the remaining required attributes. If this fails, you have to
+                    provide them manually.
+                </p>
+                <br/>
+                <p class="text-2xl font-bold text-primary mb-4">🔧 Additional Metadata</p>
+                <br/>
+                <div class="alert bg-base-200 shadow-md mb-10">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">💡</span>
+                        <span class="text-sm">Additional Metadata offers extensive customization potential for your FDOs, but also comes with a certain
+                        complexity. Therefore, this feature is intended to be used by advanced users who have already maximized the existing capabilities of
+                        the other modules.</span>
+                    </div>
+                </div>
+                <p class="text-base leading-relaxed mb-10">
+                   The Additional Metadata module is the only module in FDO MoMenT that is fully optional, even if it is enabled. It allows you to add custom
+                    key-value-pairs to a FDO's PID record to add metadata that is not covered by other modules or to serve specific use cases or requirements.
+                    <br/>
+                    There are two kinds of additional attributes: <i>Typed Attributes</i> and <i>Custom Attributes</i>, which are both explained in the following.
+                </p>
+                <br/>
+                <p class="text-xl font-bold text-primary mb-4">Typed Attributes</p>
+                <br/>
+                <img src="../images/typed_attributes.png" alt="Typed Attributes" class="rounded-lg bg-base-300 mx-auto" />
+                <p class="text-base leading-relaxed mb-10">
+                    Typed Attributes 
+                </p>
+                <br/>
+                <p class="text-xl font-bold text-primary mb-4">Custom Attributes</p>
+                <br/>
+                <img src="../images/custom_attributes.png" alt="Custom Attributes" class="rounded-lg bg-base-300 mx-auto" />
+                <p class="text-base leading-relaxed mb-10">
+                    ....
+                </p>
+              </div>
+        </div>
+    </main>
+
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
+        <p class="text-sm">FDO MoMEnT Documentation</p>
+    </footer>
+</body>
+</html>

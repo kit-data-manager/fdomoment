@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Descriptions - FDO MoMEnT Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <header class="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
+        <div class="flex-1">
+            <div class="flex gap-4">
+                <a href="../index.html" class="btn btn-ghost btn-sm">Home</a>
+                <a href="index.html" class="btn btn-ghost btn-sm">Momentum</a>
+                <span class="text-lg font-bold text-primary">Templates</span>
+            </div>
+        </div>
+        <div class="flex-none">
+            <a href="/momentum" class="btn btn-primary btn-sm">Open Momentum</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-10 px-6">
+        <a href="index.html" class="text-5xl font-bold text-primary hover:text-primary-focus transition-colors block mb-3">Templates</a>
+        <nav class="text-sm text-base-content/60 mb-10 pb-4 border-b border-base-200">
+            <a href="../index.html" class="hover:text-primary transition-colors">Documentation</a>
+            <span class="mx-2">/</span>
+            <a href="index.html" class="hover:text-primary transition-colors">Momentum</a>
+            <span class="mx-2">/</span>
+            <span>Templates</span>
+        </nav>
+        
+        <div class="prose max-w-none">
+            <p class="text-base leading-relaxed mb-10">
+                Templates provide pre-configured starting points for creating FDOs. You may choose a template based on
+                which kind of digital object you want to represent by a FAIR Digital Object. The template selection gives
+                you a short description on the template, its purpose, and lists contained modules.
+            </p>
+            <br/>
+            <img src="../images/momentum_start.png" alt="Momentum Editor Overview" class="rounded-lg bg-base-300 w-full max-w-2xl mx-auto" />
+            <br/>
+            <p class="text-base leading-relaxed mb-10">
+                For each template there are mandatory modules that cannot be changed. These modules are marked with a 🔒. Modules that are not
+                marked can be enabled (default) or disabled by clicking them, e.g., if you do not want to or can provide publication information
+                for a data object.
+            </p>
+            <br/>
+            <p class="text-base leading-relaxed mb-10">
+                To select a template, just click the box outside the module badges. You will be directed to a confirmation page showing you the
+                entire template description and a list of enabled modules. From this page you can either go back to change your selection or
+                proceed with creating the FAIR Digital Object. You may now proceed to the
+                <a href="modules.html" class="bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    → Modules documentation</a>
+            </p>
+            <br/>
+            <div class="alert bg-base-200 shadow-md mb-10">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">💡</span>
+                    <span class="text-sm">Before you finally select a template and start filling it in be sure, that you can provide all information
+                        required in the selected modules
+                    (see <a href="modules.html" class="bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    → Modules documentation</a>). Most modules only contain mandatory fields and if you cannot fill them with convenient values, you may have to
+                    start over again with the template selection losing the previous progress.</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
+        <p class="text-sm">FDO MoMEnT Documentation</p>
+    </footer>
+</body>
+</html>

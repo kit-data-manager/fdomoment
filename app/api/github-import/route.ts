@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     const urlObj = new URL(url);
     const pathParts = urlObj.pathname.split('/').filter(Boolean);
-    
+
     if (pathParts.length < 2) {
       return NextResponse.json(
         { error: 'Invalid repository URL' },
@@ -93,8 +93,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const owner = pathParts[0];
-    const repo = pathParts[1];
+      // Last segment is always the repository name
+      const repo = pathParts[pathParts.length - 1];
+    // Everything before that is the owner/group path
+      const owner = pathParts.slice(0, -1).join('/');
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -125,6 +127,13 @@ export async function POST(request: NextRequest) {
 
         if (!repoResponse.ok) {
           clearTimeout(timeoutId);
+          if(repoResponse.status === 403) {
+            return NextResponse.json(
+                { error: "API access restricted or rate limit exceeded. Please add a proper API token."},
+                {status: 404}
+            )
+          }
+
           return NextResponse.json(
             { error: 'Repository not found' },
             { status: 404 }
@@ -166,23 +175,35 @@ export async function POST(request: NextRequest) {
           }
         } catch {}
       } else if (repoType === 'GitLab.com' || repoType === 'GitLab@Kit' || repoType === 'Codebase@Helmholtz') {
-        const searchResponse = await fetch(`${apiBase}/projects?search=${encodeURIComponent(owner + '/' + repo)}`, {
+        //  console.log("HERE IN GITLAB", `${apiBase}/projects?search=${encodeURIComponent(owner + '/' + repo)}`)
+       //   console.log("NEW ", `${apiBase}/projects?search=${encodeURIComponent('hmc/hmc-public/information-portal')}&search_namespaces=true`)
+        const searchResponse = await fetch(`${apiBase}/projects?search=${encodeURIComponent(owner + '/' + repo)}&search_namespaces=true`, {
           signal: controller.signal,
           headers,
         });
-        
+
+         if(searchResponse.status === 403) {
+              return NextResponse.json(
+                  { error: "API access restricted. Please add a proper API token."},
+                  {status: 404}
+              )
+         }
+
         if (!searchResponse.ok) {
           clearTimeout(timeoutId);
+
           return NextResponse.json(
             { error: 'Repository not found' },
             { status: 404 }
           );
         }
-
+    console.log("HERE!");
         const searchResults = await searchResponse.json() as Record<string, any>[];
+        console.log("RES ", searchResults);
         const project = searchResults.find(p => p.path_with_namespace === `${owner}/${repo}`);
-        
-        if (!project) {
+          console.log("PROJECT ", project);
+
+          if (!project) {
           clearTimeout(timeoutId);
           return NextResponse.json(
             { error: 'Repository not found' },

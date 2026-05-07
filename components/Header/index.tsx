@@ -86,13 +86,14 @@ export function Header() {
         </div>
 
         <div className="flex-none gap-2">
-          <button
-            type="button"
+          <a
+            href="/docs/index.html"
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn btn-ghost btn-sm"
-            onClick={() => window.open('https://docs.example.com', '_blank')}
           >
             Help
-          </button>
+          </a>
           {authenticated && userName ? (
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-1">

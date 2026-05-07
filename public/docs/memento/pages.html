@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memento - FDO MoMEnT Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <header class="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
+        <div class="flex-1">
+            <div class="flex gap-4">
+                <a href="../index.html" class="btn btn-ghost btn-sm">Home</a>
+                <span class="text-lg font-bold text-primary">Memento</span>
+            </div>
+        </div>
+        <div class="flex-none">
+            <a href="/memento" class="btn btn-primary btn-sm">Open Memento</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-10 px-6">
+        <a href="../index.html" class="text-5xl font-bold text-primary hover:text-primary-focus transition-colors block mb-3">Memento</a>
+        <nav class="text-sm text-base-content/60 mb-10 pb-4 border-b border-base-200">
+            <a href="../index.html" class="hover:text-primary transition-colors">Documentation</a>
+            <span class="mx-2">/</span>
+            <span>Memento</span>
+        </nav>
+        
+        <div class="prose max-w-none">
+            <p class="text-base leading-relaxed mb-10">
+                Memento is the dashboard interface of FDO MoMEnT. It provides a comprehensive view of your
+                created FDOs, displays FAIR score statistics, and offers administrative overview capabilities.
+            </p>
+
+            <div class="card bg-base-200 shadow-md mb-10">
+                <div class="card-body">
+                    <h2 class="text-xl font-semibold mb-4">Overview</h2>
+                    <img src="../../memento_screenshot_placeholder.png" alt="Memento Dashboard Overview" class="rounded-lg bg-base-300 w-full max-w-2xl mb-4" onerror="this.style.display='none'" />
+                    <p class="text-sm leading-relaxed">
+                        The Memento interface uses a sidebar navigation pattern, allowing you to switch between
+                        different views: Statistics, Your FDOs, All FDOs (admin), and Admin Overview.
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-semibold mb-6">Page Descriptions</h2>
+            <p class="text-sm mb-8">
+                The Memento dashboard consists of several views accessible through the sidebar navigation:
+            </p>
+
+            <div class="space-y-8">
+                <div class="card bg-base-200 shadow-md">
+                    <div class="card-body">
+                        <h3 class="text-lg font-semibold mb-3">1. Statistics</h3>
+                        <p class="text-sm text-base-content/80 mb-4">Overview of your FDO statistics and FAIR score metrics.</p>
+                        <img src="../../memento_statistics_placeholder.png" alt="Statistics View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>Total FDOs</strong> — Number of created digital objects</li>
+                            <li><strong>Overall Score</strong> — Average FAIR score across all FDOs</li>
+                            <li><strong>FAIR Breakdown</strong> — Individual scores for Findable, Accessible, Interoperable, Reusable</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-base-200 shadow-md">
+                    <div class="card-body">
+                        <h3 class="text-lg font-semibold mb-3">2. Your FDOs</h3>
+                        <p class="text-sm text-base-content/80 mb-4">A paginated table view of all your created FDOs.</p>
+                        <img src="../../memento_fdos_placeholder.png" alt="Your FDOs View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>Sortable columns</strong> — Sort by ORCID, Research Domain, FAIR Score, Creation Date</li>
+                            <li><strong>Pagination</strong> — Navigate through pages of results</li>
+                            <li><strong>Quick view</strong> — See key metrics at a glance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-base-200 shadow-md">
+                    <div class="card-body">
+                        <h3 class="text-lg font-semibold mb-3">3. All FDOs (Admin)</h3>
+                        <p class="text-sm text-base-content/80 mb-4">A comprehensive view of FDOs across all users (admin only).</p>
+                        <img src="../../memento_allfdos_placeholder.png" alt="All FDOs View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>User column</strong> — Shows the owner of each FDO</li>
+                            <li><strong>Research Domain</strong> — Displays research domain information</li>
+                            <li><strong>Full sorting</strong> — Sort by any column</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card bg-base-200 shadow-md">
+                    <div class="card-body">
+                        <h3 class="text-lg font-semibold mb-3">4. Admin Overview</h3>
+                        <p class="text-sm text-base-content/80 mb-4">System-wide statistics and user activity overview (admin only).</p>
+                        <img src="../../memento_admin_placeholder.png" alt="Admin Overview View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>Total Users</strong> — Number of registered users</li>
+                            <li><strong>FDOs per User</strong> — List of users with their FDO counts and average scores</li>
+                            <li><strong>System Health</strong> — Overview of platform usage</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
+        <p class="text-sm">FDO MoMEnT Documentation</p>
+    </footer>
+</body>
+</html>

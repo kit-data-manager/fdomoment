@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentum - FDO MoMEnT Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <header class="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
+        <div class="flex-1">
+            <div class="flex gap-4">
+                <a href="../index.html" class="btn btn-ghost btn-sm">Home</a>
+                <span class="text-lg font-bold text-primary">Momentum</span>
+            </div>
+        </div>
+        <div class="flex-none">
+            <a href="/momentum" class="btn btn-primary btn-sm">Open Momentum</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-10 px-6">
+        <a href="../index.html" class="text-5xl font-bold text-primary hover:text-primary-focus transition-colors block mb-3">Momentum</a>
+        <nav class="text-sm text-base-content/60 mb-10 pb-4 border-b border-base-200">
+            <a href="../index.html" class="hover:text-primary transition-colors">Documentation</a>
+            <span class="mx-2">/</span>
+            <span>Momentum</span>
+        </nav>
+        
+        <div class="prose max-w-none">
+            <p class="text-base leading-relaxed mb-8">
+                Momentum is the FDO creation and publication interface of FDO MoMEnT. It allows you to create new FAIR Digital Objects
+                through an intuitive editor in a module-based fashion organized in customizable, pre-built templates. Automation features
+                and real-time feedback make the FDO creation process as pleasant as possible. Current key features are:
+            </p>
+            <br/>
+            <ul class="list-disc list-inside space-y-3 mb-10 text-sm">
+                <li><strong>Module-based editing</strong> — Organize FDO attributes into logical sections</li>
+                <li><strong>Template system</strong> — Start with pre-configured templates for common FDO types</li>
+                <li><strong>DOI/Git import</strong> — Automatically populate metadata from existing DOIs and Git repositories</li>
+                <li><strong>FAIR score calculation</strong> — Real-time feedback on the FAIRness of your FDO</li>
+                <li><strong>Type registry</strong> — Select from a variety of curated attribute types to fully customize your FDO</li>
+            </ul>
+            <br/>
+            <div class="card bg-base-200 shadow-md mb-10">
+                <div class="card-body">
+                    <img src="../images/momentum_start.png" alt="Momentum Editor Overview" class="rounded-lg bg-base-300 w-full max-w-2xl mx-auto" />
+                    <p class="text-sm leading-relaxed mt-4">
+                        The Momentum editor provides a structured approach to creating FDOs. It organizes FDO attributes
+                        into logical modules, making it easy to fill in the necessary information for your digital object.
+                        For your convenience, Momentum offers a selection of templates representing typical combinations
+                        of existing modules.
+                    </p>
+                </div>
+            </div>
+            <p class="text-base leading-relaxed mb-8">
+                The links below lead you to descriptions of the contained templates and modules. You will learn about their purpose,
+                contents, and good practices. It is recommended to get a first overview from the template descriptions, before you
+                continue with details on contained modules.
+            </p>
+            <br/>
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <a href="templates.html" class="card bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    <div class="card-body">
+                        <h3 class="card-title text-lg">Templates</h3>
+                        <p class="text-sm mt-2">Explore available templates for common FDO types</p>
+                        <div class="card-actions justify-end mt-4">
+                            <span class="btn btn-ghost btn-sm">Read More →</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="modules.html" class="card bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    <div class="card-body">
+                        <h3 class="card-title text-lg">Modules</h3>
+                        <p class="text-sm mt-2">Learn about the different modules and their attributes</p>
+                        <div class="card-actions justify-end mt-4">
+                            <span class="btn btn-ghost btn-sm">Read More →</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
+        <p class="text-sm">FDO MoMEnT Documentation</p>
+    </footer>
+</body>
+</html>

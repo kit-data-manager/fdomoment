@@ -77,7 +77,7 @@ export function AdditionalAttributesModule({
                 onClick={() => setActiveTab('typed')}
                 className={`tab ${activeTab === 'typed' ? 'tab-active' : ''}`}
             >
-              Additional Attributes
+              Typed Attributes
             </button>
             <button
                 type="button"
@@ -125,10 +125,10 @@ export function AdditionalAttributesModule({
                       </button>
                     </div>
                 )}
-                <h4 className="font-medium text-sm">Additional Attributes:</h4>
+                <h4 className="font-medium text-sm">Typed Attributes:</h4>
                 <div className="card bg-base-200 border border-base-200 p-4 gap-2">
                   {typedAttributes.length == 0 && (
-                      <p className="text-sm font-medium text-gray-500">No additional attributes, yet.</p>
+                      <p className="text-sm font-medium text-gray-500">No typed attributes, yet.</p>
                   )}
 
                   {typedAttributes.length > 0 && (

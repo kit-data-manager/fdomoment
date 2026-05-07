@@ -39,10 +39,12 @@ export function calculateFairScore(state: EditorState): FairScore {
     }
 
     if (hasSoftware && state.software.readmeUrl.length > 0) {
+        interoperable += 20;
         reusable += 30;
     }
     if (hasSoftware && state.software.hasMetadata) {
-        interoperable += 40;
+        interoperable += 30;
+        reusable += 40;
     }
 
     if (hasSoftware && state.software.repositoryType?.length && state.software.repositoryType != "Other") {

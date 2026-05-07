@@ -125,8 +125,12 @@ export function SoftwareModule({
         </div>
         
         {autoImportError && (
-          <p className="text-sm text-red-600">{autoImportError}</p>
+          <p className="text-sm text-red-600">❌ {autoImportError}</p>
         )}
+
+          { !autoImportError && !software.hasMetadata && (
+              <p className="text-sm text-yellow-600">⚠️ Add Citation.cff or codemeta.json to improve FAIR-Score.</p>
+          )}
 
         <SearchableSelect
           label="License"

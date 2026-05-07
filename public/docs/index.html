@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDO MoMEnT Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+    <header class="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
+        <div class="flex-1">
+            <span class="text-lg font-bold text-primary">FDO MoMEnT Documentation</span>
+        </div>
+        <div class="flex-none">
+            <a href="/momentum" class="btn btn-ghost btn-sm">Back to App</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-10 px-6">
+        <a href="index.html" class="text-5xl font-bold text-primary hover:text-primary-focus transition-colors block mb-3">Introduction</a>
+        <nav class="text-sm text-base-content/60 mb-10 pb-4 border-b border-base-200">
+            <span>Documentation</span>
+        </nav>
+        
+        <div class="prose max-w-none">
+            <p class="text-base leading-relaxed mb-8">
+                Welcome to the FDO MoMEnT (FAIR Digital Object Modular Minting & Enablement Toolkit) documentation.
+                This toolkit provides a comprehensive solution for creating FAIR Digital Objects (FDOs) in a modular,
+                intuitive, and effortless way. But why should you care about FDOs?
+            </p>
+            <br/>
+            <p class="text-base mb-6">
+                FAIR Digital Objects adhere to the FAIR principles, ensuring they are:
+            </p>
+            <br/>
+            <div class="grid md:grid-cols-4 gap-4 mb-8">
+                <div class="card bg-primary text-primary-content shadow">
+                    <div class="card-body items-center text-center p-4">
+                        <h3 class="font-bold text-lg">Findable</h3>
+                        <p class="text-xs mt-2">FDOs have unique persistent identifiers and rich metadata</p>
+                    </div>
+                </div>
+                <div class="card bg-secondary text-secondary-content shadow">
+                    <div class="card-body items-center text-center p-4">
+                        <h3 class="font-bold text-lg">Accessible</h3>
+                        <p class="text-xs mt-2">FDOs are accessible through open, standard protocols</p>
+                    </div>
+                </div>
+                <div class="card bg-accent text-accent-content shadow">
+                    <div class="card-body items-center text-center p-4">
+                        <h3 class="font-bold text-lg">Interoperable</h3>
+                        <p class="text-xs mt-2">FDOs use standard vocabularies and common data types</p>
+                    </div>
+                </div>
+                <div class="card bg-info text-info-content shadow">
+                    <div class="card-body items-center text-center p-4">
+                        <h3 class="font-bold text-lg">Reusable</h3>
+                        <p class="text-xs mt-2">FDOs have clear licenses and may contain rich provenance information</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-base leading-relaxed">
+                So no matter if you want to cite your dataset or software as FDO, or if you want to bring them together
+                with publication information, or if you plan to benefit from an evolving FDO ecosystem aiming at
+                fully automated processing of huge amounts of FAIR Digital Objects, starting today with creating your
+                first FDO is a great choice.
+            </p>
+            <br/>
+            <p class="text-base leading-relaxed">
+                FDO MoMEnT comes as a web-based application providing two main interfaces:
+            </p>
+            <br/>
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <a href="momentum/index.html" class="card bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    <div class="card-body">
+                        <h3 class="card-title text-lg">Momentum</h3>
+                        <p class="text-sm mt-2">Create and publish new FAIR Digital Objects using modular templates.</p>
+                        <div class="card-actions justify-end mt-4">
+                            <span class="btn btn-primary btn-sm">Learn More →</span>
+                        </div>
+                    </div>
+                </a>
+                <a href="memento/pages.html" class="card bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    <div class="card-body">
+                        <h3 class="card-title text-lg">Memento</h3>
+                        <p class="text-sm mt-2">View statistics, see your and other's FDOs, and monitor FAIR score metrics.</p>
+                        <div class="card-actions justify-end mt-4">
+                            <span class="btn btn-primary btn-sm">Learn More →</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
+        <p class="text-sm">FDO MoMEnT Documentation</p>
+    </footer>
+</body>
+</html>
