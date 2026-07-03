@@ -6,108 +6,159 @@
     <title>Memento - FDO MoMEnT Documentation</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body class="min-h-screen bg-base-100 text-base-content">
-    <header class="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
-        <div class="flex-1">
-            <div class="flex gap-4">
-                <a href="../index.html" class="btn btn-ghost btn-sm">Home</a>
-                <span class="text-lg font-bold text-primary">Memento</span>
+<header class="py-4 px-6 border-b border-base-200 flex-shrink-0">
+    <div class="flex justify-between items-center gap-4">
+        <div class="flex items-center gap-2">
+            <img src="../../logo_small.png" alt="FDO Moment Logo" class="w-[60px] h-[60px]"/>
+            <div>
+                <h1 class="text-center text-primary">
+                    <div class="flex flex-col sm:flex-row gap-1 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
+                        <div class="flex gap-1">
+                            <span class="font-mono">F</span><span class="text-neutral-content text-base">AIR</span>&nbsp;
+                            <span class="font-mono">D</span><span class="text-neutral-content text-base">igital</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <span class="font-mono">O</span><span class="text-neutral-content text-base">bject</span>&nbsp;
+                            <span class="font-mono">MO</span><span class="text-neutral-content text-base">dular</span>&nbsp;
+                            <span class="font-mono">M</span><span class="text-neutral-content text-base">inting</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <span class="text-neutral-content text-base">&amp;</span>&nbsp;
+                        </div>
+                        <div class="flex gap-1">
+                            <span class="font-mono">EN</span><span
+                                class="text-neutral-content text-base">ablement</span>&nbsp;
+                            <span class="font-mono">T</span><span class="text-neutral-content text-base">oolkit</span>
+                        </div>
+                    </div>
+                </h1>
             </div>
         </div>
         <div class="flex-none">
             <a href="/memento" class="btn btn-primary btn-sm">Open Memento</a>
         </div>
-    </header>
+    </div>
+</header>
 
-    <main class="max-w-4xl mx-auto py-10 px-6">
-        <a href="../index.html" class="text-5xl font-bold text-primary hover:text-primary-focus transition-colors block mb-3">Memento</a>
-        <nav class="text-sm text-base-content/60 mb-10 pb-4 border-b border-base-200">
-            <a href="../index.html" class="hover:text-primary transition-colors">Documentation</a>
-            <span class="mx-2">/</span>
-            <span>Memento</span>
-        </nav>
-        
-        <div class="prose max-w-none">
-            <p class="text-base leading-relaxed mb-10">
-                Memento is the dashboard interface of FDO MoMEnT. It provides a comprehensive view of your
-                created FDOs, displays FAIR score statistics, and offers administrative overview capabilities.
+<main class="text-5xl max-w-4xl mx-auto py-10 px-6">
+    <h2 class="font-bold text-primary mb-8!">Memento</h2>
+
+    <div class="prose max-w-none">
+        <p class="text-base leading-relaxed mb-10!">
+            Memento is the dashboard interface of FDO MoMEnT. It provides a comprehensive view of your
+            created FDOs, displays FAIR score statistics, and offers administrative overview capabilities.
+        </p>
+
+        <div class="card bg-base-200 shadow-md mb-3!">
+            <div class="card-body">
+                <img src="../images/memento_overview.png" alt="Memento Dashboard Overview"
+                     class="rounded-lg bg-base-300 w-full max-w-2xl mb-4" onerror="this.style.display='none'"/>
+                <p class="text-sm leading-relaxed">
+                    The Memento interface offers a sidebar navigation, allowing you to switch between
+                    different views: Statistics (starting page), Your FDOs, All FDOs, and Admin Overview (admin-only).
+                    On the overview page, you'll find information about own FAIR DOs and their FAIR statistics.
+                </p>
+            </div>
+        </div>
+        <div class="text-2xl py-10">
+            <h3 class="font-semibold text-primary mb-6!">Page Descriptions</h3>
+            <p class="text-sm mb-8!">
+                In the following, the different pages of Memento are described. You reach them using the
+                according navigation entry on the left.
             </p>
 
-            <div class="card bg-base-200 shadow-md mb-10">
+            <h3 class="text-lg! font-semibold text-primary mb-3!">Your FDOs</h3>
+
+            <div class="card bg-base-200 shadow-md">
                 <div class="card-body">
-                    <h2 class="text-xl font-semibold mb-4">Overview</h2>
-                    <img src="../../memento_screenshot_placeholder.png" alt="Memento Dashboard Overview" class="rounded-lg bg-base-300 w-full max-w-2xl mb-4" onerror="this.style.display='none'" />
-                    <p class="text-sm leading-relaxed">
-                        The Memento interface uses a sidebar navigation pattern, allowing you to switch between
-                        different views: Statistics, Your FDOs, All FDOs (admin), and Admin Overview.
+                    <img src="../images/memento_your_fdos.png" alt="Your FDOs View"
+                         class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'"/>
+                    <p class="text-sm text-base-content/80 mb-4">This page offers a table view of
+                        all your created FDOs. The table can be sorted, allows pagination, and shows basic FDO information
+                        a glance. To see all attributes registered for an FDO, just click the eye-icon in the
+                        first table column. To access further action, you may click another table cell to select an FDO.
                     </p>
                 </div>
             </div>
 
-            <h2 class="text-2xl font-semibold mb-6">Page Descriptions</h2>
-            <p class="text-sm mb-8">
-                The Memento dashboard consists of several views accessible through the sidebar navigation:
+            <h3 class="text-base! font-semibold text-primary mt-3! mb-3!">Actions</h3>
+
+            <p class="text-sm mb-8!">
+                After selecting a single FDO, the table will shrink and on its right side, an action menu will open offering
+                three different tabs:
             </p>
 
-            <div class="space-y-8">
+            <div class="grid md:grid-cols-3 gap-4 mb-8">
                 <div class="card bg-base-200 shadow-md">
                     <div class="card-body">
-                        <h3 class="text-lg font-semibold mb-3">1. Statistics</h3>
-                        <p class="text-sm text-base-content/80 mb-4">Overview of your FDO statistics and FAIR score metrics.</p>
-                        <img src="../../memento_statistics_placeholder.png" alt="Statistics View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
-                        <ul class="list-disc list-inside space-y-2 text-sm">
-                            <li><strong>Total FDOs</strong> — Number of created digital objects</li>
-                            <li><strong>Overall Score</strong> — Average FAIR score across all FDOs</li>
-                            <li><strong>FAIR Breakdown</strong> — Individual scores for Findable, Accessible, Interoperable, Reusable</li>
-                        </ul>
+                        <div class="flex justify-center items-center h-[200px] mb-4">
+                            <img src="../images/memento_selection_core.png" alt="Core Attributes"
+                                 class="rounded-lg bg-base-300 max-h-full object-contain" onerror="this.style.display='none'"/>
+                        </div>
+                        <p class="text-xs text-center">Under Core Attributes, you'll see all core attributes, i.e., owner and research field,
+                            for the selected FDO, as well as its PID. To copy any of these values, just click the copy button offered
+                            for every attribute.</p>
                     </div>
                 </div>
-
                 <div class="card bg-base-200 shadow-md">
                     <div class="card-body">
-                        <h3 class="text-lg font-semibold mb-3">2. Your FDOs</h3>
-                        <p class="text-sm text-base-content/80 mb-4">A paginated table view of all your created FDOs.</p>
-                        <img src="../../memento_fdos_placeholder.png" alt="Your FDOs View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
-                        <ul class="list-disc list-inside space-y-2 text-sm">
-                            <li><strong>Sortable columns</strong> — Sort by ORCID, Research Domain, FAIR Score, Creation Date</li>
-                            <li><strong>Pagination</strong> — Navigate through pages of results</li>
-                            <li><strong>Quick view</strong> — See key metrics at a glance</li>
-                        </ul>
+                        <div class="flex justify-center items-center h-[200px] mb-4">
+                            <img src="../images/memento_selection_badge.png" alt="Badge Creation"
+                                 class="rounded-lg bg-base-300 max-h-full object-contain" onerror="this.style.display='none'"/>
+                        </div>
+                        <p class="text-xs text-center">In this tab, you can create badges for the selected FDO, e.g., to make it available
+                        on Web pages, markdown files, or as image. There are three different styles and export formats offered. Just
+                        select a style and then click the copy button to create the according badge representation.</p>
                     </div>
                 </div>
-
                 <div class="card bg-base-200 shadow-md">
                     <div class="card-body">
-                        <h3 class="text-lg font-semibold mb-3">3. All FDOs (Admin)</h3>
-                        <p class="text-sm text-base-content/80 mb-4">A comprehensive view of FDOs across all users (admin only).</p>
-                        <img src="../../memento_allfdos_placeholder.png" alt="All FDOs View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
-                        <ul class="list-disc list-inside space-y-2 text-sm">
-                            <li><strong>User column</strong> — Shows the owner of each FDO</li>
-                            <li><strong>Research Domain</strong> — Displays research domain information</li>
-                            <li><strong>Full sorting</strong> — Sort by any column</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="card bg-base-200 shadow-md">
-                    <div class="card-body">
-                        <h3 class="text-lg font-semibold mb-3">4. Admin Overview</h3>
-                        <p class="text-sm text-base-content/80 mb-4">System-wide statistics and user activity overview (admin only).</p>
-                        <img src="../../memento_admin_placeholder.png" alt="Admin Overview View" class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'" />
-                        <ul class="list-disc list-inside space-y-2 text-sm">
-                            <li><strong>Total Users</strong> — Number of registered users</li>
-                            <li><strong>FDOs per User</strong> — List of users with their FDO counts and average scores</li>
-                            <li><strong>System Health</strong> — Overview of platform usage</li>
-                        </ul>
+                        <div class="flex justify-center items-center h-[200px] mb-4">
+                            <img src="../images/memento_selection_citation.png" alt="Citation"
+                                 class="rounded-lg bg-base-300 max-h-full object-contain" onerror="this.style.display='none'"/>
+                        </div>
+                        <p class="text-xs text-center">In the citation tab, you can create citation information for the selected FDO,
+                        i.e., to cite it in your publication. There are four different citation styles available. Depending
+                            on available FDO attributes, some fields may be already pre-filled. If required, you can fill in
+                            missing fields manually and check the preview before copying the citation information, either from the
+                            preview or by using the according button.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
-        <p class="text-sm">FDO MoMEnT Documentation</p>
-    </footer>
+            <h3 class="text-lg! font-semibold text-primary mb-3!">All FDOs</h3>
+
+            <div class="card bg-base-200 shadow-md mb-8!">
+                <div class="card-body">
+                    <img src="../images/memento_all_fdos.png" alt="Your FDOs View"
+                         class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'"/>
+                    <p class="text-sm text-base-content/80 mb-4">On this page, you see all FDOs created using this instance of
+                        FDO MoMEnT. You also see the owner of each FDO and besides of that, it offers the same features as
+                        the table of your FDOs.
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="text-lg! font-semibold text-primary mb-3!">Admin Overview</h3>
+
+            <div class="card bg-base-200 shadow-md">
+                <div class="card-body">
+                    <img src="../images/memento_admin.png" alt="Your FDOs View"
+                         class="rounded-lg bg-base-300 w-full max-w-xl mb-4" onerror="this.style.display='none'"/>
+                    <p class="text-sm text-base-content/80 mb-4">Usually, the admin overview won't be visible to you. It contains
+                        information for monitoring purposes and currently only show the number of registered users and their usage statistics.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
+    <p class="text-sm">FDO MoMEnT Documentation</p>
+</footer>
 </body>
 </html>

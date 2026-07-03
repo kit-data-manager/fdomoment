@@ -6,30 +6,44 @@
     <title>Module Descriptions - FDO MoMEnT Documentation</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body class="min-h-screen bg-base-100 text-base-content">
-    <header class="navbar bg-base-100 shadow-sm border-b border-base-200 px-6 h-14">
-        <div class="flex-1">
-            <div class="flex gap-4">
-                <a href="../index.html" class="btn btn-ghost btn-sm">Home</a>
-                <a href="index.html" class="btn btn-ghost btn-sm">Momentum</a>
-                <span class="text-lg font-bold text-primary">Modules</span>
+    <header class="py-4 px-6 border-b border-base-200 flex-shrink-0">
+        <div class="flex justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <img src="../../logo_small.png" alt="FDO Moment Logo" class="w-[60px] h-[60px]" />
+                <div>
+                    <h1 class="text-center text-primary">
+                        <div class="flex flex-col sm:flex-row gap-1 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
+                            <div class="flex gap-1">
+                                <span class="font-mono">F</span><span class="text-neutral-content text-base">AIR</span>&nbsp;
+                                <span class="font-mono">D</span><span class="text-neutral-content text-base">igital</span>
+                            </div>
+                            <div class="flex gap-1">
+                                <span class="font-mono">O</span><span class="text-neutral-content text-base">bject</span>&nbsp;
+                                <span class="font-mono">MO</span><span class="text-neutral-content text-base">dular</span>&nbsp;
+                                <span class="font-mono">M</span><span class="text-neutral-content text-base">inting</span>
+                            </div>
+                            <div class="flex gap-1">
+                                <span class="text-neutral-content text-base">&amp;</span>&nbsp;
+                            </div>
+                            <div class="flex gap-1">
+                                <span class="font-mono">EN</span><span class="text-neutral-content text-base">ablement</span>&nbsp;
+                                <span class="font-mono">T</span><span class="text-neutral-content text-base">oolkit</span>
+                            </div>
+                        </div>
+                    </h1>
+                </div>
             </div>
-        </div>
-        <div class="flex-none">
-            <a href="/momentum" class="btn btn-primary btn-sm">Open Momentum</a>
+            <div class="flex-none">
+                <a href="/momentum" class="btn btn-primary btn-sm">Open Momentum</a>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto py-10 px-6">
-        <a href="index.html" class="text-5xl font-bold text-primary hover:text-primary-focus transition-colors block mb-3">Modules</a>
-        <nav class="text-sm text-base-content/60 mb-10 pb-4 border-b border-base-200">
-            <a href="../index.html" class="hover:text-primary transition-colors">Documentation</a>
-            <span class="mx-2">/</span>
-            <a href="index.html" class="hover:text-primary transition-colors">Momentum</a>
-            <span class="mx-2">/</span>
-            <span>Modules</span>
-        </nav>
+    <main class="text-5xl max-w-4xl mx-auto py-10 px-6">
+        <h2 class="font-bold text-primary mb-8!">Modules</h2>
         
         <div class="prose max-w-none">
             <p class="text-base leading-relaxed mb-10">
@@ -47,7 +61,7 @@
                     to give context about the FAIR Digital Object, and it's creator. The research domain can be selected from a dropdown, which contains
                     all research fields of the Helmholtz Association, for now. In the ORCID field, you have to paste your ORCiD (without base URL), which will
                     then be resolved and validated automatically. As these two attributes rarely change, you may
-                    pre-configure them in your <a href="profile-settings.html" class="bg-base-200 shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
+                    pre-configure them in your <a href="profile-settings.html" class="shadow-md hover:bg-base-300 hover:border-primary transition-all cursor-pointer border border-transparent">
                     → Profile Settings</a>
                 </p>
                 <br/>
@@ -104,7 +118,7 @@
                 <p class="text-base leading-relaxed mb-10">
                    The Additional Metadata module is the only module in FDO MoMenT that is fully optional, even if it is enabled. It allows you to add custom
                     key-value-pairs to a FDO's PID record to add metadata that is not covered by other modules or to serve specific use cases or requirements.
-                    <br/>
+                    <br/><br/>
                     There are two kinds of additional attributes: <i>Typed Attributes</i> and <i>Custom Attributes</i>, which are both explained in the following.
                 </p>
                 <br/>
@@ -112,14 +126,48 @@
                 <br/>
                 <img src="../images/typed_attributes.png" alt="Typed Attributes" class="rounded-lg bg-base-300 mx-auto" />
                 <p class="text-base leading-relaxed mb-10">
-                    Typed Attributes 
+                    Typed Attributes allow you to choose from a growing selection of registered and curated attributes to enrich your
+                    FDO's metadata for increased interoperability and reuse. To see all available typed attributes, open the combobox as
+                    soon as its content is loaded. You'll find them in different categories. You may also use the input field on top of
+                    the selection to search for attributes. Attributes in categories Core, DataObject,
+                    and Software are those which are also used in the available modules of FDO MoMenT. However, by adding them as
+                    additional, typed attributes, you may also use them without using the specific module.
+                </p>
+                <br/>
+                <p class="text-base leading-relaxed mb-10">
+                    To add a new typed attribute, open the according category by clicking the arrow and click the attribute you want to add.
+                    Take care not to click the category name itself as this will close the selection popup.
+                     Once a typed attribute is selected, the attribute selection will be locked in and a form rendering the attribute's properties
+                    opens below. Depending on the attribute, the rendered form may look different and required different inputs. There are for example
+                    attributes based on a JSON-Schema definition rendering a complex input form, or attributes based on SPARQL queries rendering as
+                    interactive query interface to external RDF graphs. After all required inputs are filled, you can click "Add Typed Attribute" to add
+                    new attribute and the whole selection will reset. To change the selected attribute type manually, click "Change Type", but be aware,
+                    that all changes to the input form will be lost.
                 </p>
                 <br/>
                 <p class="text-xl font-bold text-primary mb-4">Custom Attributes</p>
                 <br/>
                 <img src="../images/custom_attributes.png" alt="Custom Attributes" class="rounded-lg bg-base-300 mx-auto" />
                 <p class="text-base leading-relaxed mb-10">
-                    ....
+                    Compared to Typed Attributes, Custom Attributes are simple key-value pairs that can be defined as needed. They are not
+                    validated against any rules and may have a different semantic meaning depending on who assigned them in which context.
+                    FDO MoMenT offers a small selection of custom attribute names, where some of them may be suggested depending on the
+                    research domain used in the Core Module. However, their value can be assigned according to your needs. To add a new
+                    custom attribute, either click on one of the suggested attribute keys to add the attribute to the list and then set an
+                    appropriate value. Alternatively, you can click "+ Add custom", open the attribute key selection by clicking it, and either
+                    select one of the predefined keys or enter an own attribute key. Afterward, fill-in the attribute value.
+                </p>
+                <br/>
+                <p class="text-xl font-bold text-primary mb-4">Attributes Templates</p>
+                <br/>
+                <img src="../images/attribute_templates.png" alt="Attribute Templates" class="rounded-lg bg-base-300 mx-auto" />
+                <p class="text-base leading-relaxed mb-10">
+                    Attribute Templates allow the reuse of recurring attribute combinations, i.e., a set of constant key-value pairs for branding
+                    created FDOs. To create a new attribute template, first add all typed and custom attributes as described before. Then switch to
+                    the attribute templates tab, enter a template name in the input field, and click "Save as New Template". The template is now available
+                    in the lower section, from where it can be loaded, updated, or deleted. Loading a template removed all currently existing attributes, and
+                    replaces them by the attributes and values in the template. To update a template load it first, then add or remove attributes as required, before
+                    you save the template again with the same name.
                 </p>
               </div>
         </div>

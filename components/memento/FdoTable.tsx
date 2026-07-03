@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, memo, useRef, useEffect } from 'react';
+import React, { useState, memo } from 'react';
 import FdoDetailPanel from './FdoDetailPanel';
 import type { FdoRecord } from '@/lib/database/types';
 import { Eye } from 'lucide-react';
 import { useFdoDetails } from './hooks/useFdoDetails';
 import { createPortal } from 'react-dom';
-import {PidComponent} from "@kit-data-manager/react-pid-component";
 import {useTheme} from "@/context/ThemeContext";
+import {PidComponent} from "@kit-data-manager/react-pid-component";
 
 interface PreviewContentProps {
   pid: string;
@@ -197,8 +197,6 @@ export function FdoTable({
                     <td className={selectedFdo ? 'whitespace-nowrap w-0 hidden lg:table-cell' : ''}>{new Date(fdo.createdAt).toLocaleDateString("de",{year:"2-digit",month:"2-digit", day:"2-digit"})}</td>
                     {showOrcid && <td className={selectedFdo ? 'hidden 2xl:table-cell' : ''}>
                       <PidComponent value={fdo.orcid} emphasizeComponent={false} hideSubcomponents={true} darkMode={darkMode ? 'dark' : 'light'}/>
-
-
                     </td>}
                   </tr>
                 ))}

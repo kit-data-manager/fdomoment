@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Descriptions - FDO MoMEnT Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="min-h-screen bg-base-100 text-base-content">
+<header class="py-4 px-6 border-b border-base-200 flex-shrink-0">
+    <div class="flex justify-between items-center gap-4">
+        <div class="flex items-center gap-2">
+            <img src="../../logo_small.png" alt="FDO Moment Logo" class="w-[60px] h-[60px]" />
+            <div>
+                <h1 class="text-center text-primary">
+                    <div class="flex flex-col sm:flex-row gap-1 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
+                        <div class="flex gap-1">
+                            <span class="font-mono">F</span><span class="text-neutral-content text-base">AIR</span>&nbsp;
+                            <span class="font-mono">D</span><span class="text-neutral-content text-base">igital</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <span class="font-mono">O</span><span class="text-neutral-content text-base">bject</span>&nbsp;
+                            <span class="font-mono">MO</span><span class="text-neutral-content text-base">dular</span>&nbsp;
+                            <span class="font-mono">M</span><span class="text-neutral-content text-base">inting</span>
+                        </div>
+                        <div class="flex gap-1">
+                            <span class="text-neutral-content text-base">&amp;</span>&nbsp;
+                        </div>
+                        <div class="flex gap-1">
+                            <span class="font-mono">EN</span><span class="text-neutral-content text-base">ablement</span>&nbsp;
+                            <span class="font-mono">T</span><span class="text-neutral-content text-base">oolkit</span>
+                        </div>
+                    </div>
+                </h1>
+            </div>
+        </div>
+        <div class="flex-none">
+            <a href="/momentum" class="btn btn-primary btn-sm">Open Momentum</a>
+        </div>
+    </div>
+</header>
+
+<main class="text-5xl max-w-4xl mx-auto py-10 px-6">
+    <h2 class="font-bold text-primary mb-8!">Profile Settings</h2>
+
+    <div class="prose max-w-none">
+        <p class="text-base leading-relaxed mb-10">
+           In the profile settings you can persist core attributes, UI settings, and access tokens for a range of supported Git platforms.
+            You can access the profile settings when logged in by clicking the "Logged in" menu entry in the upper right and then selecting
+            "Profile Settings".
+        </p>
+        <br/>
+        <div class="space-y-8">
+            <p class="text-2xl font-bold text-primary mb-4">General</p>
+            <br/>
+            <img src="../images/settings_general.png" alt="General Settings" class="rounded-lg bg-base-300 mx-auto" />
+            <p class="text-base leading-relaxed mb-10">
+                In the general settings you can set your ORCiD and the default research domain, that should be pre-filled in the core
+                attributes when creating a new FAIR Digital Object. Furthermore, you can configure the default theme that will be
+                used every time you open FDO MoMenT.
+            </p>
+            <br/>
+            <p class="text-2xl font-bold text-primary mb-4">Access Tokens</p>
+            <br/>
+            <img src="../images/settings_access_tokens.png" alt="Access Token Settings" class="rounded-lg bg-base-300 mx-auto" />
+            <p class="text-base leading-relaxed mb-10">
+                In the access tokens settings you can add access tokens to read information via Git platform APIs, i.e., for auto-detecting
+                FDO attributes in the Software Module. FDO MoMenT supports a range of Git platforms which you can select in the dropdown component
+                on the left after adding a new access token. Then, copy&amp;paste the access token generated in the settings of your Git platform
+                into the text field. If no longer needed, single access tokens can also be removed.
+            </p>
+            <br/>
+           <div class="alert bg-base-200 shadow-md mb-10">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">💡</span>
+                    <span class="text-sm">It is recommended not to assign strong permissions to your access tokens. Usually, read permissions
+                    are sufficient. However, access tokens are only stored on your local machine, which reduced the risk of a compromise.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
+    <p class="text-sm">FDO MoMEnT Documentation</p>
+</footer>
+</body>
+</html>
