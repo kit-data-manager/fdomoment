@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
+const FDO_SERVICE_MODE = process.env.FDO_SERVICE_MODE || 'local';
+const REMOTE_FDO_SERVICE_ENDPOINT = process.env.REMOTE_FDO_SERVICE_ENDPOINT || '';
+
 function generatePid(): string {
   return Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
@@ -50,6 +53,21 @@ async function saveRecords() {
   }
 }
 
+async function forwardToRemoteService(pid: string): Promise<NextResponse> {
+  try {
+    const response = await fetch(`${REMOTE_FDO_SERVICE_ENDPOINT}/api/fdoservice/${pid}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    console.error('Failed to forward to remote FDO service:', error);
+    return NextResponse.json({ error: 'Failed to connect to remote FDO service' }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   await initializeRecords();
   
@@ -82,9 +100,16 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ pid?: string }> }
 ) {
-  await initializeRecords();
-  
   const { pid } = await params;
+  
+  if (FDO_SERVICE_MODE === 'remote') {
+    if (!pid) {
+      return NextResponse.json({ error: 'PID required' }, { status: 400 });
+    }
+    return forwardToRemoteService(pid);
+  }
+  
+  await initializeRecords();
   
   console.log('GET params:', { pid });
   console.log('GET request.url:', request.url);

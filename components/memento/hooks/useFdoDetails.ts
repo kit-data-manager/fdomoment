@@ -19,7 +19,7 @@ export function useFdoDetails(fdoPid: string) {
     const fetchFullFdo = async () => {
       setIsFdoLoading(true);
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT}/${fdoPid}`);
+        const response = await fetch(`/api/fdoservice/${fdoPid}`);
         if (response.ok) {
           const data = await response.json();
           const recordObj: Record<string, string | string[]> = {};

@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
+const FDO_SERVICE_MODE = process.env.FDO_SERVICE_MODE || 'local';
+const REMOTE_FDO_SERVICE_ENDPOINT = process.env.REMOTE_FDO_SERVICE_ENDPOINT || '';
+
 function generatePid(): string {
   return Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
@@ -50,7 +53,28 @@ async function saveRecords() {
   }
 }
 
+async function forwardToRemoteService(request: Request): Promise<NextResponse> {
+  try {
+    const body = await request.json();
+    const response = await fetch(`${REMOTE_FDO_SERVICE_ENDPOINT}/api/fdoservice`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    console.error('Failed to forward to remote FDO service:', error);
+    return NextResponse.json({ error: 'Failed to connect to remote FDO service' }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
+  if (FDO_SERVICE_MODE === 'remote') {
+    return forwardToRemoteService(request);
+  }
+  
   await initializeRecords();
   
   try {

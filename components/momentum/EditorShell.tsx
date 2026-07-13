@@ -26,7 +26,7 @@ import { createFdoRecord, upsertFairScoreAggregation } from '@/lib/database/acti
 import { calculateFairScore } from '@/lib/momentum/fairScore';
 import {getLicenseById} from "@/lib/momentum/constants";
 
-const FDO_SERVICE_ENDPOINT = process.env.NEXT_PUBLIC_FDO_SERVICE_ENDPOINT || '/api/fdoservice';
+
 
 interface EditorShellProps {
   state: EditorState;
@@ -86,7 +86,7 @@ export function EditorShell(props: EditorShellProps) {
     //console.log('Creating FDO', fdoRecord);
       
         try {
-          const response: Response = await fetch(FDO_SERVICE_ENDPOINT, {
+          const response: Response = await fetch('/api/fdoservice', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(fdoRecord),
