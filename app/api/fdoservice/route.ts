@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import {FdoRecord} from "@/app/api/fdoservice/types";
 
 const FDO_SERVICE_MODE = process.env.FDO_SERVICE_MODE || 'local';
 const REMOTE_FDO_SERVICE_ENDPOINT = process.env.REMOTE_FDO_SERVICE_ENDPOINT || '';
@@ -8,16 +9,6 @@ const REMOTE_FDO_SERVICE_ENDPOINT = process.env.REMOTE_FDO_SERVICE_ENDPOINT || '
 function generatePid(): string {
   return Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
-}
-
-interface RecordEntry {
-  key: string;
-  value: string;
-}
-
-interface FdoRecord {
-  pid: string;
-  record: RecordEntry[];
 }
 
 const fdoRecords: Map<string, FdoRecord> = new Map();
@@ -56,9 +47,9 @@ async function saveRecords() {
 async function forwardToRemoteService(request: Request): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const response = await fetch(`${REMOTE_FDO_SERVICE_ENDPOINT}/api/fdoservice`, {
+    const response = await fetch(`${REMOTE_FDO_SERVICE_ENDPOINT}/api/v1/pit/pid`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/vnd.datamanager.pid.simple+json' },
       body: JSON.stringify(body),
     });
     
