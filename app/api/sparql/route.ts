@@ -8,21 +8,17 @@ interface ValidatorArgument {
 async function executeSparql(endpoint: string, query: string, term: string, validatorArgs?: ValidatorArgument[]) {
   const interpolatedQuery = query.replaceAll('${term}', term);
   const normalizedQuery = interpolatedQuery.replace(/\n/g, '\r\n');
-  
-  const params = new URLSearchParams();
-  if (validatorArgs) {
-    for (const arg of validatorArgs) {
-      params.append(arg.key, arg.value);
-    }
-  }
-  params.set('query', normalizedQuery);
-  
-  const url = `${endpoint}?${params.toString()}`;
-  
-  const res = await fetch(url, {
-    headers: {
-      'Accept': 'application/sparql-results+json'
-    }
+
+  console.log("Validator args: (ignored)", validatorArgs);
+
+  const url = `${endpoint}`;
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/sparql-query',
+            'Accept': 'application/sparql-results+json'
+        },
+        body: normalizedQuery,
   });
   
   const responseText = await res.text();
