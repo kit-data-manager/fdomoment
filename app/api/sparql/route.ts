@@ -11,8 +11,16 @@ async function executeSparql(endpoint: string, query: string, term: string, vali
 
   console.log("Validator args: (ignored)", validatorArgs);
 
-  const url = `${endpoint}`;
-    const res = await fetch(url, {
+  const allowedUrls:string = process.env.TRUSTED_SPARQL_URLS || '';
+
+  const allowedUrlsArray:string[] = allowedUrls.split(',');
+  const match = allowedUrlsArray.find(url => url === `${endpoint}`)
+
+    if(match == undefined) {
+        throw new Error(`SPARQL endpoint ${endpoint} is not in list of trusted endpoints.`);
+    }
+
+    const res = await fetch(match, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/sparql-query',
