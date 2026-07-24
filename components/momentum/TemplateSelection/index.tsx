@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useTemplateSelection } from './useTemplateSelection';
 import { TemplateSelectionProps, TEMPLATES, TemplateConfig } from './types';
 import { MODULE_LABELS, ModuleIdentifier } from '@/lib/momentum/types';
-import Footer from "@/components/Footer";
 
 export function TemplateSelection({
   onSelectTemplate,

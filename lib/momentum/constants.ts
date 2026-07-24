@@ -108,10 +108,15 @@ export function getLicenseHint(researchDomain: ResearchDomain | null) {
 }
 
 export function getLicenseById(licenseId:string):string{
-    const license = DATASET_LICENSES.find(l => l.id === licenseId);
-    if (license) {
-        return license.url;
+    const datasetLicense = DATASET_LICENSES.find(l => l.id === licenseId);
+    if (datasetLicense) {
+        return datasetLicense.url;
     }
+    const softwareLicense = SOFTWARE_LICENSES.find(l => l.id === licenseId);
+    if (softwareLicense) {
+        return softwareLicense.url;
+    }
+
     return ''
 }
 

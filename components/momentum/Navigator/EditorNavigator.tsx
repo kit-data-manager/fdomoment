@@ -3,7 +3,6 @@
 import React, { useEffect, useId, useState } from 'react';
 import { EditorState, ModuleIdentifier, MODULE_LABELS } from '@/lib/momentum/types';
 import { NavigatorModule } from './NavigatorModule';
-import { NavigatorCreateButton } from './NavigatorCreateButton';
 import { TEMPLATES } from '../TemplateSelection/types';
 import { Menu } from 'lucide-react';
 
@@ -11,8 +10,6 @@ interface EditorNavigatorProps {
   state: EditorState;
   moduleStatus: EditorState['moduleStatus'];
   setActiveModule: (module: string) => void;
-  canCreate: boolean;
-  onCreate: () => void;
   children: React.ReactNode;
 }
 
@@ -32,8 +29,6 @@ export function EditorNavigator({
   state,
   moduleStatus,
   setActiveModule,
-  canCreate,
-  onCreate,
   children,
 }: EditorNavigatorProps) {
   const modules = getModulesForTemplate(state.template, state.enabledModules);
@@ -89,12 +84,6 @@ export function EditorNavigator({
               onClick={() => handleModuleClick(module)}
             />
           ))}
-
-          <div className="flex-1" />
-
-          <div className="p-4 border-t border-base-200">
-            <NavigatorCreateButton canCreate={canCreate} onClick={onCreate} />
-          </div>
         </div>
       </div>
     </div>
