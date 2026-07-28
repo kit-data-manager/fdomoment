@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FDO MoMEnT - The FAIR Digital Object Modular Minting & Enablement Toolkit
 
-## Getting Started
+FDO MoMEnT is a Web app that allows the creation of FAIR Digital Objects (FAIR DO). This is done in a modular way by selecting 
+from a list of templates defining metadata available in the resulting FAIR DO. For further customization, additional metadata
+elements can be added as required to satisfy specific use cases or community needs. 
 
-First, run the development server:
+To ease the provisioning of metadata values, FAIR DO MoMEnT offers a multitude of Quality-of-Life features allowing the
+(semi-)automatic acquisition of most standard metadata values. For immediate feedback on the impact of provided metadata,
+a FAIR-Score indicator is shown giving the user a hint on how FAIR the resulting FAIR DO will be and how to improve 
+the FAIR-Score.
+
+## Configuration
+
+FAIR DO MoMEnT is configured via `.env` file. You'll find an example in `env.example` showing all properties and potential
+values. For testing purposes, you may use the in-memory variants of 'FDO_SERVICE_MODE' and 'DATABASE_TYPE', for production
+it is strongly recommended to use a PostgreSQL database and a Typed PID Maker instance in order to create FAIR DOs 
+that are persistently stored, have a globally unique identifier, and can be operated on outside FAIR DO MoMEnT. 
+
+## Startup
+
+While FAIR DO MoMEnT can be started like every other Next.js app, i.e., via `next run start`, it is recommended to use 
+the Docker-based startup to run in a reproducible environment.
+
+### Build and run as single Docker container
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 1. Pull the release image
+docker pull ghcr.io/kit-data-manager/fdo-moment:v0.0.1
+
+# 2. Run container interactively, mounting your environment files
+docker run --rm -it \
+  -v $(pwd)/.env:/app/.env \
+  -v $(pwd)/next.config.js:/app/next.config.js \
+  ghcr.io/kit-data-manager/fdo-moment:v0.0.1 \
+  bash -c "npm run build && npm start"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Include in docker-compose setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```yaml
+version: "3.8"
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+services:
+  nextjs:
+    image: ghcr.io/kit-data-manager/fdo-moment:v0.0.1
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./next.config.js:/app/next.config.js
+    command: bash -c "npm run build && npm start"
+```
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+The KIT Data Manager is licensed under the Apache License, Version 2.0.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Acknowledgements
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This work has been supported by the research program [‘Engineering Digital Futures’](https://www.helmholtz.de/en/research/research-fields/information/engineering-digital-futures/) of the [Helmholtz Association of German Research Centers](https://www.helmholtz.de/en) and the [Helmholtz Metadata Collaboration Platform (HMC)](https://helmholtz-metadaten.de/).
