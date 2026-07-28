@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Module Descriptions - FDO MoMEnT Documentation</title>
+    <title>Module Descriptions - FAIR DO MoMEnT Documentation</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css">
     <link rel="stylesheet" href="../styles.css">
@@ -12,7 +12,7 @@
     <header class="py-4 px-6 border-b border-base-200 flex-shrink-0">
         <div class="flex justify-between items-center gap-4">
             <div class="flex items-center gap-2">
-                <img src="../../logo_small.png" alt="FDO Moment Logo" class="w-[60px] h-[60px]" />
+                <img src="../../logo_small.png" alt="FAIR DO Moment Logo" class="w-[60px] h-[60px]" />
                 <div>
                     <h1 class="text-center text-primary">
                         <div class="flex flex-col sm:flex-row gap-1 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
@@ -47,8 +47,8 @@
         
         <div class="prose max-w-none">
             <p class="text-base leading-relaxed mb-10">
-                FDO MoMenT organizes FDO attributes into six modules. Each module contains
-                specific fields that contribute to the overall FAIRness of the created FDO. Depending on the selected
+                FAIR DO MoMenT organizes FAIR DO attributes into six modules. Each module contains
+                specific fields that contribute to the overall FAIRness of the created FAIR DO. Depending on the selected
                 template, some modules may or may not be available.
             </p>
             <br/>
@@ -69,7 +69,7 @@
                 <br/>
                 <img src="../images/data_object_metadata.png" alt="Data Object Metadata Module" class="rounded-lg bg-base-300 mx-auto" />
                 <p class="text-base leading-relaxed mb-10">
-                    For data objects, FDO MoMenT provides the attributes <i>Data Object URL</i>, <i>MIME-Type</i>, and <i>License</i>. The URL will be checked
+                    For data objects, FAIR DO MoMenT provides the attributes <i>Data Object URL</i>, <i>MIME-Type</i>, and <i>License</i>. The URL will be checked
                     for accessibility after pasting it. The other two attributes must be manually selected, for now. Depending on the research domain selected in
                     the Core Metadata, domain-specific values may be suggested below the attribute inputs (see MIME-Types in screenshot). In the license
                     selection component you will also find some information on which license to use in case there is no license assigned to the data referred by
@@ -83,7 +83,7 @@
                     For software, there are four attributes: <i>Repository Platform</i>, <i>Repository URL</i>, <i>License</i>, and <i>README URL</i>.
                     First, select the Repository Platform where your software is located. Currently, four platforms are supported. If your platform is not in the list,
                     you may select "Other", but you will lose the possibility to auto-detect other attributes. Then, add the Repository URL where your software is located.
-                    After clicking "Import", FDO MoMenT will try to obtain information about License and README URL. If this fails or if you selected "Other" before,
+                    After clicking "Import", FAIR DO MoMenT will try to obtain information about License and README URL. If this fails or if you selected "Other" before,
                     you have to provide these information manually.
                 </p>
                 <br/>
@@ -100,7 +100,7 @@
                 <img src="../images/publication_metadata.png" alt="Publication Metadata Module" class="rounded-lg bg-base-300 mx-auto" />
                 <p class="text-base leading-relaxed mb-10">
                     Attributes in the publication module can typically be obtained via DOI. Therefor, add your publication's DOI in the <i>DOI</i> input
-                    field and click "Import". You may either only add the DOI or the full DOI URL. On import, FDO MoMenT will check Zenodo, Crossref, and
+                    field and click "Import". You may either only add the DOI or the full DOI URL. On import, FAIR DO MoMenT will check Zenodo, Crossref, and
                     as fallback &lt;Meta&gt; tags in the referred landing page to obtain the remaining required attributes. If this fails, you have to
                     provide them manually.
                 </p>
@@ -110,14 +110,14 @@
                 <div class="alert bg-base-200 shadow-md mb-10">
                     <div class="flex items-center gap-3">
                         <span class="text-lg">💡</span>
-                        <span class="text-sm">Additional Metadata offers extensive customization potential for your FDOs, but also comes with a certain
+                        <span class="text-sm">Additional Metadata offers extensive customization potential for your FAIR DOs, but also comes with a certain
                         complexity. Therefore, this feature is intended to be used by advanced users who have already maximized the existing capabilities of
                         the other modules.</span>
                     </div>
                 </div>
                 <p class="text-base leading-relaxed mb-10">
-                   The Additional Metadata module is the only module in FDO MoMenT that is fully optional, even if it is enabled. It allows you to add custom
-                    key-value-pairs to a FDO's PID record to add metadata that is not covered by other modules or to serve specific use cases or requirements.
+                   The Additional Metadata module is the only module in FAIR DO MoMenT that is fully optional, even if it is enabled. It allows you to add custom
+                    key-value-pairs to a FAIR DO's PID record to add metadata that is not covered by other modules or to serve specific use cases or requirements.
                     <br/><br/>
                     There are two kinds of additional attributes: <i>Typed Attributes</i> and <i>Custom Attributes</i>, which are both explained in the following.
                 </p>
@@ -127,10 +127,10 @@
                 <img src="../images/typed_attributes.png" alt="Typed Attributes" class="rounded-lg bg-base-300 mx-auto" />
                 <p class="text-base leading-relaxed mb-10">
                     Typed Attributes allow you to choose from a growing selection of registered and curated attributes to enrich your
-                    FDO's metadata for increased interoperability and reuse. To see all available typed attributes, open the combobox as
+                    FAIR DO's metadata for increased interoperability and reuse. To see all available typed attributes, open the combobox as
                     soon as its content is loaded. You'll find them in different categories. You may also use the input field on top of
                     the selection to search for attributes. Attributes in categories Core, DataObject,
-                    and Software are those which are also used in the available modules of FDO MoMenT. However, by adding them as
+                    and Software are those which are also used in the available modules of FAIR DO MoMenT. However, by adding them as
                     additional, typed attributes, you may also use them without using the specific module.
                 </p>
                 <br/>
@@ -151,7 +151,7 @@
                 <p class="text-base leading-relaxed mb-10">
                     Compared to Typed Attributes, Custom Attributes are simple key-value pairs that can be defined as needed. They are not
                     validated against any rules and may have a different semantic meaning depending on who assigned them in which context.
-                    FDO MoMenT offers a small selection of custom attribute names, where some of them may be suggested depending on the
+                    FAIR DO MoMenT offers a small selection of custom attribute names, where some of them may be suggested depending on the
                     research domain used in the Core Module. However, their value can be assigned according to your needs. To add a new
                     custom attribute, either click on one of the suggested attribute keys to add the attribute to the list and then set an
                     appropriate value. Alternatively, you can click "+ Add custom", open the attribute key selection by clicking it, and either
@@ -163,7 +163,7 @@
                 <img src="../images/attribute_templates.png" alt="Attribute Templates" class="rounded-lg bg-base-300 mx-auto" />
                 <p class="text-base leading-relaxed mb-10">
                     Attribute Templates allow the reuse of recurring attribute combinations, i.e., a set of constant key-value pairs for branding
-                    created FDOs. To create a new attribute template, first add all typed and custom attributes as described before. Then switch to
+                    created FAIR DOs. To create a new attribute template, first add all typed and custom attributes as described before. Then switch to
                     the attribute templates tab, enter a template name in the input field, and click "Save as New Template". The template is now available
                     in the lower section, from where it can be loaded, updated, or deleted. Loading a template removed all currently existing attributes, and
                     replaces them by the attributes and values in the template. To update a template load it first, then add or remove attributes as required, before
@@ -174,7 +174,7 @@
     </main>
 
     <footer class="footer footer-center p-4 bg-base-200 text-base-content mt-12">
-        <p class="text-sm">FDO MoMEnT Documentation</p>
+        <p class="text-sm">FAIR DO MoMEnT Documentation</p>
     </footer>
 </body>
 </html>

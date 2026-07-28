@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
       const token = tokens?.[repoType] || '';
       
       const headers: Record<string, string> = {
-        'User-Agent': 'FDOCreator/1.0',
+        'User-Agent': 'FAIRDO-MoMEnT/1.0',
       };
 
       if (repoType === 'GitHub' && token) {

@@ -41,7 +41,7 @@ export function Header() {
               <div className="flex items-center gap-2 flex-shrink-0">
                   <Image
                       src="/logo_small.png"
-                      alt="FDO Moment Logo"
+                      alt="FAIR DO Moment Logo"
                       width={60}
                       height={60}
                       className="logo w-10 h-10 md:w-12 md:h-12"
@@ -50,10 +50,10 @@ export function Header() {
                       <h1 className="text-center text-primary">
                           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-1 font-bold">
                               {pathname !== '/momentum' && (
-                              <span className="text-primary text-bold">FDO MoMEnT - Memento</span>
+                              <span className="text-primary text-bold">FAIR DO MoMEnT - Memento</span>
                                   )}
                               {pathname !== '/memento' && (
-                                  <span className="text-primary text-bold">FDO MoMEnT - Momentum</span>
+                                  <span className="text-primary text-bold">FAIR DO MoMEnT - Momentum</span>
                               )}
                           </div>
                       </h1>

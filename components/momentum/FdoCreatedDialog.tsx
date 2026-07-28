@@ -75,7 +75,7 @@ export function FdoCreatedDialog({ isOpen, pid, onStartOver }: FdoCreatedDialogP
               onClick={onStartOver}
             >
               <RotateCcw className="w-4 h-4" />
-              Create Another FDO
+              Create Another FAIR DO
             </button>
           </div>
         </div>

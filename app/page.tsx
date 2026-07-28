@@ -18,7 +18,7 @@ export default function Home() {
              <div className="flex items-center gap-2 flex-shrink-0">
                <Image
                  src="/logo_small.png"
-                 alt="FDO Moment Logo"
+                 alt="FAIR DO Moment Logo"
                  width={60}
                  height={60}
                />

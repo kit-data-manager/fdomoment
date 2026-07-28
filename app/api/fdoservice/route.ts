@@ -27,7 +27,7 @@ async function initializeRecords() {
       });
     }
   } catch (error) {
-    console.log('No existing FDO records found, starting fresh');
+    console.log('No existing FAIR DO records found, starting fresh');
   }
 }
 
@@ -40,7 +40,7 @@ async function saveRecords() {
     
     await fs.writeFile(dataPath, JSON.stringify(records, null, 2));
   } catch (error) {
-    console.error('Failed to save FDO records:', error);
+    console.error('Failed to save FAIR DO records:', error);
   }
 }
 
@@ -56,8 +56,8 @@ async function forwardToRemoteService(request: Request): Promise<NextResponse> {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('Failed to forward to remote FDO service:', error);
-    return NextResponse.json({ error: 'Failed to connect to remote FDO service' }, { status: 500 });
+    console.error('Failed to forward to remote FAIR DO service:', error);
+    return NextResponse.json({ error: 'Failed to connect to remote FAIR DO service' }, { status: 500 });
   }
 }
 
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
   
   try {
     const fdoRecord: FdoRecord = await request.json();
-    console.log('User FDO', fdoRecord);
+    console.log('User FAIR DO', fdoRecord);
 
     if (!fdoRecord || !Array.isArray(fdoRecord.record)) {
       return NextResponse.json({ error: 'Invalid FDO record' }, { status: 400 });
@@ -82,13 +82,13 @@ export async function POST(request: Request) {
       pid,
     };
 
-    console.log('New FDO', newRecord);
+    console.log('New FAIR DO', newRecord);
 
     fdoRecords.set(pid, newRecord);
     await saveRecords();
     
     return NextResponse.json(newRecord, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create FDO record' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create FAIR DO record' }, { status: 500 });
   }
 }

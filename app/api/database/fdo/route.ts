@@ -25,9 +25,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error creating FDO record:', error);
+    console.error('Error creating FAIR DO record:', error);
     return NextResponse.json(
-      { error: 'Failed to create FDO record' },
+      { error: 'Failed to create FAIR DO record' },
       { status: 500 }
     );
   }
@@ -58,9 +58,9 @@ export async function GET(request: NextRequest) {
       limit
     });
   } catch (error) {
-    console.error('Error fetching FDO records:', error);
+    console.error('Error fetching FAIR DO records:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch FDO records' },
+      { error: 'Failed to fetch FAIR DO records' },
       { status: 500 }
     );
   }

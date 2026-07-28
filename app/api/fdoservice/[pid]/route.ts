@@ -22,7 +22,7 @@ async function initializeRecords() {
             });
         }
     } catch (error) {
-        console.log('No existing FDO records found, starting fresh');
+        console.log('No existing FAIR DO records found, starting fresh');
     }
 }
 
@@ -36,8 +36,8 @@ async function forwardToRemoteService(pid: string): Promise<NextResponse> {
         const data = await response.json();
         return NextResponse.json(data, {status: response.status});
     } catch (error) {
-        console.error('Failed to forward to remote FDO service:', error);
-        return NextResponse.json({error: 'Failed to connect to remote FDO service'}, {status: 500});
+        console.error('Failed to forward to remote FAIR DO service:', error);
+        return NextResponse.json({error: 'Failed to connect to remote FAIR DO service'}, {status: 500});
     }
 }
 
@@ -75,7 +75,7 @@ export async function GET(
     }
 
     if (!record) {
-        return NextResponse.json({error: 'FDO record not found'}, {status: 404});
+        return NextResponse.json({error: 'FAIR DO record not found'}, {status: 404});
     }
 
     return NextResponse.json(record);
