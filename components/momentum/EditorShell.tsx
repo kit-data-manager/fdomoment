@@ -94,6 +94,8 @@ export function EditorShell(props: EditorShellProps) {
         //collect fair score for stats
         const score = calculateFairScore(state);
 
+        console.log("POST ", fdoRecord);
+
         //create FDO using configured fdo service
         try {
             const response: Response = await fetch('/api/fdoservice', {
@@ -324,6 +326,8 @@ export function EditorShell(props: EditorShellProps) {
                 state={state}
                 moduleStatus={state.moduleStatus}
                 setActiveModule={setActiveModule}
+                canCreate={canCreate}
+                onCreate={handleCreate}
              >
                 <main className="flex-1 overflow-y-auto bg-base-200">
                     <div className="flex flex-col md:flex-row gap-6 p-4 md:p-8">

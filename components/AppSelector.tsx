@@ -62,7 +62,7 @@ export function AppSelector() {
           <div className="card-body p-4">
             <h3 className="card-title text-sm text-secondary">Memento</h3>
             <p className="text-xs text-base-content/60">
-              Review your created FAIR DOs, track FAIR scores, and view statistics.
+              Access your created FAIR DOs, track FAIR scores, and show statistics.
             </p>
             <div className={`flex items-center gap-1 text-xs text-secondary mt-1 transition-opacity ${side === 'right' ? 'opacity-100' : 'opacity-0'}`}>
               <span>Open Memento</span>

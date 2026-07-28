@@ -53,7 +53,7 @@ export const addRecordEntry = (data: RecordData, key: string, value: any): Recor
       ...data.record,
       {
         key,
-        value: String(value)
+        value: typeof value === 'object' ? JSON.stringify(value) : String(value)
       }
     ]
   };

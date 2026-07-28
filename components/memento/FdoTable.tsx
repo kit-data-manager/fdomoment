@@ -44,7 +44,7 @@ const PreviewContent = memo(({ pid, onClose }: PreviewContentProps & { onClose?:
         </thead>
         <tbody>
           {Object.entries(fullFdo.record).map(([key, value]) => {
-            const displayValue = Array.isArray(value) 
+            const displayValue = Array.isArray(value)
               ? value.join(', ') 
               : value;
             return (

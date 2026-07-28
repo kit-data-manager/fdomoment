@@ -55,7 +55,7 @@ switch(moduleId){
   case "dataobject": return (<div>Data object module for research data-focused FAIR Digital Objects.</div>)
   case "software": return (<div>Software module for research software-focused FAIR Digital Objects.</div>)
   case "publication": return (<div>Publication module for scientific publication-focused FAIR Digital Objects or for additional publication information.</div>)
-  case "misc": return (<div>Miscellaneous module for adding additional attributes to FAIR Digital Objects, i.e., to increase FAIRness for for customization.</div>)
+  case "misc": return (<div>Miscellaneous module for adding additional attributes to FAIR Digital Objects, i.e., to increase FAIRness or for customization.</div>)
 }
   }
 
