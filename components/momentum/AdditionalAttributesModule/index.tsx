@@ -4,14 +4,13 @@ import React, { useState, useCallback } from 'react';
 import { ModuleShell } from '../ModuleShell';
 import { KeyValueEditor } from '../ui/KeyValueEditor';
 import { getSuggestedKeys } from '@/lib/momentum/constants';
-import { SimpleTypeRegistryComponent, SimpleTypeRegistryRef } from '@/components/SimpleTypeRegistryComponent';
+import { SimpleTypeRegistryComponent } from '@/components/SimpleTypeRegistryComponent';
 import { NavigationButtons } from '../ui/NavigationButtons';
 import { Trash2 } from "lucide-react";
 import { useAdditionalAttributes } from './useAdditionalAttributes';
 import { AdditionalAttributesModuleProps } from './types';
 import { AttributeTemplatesTab } from './AttributeTemplatesTab';
 import { AttributeTemplate } from '@/lib/database/types';
-import { MiscEntry } from '@/lib/momentum/types';
 
 export function AdditionalAttributesModule({
   misc,

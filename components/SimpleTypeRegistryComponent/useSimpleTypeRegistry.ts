@@ -53,7 +53,8 @@ export const useSimpleTypeRegistry = (
           `/api/type-registry/validator?validatorInput=${encodeURIComponent(type.validatorInput)}&validatorType=JSON`
         );
         const result = await res.json();
-        if (result.data) {
+
+          if (result.data) {
           setJsonSchema(result.data);
           setSparqlQuery("");
         }
@@ -103,6 +104,7 @@ export const useSimpleTypeRegistry = (
 
   const handleFormChange = (data: any) => {
     setFormValue(data.formData);
+    console.log("DATA ", data.formData);
     if (onValueChange) {
       onValueChange(data.formData);
     }

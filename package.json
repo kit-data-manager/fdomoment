@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@hey-api/json-schema-ref-parser": "^1.4.4",
     "@iconify/react": "^6.0.2",
     "@icons-pack/react-simple-icons": "^13.13.0",
     "@kit-data-manager/react-pid-component": "^0.4.2",
