@@ -217,8 +217,8 @@ export default function MementoPage() {
 
   const views: { id: MementoView, label: string }[] = [
     { id: 'statistics', label: 'Statistics' },
-    { id: 'fdos', label: 'Your FDOs' },
-    { id: 'allFdos', label: 'All FDOs' },
+    { id: 'fdos', label: 'Your FAIR DOs' },
+    { id: 'allFdos', label: 'All FAIR DOs' },
   ];
 
   if (isAdmin && adminStats) {

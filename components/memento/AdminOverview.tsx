@@ -29,7 +29,7 @@ export function AdminOverview({ stats }: AdminOverviewProps) {
             <thead>
               <tr>
                 <th>Username</th>
-                <th>FDOs Created</th>
+                <th>FAIR DOs Created</th>
                 <th>Average Score</th>
               </tr>
             </thead>

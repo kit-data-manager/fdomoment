@@ -32,7 +32,7 @@ export function AppSelector() {
         <div className="flex-shrink-0 w-32 h-32 relative">
           <Image
             src="/puzzle_complete.png"
-            alt="FDO MoMEnT"
+            alt="FAIR DO MoMEnT"
             width={128}
             height={128}
             className={`logo absolute inset-0 transition-opacity duration-200 ${side === null ? 'opacity-100' : 'opacity-0'}`}
@@ -62,7 +62,7 @@ export function AppSelector() {
           <div className="card-body p-4">
             <h3 className="card-title text-sm text-secondary">Memento</h3>
             <p className="text-xs text-base-content/60">
-              Review your created FDOs, track FAIR scores, and view statistics.
+              Access your created FAIR DOs, track FAIR scores, and show statistics.
             </p>
             <div className={`flex items-center gap-1 text-xs text-secondary mt-1 transition-opacity ${side === 'right' ? 'opacity-100' : 'opacity-0'}`}>
               <span>Open Memento</span>

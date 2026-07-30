@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { $RefParser } from '@hey-api/json-schema-ref-parser';
 
 const TYPE_REGISTRY_BASE = "https://raw.githubusercontent.com/ThomasJejkal/simple-type-registry/main/types";
 
@@ -20,12 +21,12 @@ export async function GET(request: NextRequest) {
   const cacheKey = `${validatorType}:${validatorInput}`;
   const now = Date.now();
 
-  if (cache.has(cacheKey)) {
+ /* if (cache.has(cacheKey)) {
     const cached = cache.get(cacheKey)!;
     if (now - cached.timestamp < CACHE_TTL) {
       return NextResponse.json({ data: cached.data, cached: true });
     }
-  }
+  }*/
 
   try {
     const url = `${TYPE_REGISTRY_BASE}/${validatorInput}`;
@@ -38,6 +39,9 @@ export async function GET(request: NextRequest) {
     let data;
     if (validatorType === 'JSON') {
       data = await res.json();
+      console.log("DATA ", data);
+      data = await resolveSchema(data);
+        console.log("Resolved ", data);
     } else if (validatorType === 'SPARQL') {
       data = await res.text();
     } else {
@@ -53,4 +57,17 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+
+    type JsonSchema = Record<string, unknown>;
+
+    async function resolveSchema(
+        schemaOrUrl: JsonSchema | string,
+    ): Promise<JsonSchema> {
+        const parser = new $RefParser();
+        const bundled = await parser.bundle({
+            pathOrUrlOrSchema: schemaOrUrl,
+        });
+        console.log("BUN ", bundled)
+        return bundled as JsonSchema;
+    }
 }

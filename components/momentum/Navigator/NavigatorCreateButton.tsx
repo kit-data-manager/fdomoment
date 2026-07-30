@@ -30,7 +30,7 @@ export function NavigatorCreateButton({
           justBecameAvailable ? 'animate-pulse' : ''
         }`}
       >
-        Create FDO ✨
+        Create FAIR DO ✨
       </button>
     );
   }
@@ -42,7 +42,7 @@ export function NavigatorCreateButton({
       className="btn btn-ghost w-full opacity-50"
       title="Core metadata and one of both, data object or software metadata, must be completed."
     >
-      Create FDO 🔒
+      Create FAIR DO 🔒
     </button>
   );
 }

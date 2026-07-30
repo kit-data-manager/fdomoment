@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FDO Modular Minting and Enablement Toolkit",
-  description: "Mint your FDOs easily.",
+  title: "FAIR DO Modular Minting and Enablement Toolkit",
+  description: "Mint your FAIR DOs easily.",
 };
 
 export default function RootLayout({

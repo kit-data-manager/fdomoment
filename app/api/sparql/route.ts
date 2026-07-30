@@ -8,21 +8,25 @@ interface ValidatorArgument {
 async function executeSparql(endpoint: string, query: string, term: string, validatorArgs?: ValidatorArgument[]) {
   const interpolatedQuery = query.replaceAll('${term}', term);
   const normalizedQuery = interpolatedQuery.replace(/\n/g, '\r\n');
-  
-  const params = new URLSearchParams();
-  if (validatorArgs) {
-    for (const arg of validatorArgs) {
-      params.append(arg.key, arg.value);
+
+  console.log("Validator args: (ignored)", validatorArgs);
+
+  const allowedUrls:string = process.env.TRUSTED_SPARQL_URLS || '';
+
+  const allowedUrlsArray:string[] = allowedUrls.split(',');
+  const match = allowedUrlsArray.find(url => url === `${endpoint}`)
+
+    if(match == undefined) {
+        throw new Error(`SPARQL endpoint ${endpoint} is not in list of trusted endpoints.`);
     }
-  }
-  params.set('query', normalizedQuery);
-  
-  const url = `${endpoint}?${params.toString()}`;
-  
-  const res = await fetch(url, {
-    headers: {
-      'Accept': 'application/sparql-results+json'
-    }
+
+    const res = await fetch(match, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/sparql-query',
+            'Accept': 'application/sparql-results+json'
+        },
+        body: normalizedQuery,
   });
   
   const responseText = await res.text();

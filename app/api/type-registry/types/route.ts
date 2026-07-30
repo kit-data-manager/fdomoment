@@ -27,8 +27,9 @@ const cache = {
 export async function GET() {
     const now = Date.now();
 
+    //check cache
     if (cache.types && now - cache.timestamp < cache.TTL) {
-        return NextResponse.json({types: cache.types, cached: true});
+        return NextResponse.json({types: cache.types, cached: true, timestamp: cache.timestamp});
     }
 
     try {
@@ -46,7 +47,7 @@ export async function GET() {
         const treeData = await treeRes.json();
 
         const jsonFiles = treeData.tree
-            .filter((item: any) => item.path.startsWith(TYPES_PATH) && item.path.endsWith('.json'))
+            .filter((item: any) => item.path.startsWith(TYPES_PATH) && item.path.endsWith('.json') && (item.path.indexOf('/schemas/') == -1))
             .map((item: any) => item.path.replace(`${TYPES_PATH}/`, ""));
 
         const types: TypeDefinition[] = [];
@@ -60,7 +61,6 @@ export async function GET() {
                 }
 
                 const type = await res.json();
-
                 if (!type.pid || !type.name || !type.description) {
                     console.warn(`Invalid type definition in ${file}: missing required fields`);
                     continue;

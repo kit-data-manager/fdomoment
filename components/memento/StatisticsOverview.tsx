@@ -11,12 +11,12 @@ export function StatisticsOverview({ stats }: StatisticsOverviewProps) {
      return (
          <div className="card bg-base-100 shadow-lg">
            <div className="card-body items-center text-center py-12">
-             <h2 className="card-title text-2xl mb-4">No FDOs Yet</h2>
+             <h2 className="card-title text-2xl mb-4">No FAIR DOs Yet</h2>
              <p className="text-base-content/70 mb-6">
-               No FDOs found. Create your first FDO now.
+               No FAIR DOs found. Create your first FAIR DO now.
              </p>
              <Link href="/momentum" className="btn btn-primary">
-               Create FDO
+               Create FAIR DO
              </Link>
            </div>
          </div>
@@ -37,7 +37,7 @@ export function StatisticsOverview({ stats }: StatisticsOverviewProps) {
         <div className="divider"></div>
         <div className="stats stats-vertical lg:stats-horizontal shadow w-full">
           <div className="stat">
-            <div className="stat-title">Total FDOs Created</div>
+            <div className="stat-title">Total FAIR DOs Created</div>
             <div className="stat-value text-primary">{stats.totalFdos}</div>
           </div>
           <div className="stat">

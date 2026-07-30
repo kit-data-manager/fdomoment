@@ -3,14 +3,16 @@
 import React, { useState } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
 import { SettingsModal } from '@/components/SettingsModal';
+import { AboutDialog } from '@/components/AboutDialog';
 import { useKeycloak } from '@/context/KeycloakContext';
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
-import { LogIn, LogOut, FileText, BookMarked } from "lucide-react";
+import { LogIn, LogOut, FileText, BookMarked, Info } from "lucide-react";
 
 export function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const { keycloak, authenticated, userName } = useKeycloak();
   const pathname = usePathname();
 
@@ -41,7 +43,7 @@ export function Header() {
               <div className="flex items-center gap-2 flex-shrink-0">
                   <Image
                       src="/logo_small.png"
-                      alt="FDO Moment Logo"
+                      alt="FAIR DO Moment Logo"
                       width={60}
                       height={60}
                       className="logo w-10 h-10 md:w-12 md:h-12"
@@ -50,10 +52,10 @@ export function Header() {
                       <h1 className="text-center text-primary">
                           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-1 font-bold">
                               {pathname !== '/momentum' && (
-                              <span className="text-primary text-bold">FDO MoMEnT - Memento</span>
+                              <span className="text-primary text-bold">FAIR DO MoMEnT - Memento</span>
                                   )}
                               {pathname !== '/memento' && (
-                                  <span className="text-primary text-bold">FDO MoMEnT - Momentum</span>
+                                  <span className="text-primary text-bold">FAIR DO MoMEnT - Momentum</span>
                               )}
                           </div>
                       </h1>
@@ -83,9 +85,14 @@ export function Header() {
               Memento
             </Link>
           )}
-        </div>
-
-        <div className="flex-none gap-2">
+          <button
+            type="button"
+            onClick={() => setIsAboutOpen(true)}
+            className="btn btn-ghost btn-sm gap-1"
+          >
+            <Info className="w-4 h-4" />
+            About
+          </button>
           <a
             href="/docs/index.html"
             target="_blank"
@@ -140,6 +147,11 @@ export function Header() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+      
+      <AboutDialog
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
       />
     </>
   );

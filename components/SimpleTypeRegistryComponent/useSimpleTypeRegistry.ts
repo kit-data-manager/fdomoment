@@ -30,6 +30,8 @@ export const useSimpleTypeRegistry = (
         throw new Error(result.error);
       }
 
+      console.log(`Loaded ${result.types.length} types. Cached: ${result.cached} (${new Date(result.timestamp)}).`);
+
       setTypeOptions(result.types || []);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
@@ -51,7 +53,8 @@ export const useSimpleTypeRegistry = (
           `/api/type-registry/validator?validatorInput=${encodeURIComponent(type.validatorInput)}&validatorType=JSON`
         );
         const result = await res.json();
-        if (result.data) {
+
+          if (result.data) {
           setJsonSchema(result.data);
           setSparqlQuery("");
         }
@@ -101,6 +104,7 @@ export const useSimpleTypeRegistry = (
 
   const handleFormChange = (data: any) => {
     setFormValue(data.formData);
+    console.log("DATA ", data.formData);
     if (onValueChange) {
       onValueChange(data.formData);
     }

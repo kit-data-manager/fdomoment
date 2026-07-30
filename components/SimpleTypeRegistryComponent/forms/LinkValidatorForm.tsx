@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useImperativeHandle, forwardRef, memo, useCallback, useRef } from "react";
-import { useFdoDetails } from "@/components/memento/hooks/useFdoDetails";
+import React, { useState, useEffect, useImperativeHandle, forwardRef, useCallback, useRef } from "react";
 import { FdoTable } from "@/components/memento/FdoTable";
 import type { FdoRecord } from '@/lib/database/types';
 import type { LinkValidatorFormRef } from '../types';

@@ -59,6 +59,8 @@ const JsonValidatorForm = ({ schema, formData, onChange }: JsonValidatorFormProp
         validator={validator}
         className="w-full"
         uiSchema={{ 'ui:autofocus': false }}
+        showErrorList={false}
+        liveValidate
       >
         <div className="mt-4" />
       </Form>

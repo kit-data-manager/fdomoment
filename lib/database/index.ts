@@ -16,13 +16,20 @@ export async function getDatabase(): Promise<Database> {
   }
 
   const dbType = process.env.DATABASE_TYPE || 'in-memory';
-  
   switch (dbType) {
-    case 'postgres':
-      if (!process.env.DATABASE_URL) {
+      case 'postgres':
+      if (!process.env.POSTGRES_HOST ||!process.env.POSTGRES_USER ||!process.env.POSTGRES_PASSWORD || !process.env.POSTGRES_DATABASE) {
         throw new Error('DATABASE_URL environment variable is required for PostgreSQL');
       }
-      dbInstance = createPostgresDatabase(process.env.DATABASE_URL);
+
+      const pgPort = Number(process.env.POSTGRES_PORT ?? 5432);
+
+      dbInstance = createPostgresDatabase(
+          process.env.POSTGRES_HOST,
+          pgPort,
+          process.env.POSTGRES_USER,
+          process.env.POSTGRES_PASSWORD,
+          process.env.POSTGRES_DATABASE);
       break;
       case 'in-memory':
     default:

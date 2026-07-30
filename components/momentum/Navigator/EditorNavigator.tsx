@@ -89,12 +89,6 @@ export function EditorNavigator({
               onClick={() => handleModuleClick(module)}
             />
           ))}
-
-          <div className="flex-1" />
-
-          <div className="p-4 border-t border-base-200">
-            <NavigatorCreateButton canCreate={canCreate} onClick={onCreate} />
-          </div>
         </div>
       </div>
     </div>
