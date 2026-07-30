@@ -94,8 +94,6 @@ export function EditorShell(props: EditorShellProps) {
         //collect fair score for stats
         const score = calculateFairScore(state);
 
-        console.log("POST ", fdoRecord);
-
         //create FDO using configured fdo service
         try {
             const response: Response = await fetch('/api/fdoservice', {
