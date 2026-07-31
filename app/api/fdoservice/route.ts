@@ -47,17 +47,23 @@ async function saveRecords() {
 async function forwardToRemoteService(request: Request): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const response = await fetch(`${REMOTE_FDO_SERVICE_ENDPOINT}/api/v1/pit/pid`, {
+    console.log('User FAIR DO', body);
+    const response = await fetch(`${REMOTE_FDO_SERVICE_ENDPOINT}/api/v1/pit/pid/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/vnd.datamanager.pid.simple+json' },
       body: JSON.stringify(body),
     });
-    
+    if(response.status === 201) {
+        console.log("Remote FAIR DO service successfully returned. Parsing response.");
+    }else{
+        return NextResponse.json({ error: `FAIR DO Service failed. Message: ${response.statusText}` }, { status: response.status });
+    }
     const data = await response.json();
+    console.log('New FAIR DO', data);
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     console.error('Failed to forward to remote FAIR DO service:', error);
-    return NextResponse.json({ error: 'Failed to connect to remote FAIR DO service' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to forward to remote FAIR DO service.' }, { status: 500 });
   }
 }
 
