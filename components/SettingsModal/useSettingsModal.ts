@@ -32,29 +32,31 @@ export function useSettingsModal(onClose?: () => void) {
   const [activeTab, setActiveTab] = useState<'general' | 'tokens'>('general');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load settings from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setSettings(parsed);
-        setTempSettings(parsed);
-      } catch (e) {
-        console.error('Failed to load settings:', e);
+    try {
+      const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setSettings(parsed);
+          setTempSettings(parsed);
+        } catch (e) {
+          console.error('Failed to parse settings:', e);
+        }
       }
-    }
-    
-    // Load tokens
-    const storedTokens = localStorage.getItem(TOKENS_STORAGE_KEY);
-    if (storedTokens) {
-      try {
-        const parsedTokens = JSON.parse(storedTokens);
-        setTokens(parsedTokens);
-        setTempTokens(parsedTokens);
-      } catch (e) {
-        console.error('Failed to load tokens:', e);
+      
+      const storedTokens = localStorage.getItem(TOKENS_STORAGE_KEY);
+      if (storedTokens) {
+        try {
+          const parsedTokens = JSON.parse(storedTokens);
+          setTokens(parsedTokens);
+          setTempTokens(parsedTokens);
+        } catch (e) {
+          console.error('Failed to parse tokens:', e);
+        }
       }
+    } catch (e) {
+      console.error('localStorage access failed:', e);
     }
     
     setIsLoading(false);
@@ -134,17 +136,20 @@ export function useSettingsModal(onClose?: () => void) {
   };
 
   const handleSave = useCallback(() => {
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(tempSettings));
-    localStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify(tempTokens));
-    setSettings(tempSettings);
-    setTokens(tempTokens);
-    
-    // Apply theme
-    applyTheme(tempSettings.theme);
-    
-    // Close modal
-    if (onClose) {
-      onClose();
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(tempSettings));
+      localStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify(tempTokens));
+      setSettings(tempSettings);
+      setTokens(tempTokens);
+      
+      applyTheme(tempSettings.theme);
+      
+      if (onClose) {
+        onClose();
+      }
+    } catch (e) {
+      console.error('Failed to save settings to localStorage:', e);
+      alert('Failed to save settings. Please check your browser storage settings.');
     }
   }, [tempSettings, tempTokens, applyTheme, onClose]);
 
