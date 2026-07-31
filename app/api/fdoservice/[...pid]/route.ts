@@ -43,34 +43,37 @@ async function forwardToRemoteService(pid: string): Promise<NextResponse> {
 
 export async function GET(
     request: Request,
-    {params}: { params: Promise<{ pid?: string }> }
+    {params}: { params: Promise<{ pid?: string[] }> }
 ) {
     const {pid} = await params;
 
     if (FDO_SERVICE_MODE === 'remote') {
-        if (!pid) {
+        if (!pid || pid.length === 0) {
             return NextResponse.json({error: 'PID required'}, {status: 400});
         }
-        return forwardToRemoteService(pid);
+        const decodedPid = decodeURIComponent(pid.join('/'));
+        return forwardToRemoteService(decodedPid);
     }
 
     await initializeRecords();
 
     console.log('GET params:', {pid});
     console.log('GET request.url:', request.url);
-    if (!pid) {
+    if (!pid || pid.length === 0) {
         return NextResponse.json({error: 'PID required'}, {status: 400});
     }
 
-    let record = fdoRecords.get(pid);
+    const pidString = decodeURIComponent(pid.join('/'));
+
+    let record = fdoRecords.get(pidString);
 
     if (!record) {
-        const fullPid = `https://hdl.handle.net/${pid}`;
+        const fullPid = `https://hdl.handle.net/${pidString}`;
         record = fdoRecords.get(fullPid);
     }
 
-    if (!record && pid.startsWith('https://hdl.handle.net/')) {
-        const shortPid = pid.replace('https://hdl.handle.net/', '');
+    if (!record && pidString.startsWith('https://hdl.handle.net/')) {
+        const shortPid = pidString.replace('https://hdl.handle.net/', '');
         record = fdoRecords.get(shortPid);
     }
 

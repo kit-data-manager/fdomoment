@@ -14,7 +14,8 @@ export function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
   const { keycloak, authenticated, userName } = useKeycloak();
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  const pathname = rawPathname?.replace(/\/$/, '') || '';
 
   const handleLogin = () => {
     if (keycloak) {
