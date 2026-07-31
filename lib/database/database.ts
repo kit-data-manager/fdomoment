@@ -16,13 +16,13 @@ export interface Database {
       userName: string,
       page?: number,
       limit?: number,
-      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]>;
     getAll(
       page?: number,
       limit?: number,
-      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]>;
     count(): Promise<number>;
@@ -35,7 +35,7 @@ export interface Database {
   };
 
   attributeTemplate: {
-    create(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate>;
+    create(template: Omit<AttributeTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<AttributeTemplate>;
     update(template: Partial<AttributeTemplate> & { id: string }): Promise<AttributeTemplate>;
     delete(id: string): Promise<void>;
     findById(id: string): Promise<AttributeTemplate | null>;

@@ -266,7 +266,7 @@ export const inMemoryDatabase: Database = {
       userName: string,
       page?: number,
       limit?: number,
-      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]> {
       await loadData();
@@ -278,9 +278,9 @@ export const inMemoryDatabase: Database = {
         records.sort((a, b) => {
           let cmp = 0;
           if (sortBy === 'orcid') cmp = (a.orcid || '').localeCompare(b.orcid || '');
-          else if (sortBy === 'researchDomain') cmp = (a.researchDomain || '').localeCompare(b.researchDomain || '');
-          else if (sortBy === 'fairScore') cmp = a.fairScore - b.fairScore;
-          else if (sortBy === 'createdAt') cmp = a.createdAt.getTime() - b.createdAt.getTime();
+          else if (sortBy === 'research_domain') cmp = (a.researchDomain || '').localeCompare(b.researchDomain || '');
+          else if (sortBy === 'fair_score') cmp = a.fairScore - b.fairScore;
+          else if (sortBy === 'created_at') cmp = a.createdAt.getTime() - b.createdAt.getTime();
           return sortOrder === 'desc' ? -cmp : cmp;
         });
       }
@@ -294,7 +294,7 @@ export const inMemoryDatabase: Database = {
     async getAll(
       page?: number,
       limit?: number,
-      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]> {
       await loadData();
@@ -304,9 +304,9 @@ export const inMemoryDatabase: Database = {
         records.sort((a, b) => {
           let cmp = 0;
           if (sortBy === 'orcid') cmp = (a.orcid || '').localeCompare(b.orcid || '');
-          else if (sortBy === 'researchDomain') cmp = (a.researchDomain || '').localeCompare(b.researchDomain || '');
-          else if (sortBy === 'fairScore') cmp = a.fairScore - b.fairScore;
-          else if (sortBy === 'createdAt') cmp = a.createdAt.getTime() - b.createdAt.getTime();
+          else if (sortBy === 'research_domain') cmp = (a.researchDomain || '').localeCompare(b.researchDomain || '');
+          else if (sortBy === 'fair_score') cmp = a.fairScore - b.fairScore;
+          else if (sortBy === 'created_at') cmp = a.createdAt.getTime() - b.createdAt.getTime();
           return sortOrder === 'desc' ? -cmp : cmp;
         });
       }
@@ -364,7 +364,7 @@ export const inMemoryDatabase: Database = {
   },
 
   attributeTemplate: {
-    async create(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate> {
+    async create(template: Omit<AttributeTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<AttributeTemplate> {
       await loadData();
       const db = getInMemoryDb();
       const id = crypto.randomUUID();

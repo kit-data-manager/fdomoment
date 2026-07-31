@@ -208,7 +208,7 @@ export function createPostgresDatabase(dbHost: string, dbPort: number, dbUser: s
                 userName: string,
                 page?: number,
                 limit?: number,
-                sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+                sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
                 sortOrder?: 'asc' | 'desc'
             ): Promise<FdoRecord[]> {
                 const orderBy = sortBy || 'created_at';
@@ -237,7 +237,7 @@ export function createPostgresDatabase(dbHost: string, dbPort: number, dbUser: s
             async getAll(
                 page?: number,
                 limit?: number,
-                sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+                sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
                 sortOrder?: 'asc' | 'desc'
             ): Promise<FdoRecord[]> {
                 const orderBy = sortBy || 'created_at';
@@ -310,7 +310,7 @@ export function createPostgresDatabase(dbHost: string, dbPort: number, dbUser: s
         },
 
         attributeTemplate: {
-            async create(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate> {
+            async create(template: Omit<AttributeTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<AttributeTemplate> {
                 const id = crypto.randomUUID();
                 const now = new Date();
                 const result = await pool.query(
