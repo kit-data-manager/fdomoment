@@ -38,11 +38,11 @@ export default function MementoPage() {
   const [activeView, setActiveView] = useState<MementoView>(initialView || 'statistics');
   const [isLoading, setIsLoading] = useState(true);
   const [userFdosPage, setUserFdosPage] = useState(1);
-  const [userFdosSortBy, setUserFdosSortBy] = useState<'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | undefined>(undefined);
+  const [userFdosSortBy, setUserFdosSortBy] = useState<'orcid' | 'research_domain' | 'fair_score' | 'created_at' | undefined>(undefined);
   const [userFdosSortOrder, setUserFdosSortOrder] = useState<'asc' | 'desc' | undefined>(undefined);
   const [totalUserFdos, setTotalUserFdos] = useState<number | undefined>(undefined);
   const [allFdosPage, setAllFdosPage] = useState(1);
-  const [allFdosSortBy, setAllFdosSortBy] = useState<'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | undefined>(undefined);
+  const [allFdosSortBy, setAllFdosSortBy] = useState<'orcid' | 'research_domain' | 'fair_score' | 'created_at' | undefined>(undefined);
   const [allFdosSortOrder, setAllFdosSortOrder] = useState<'asc' | 'desc' | undefined>(undefined);
   const [totalAllFdos, setTotalAllFdos] = useState<number | undefined>(undefined);
   const drawerId = useId();
@@ -59,7 +59,7 @@ export default function MementoPage() {
 
   const fetchUserFdos = useCallback(async (
     page: number,
-    sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+    sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
     sortOrder?: 'asc' | 'desc'
   ) => {
     if (!userName) return;
@@ -89,7 +89,7 @@ export default function MementoPage() {
     try {
       const allUserRecords = await getFdoRecords(userName);
       const total = allUserRecords.length;
-      const userRecords = await getFdoRecords(userName, 1, 10, 'createdAt', 'desc');
+      const userRecords = await getFdoRecords(userName, 1, 10, 'created_at', 'desc');
 
       setUserFdos(Array.isArray(userRecords) ? userRecords : []);
       setTotalUserFdos(total);
@@ -118,7 +118,7 @@ export default function MementoPage() {
       if (isAdmin) {
         const allRecords = await getFdoRecords(undefined);
         const total = allRecords.length;
-        const pageRecords = await getFdoRecords(undefined, 1, 10, 'createdAt', 'desc');
+        const pageRecords = await getFdoRecords(undefined, 1, 10, 'created_at', 'desc');
         const users = await getAllUsers();
 
         const fdosPerUser = users.map(user => {
@@ -150,7 +150,7 @@ export default function MementoPage() {
 
   const fetchAllFdos = useCallback(async (
     page: number,
-    sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+    sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
     sortOrder?: 'asc' | 'desc'
   ) => {
     if (!isAdmin) return;

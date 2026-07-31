@@ -35,7 +35,7 @@ export interface Database {
   };
 
   attributeTemplate: {
-    create(template: Omit<AttributeTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<AttributeTemplate>;
+    create(template: Omit<AttributeTemplate, 'id' | 'createdAt' | 'updatedAt'>): Promise<AttributeTemplate>;
     update(template: Partial<AttributeTemplate> & { id: string }): Promise<AttributeTemplate>;
     delete(id: string): Promise<void>;
     findById(id: string): Promise<AttributeTemplate | null>;

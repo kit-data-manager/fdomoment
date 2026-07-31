@@ -30,7 +30,7 @@ export async function getFdoRecords(
   userName?: string,
   page?: number,
   limit?: number,
-  sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+  sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
   sortOrder?: 'asc' | 'desc'
 ): Promise<FdoRecord[]> {
   const db = await getDatabase();
