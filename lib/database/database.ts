@@ -16,13 +16,13 @@ export interface Database {
       userName: string,
       page?: number,
       limit?: number,
-      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]>;
     getAll(
       page?: number,
       limit?: number,
-      sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt',
+      sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at',
       sortOrder?: 'asc' | 'desc'
     ): Promise<FdoRecord[]>;
     count(): Promise<number>;

@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const userName = searchParams.get('userName');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
-    const sortBy = searchParams.get('sortBy') as 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt' | null;
+    const sortBy = searchParams.get('sortBy') as 'orcid' | 'research_domain' | 'fair_score' | 'created_at' | null;
     const sortOrder = searchParams.get('sortOrder') as 'asc' | 'desc' | null;
 
     const db = await getDatabase();
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(records);
     }
 
-    const records = await db.fdoRecord.getAll(page, limit, sortBy || 'createdAt', sortOrder || 'desc');
+    const records = await db.fdoRecord.getAll(page, limit, sortBy || 'created_at', sortOrder || 'desc');
     const total = await db.fdoRecord.count();
     return NextResponse.json({
       items: records,

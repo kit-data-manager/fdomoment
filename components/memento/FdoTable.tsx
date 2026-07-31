@@ -72,9 +72,9 @@ interface FdoTableProps {
     orcid?: boolean;
     researchDomain?: boolean;
   };
-  sortBy?: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt';
+  sortBy?: 'orcid' | 'research_domain' | 'fair_score' | 'created_at';
   sortOrder?: 'asc' | 'desc';
-  onSort?: (field: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt') => void;
+  onSort?: (field: 'orcid' | 'research_domain' | 'fair_score' | 'created_at') => void;
   page?: number;
   limit?: number;
   total?: number;
@@ -114,7 +114,7 @@ export function FdoTable({
   const totalPages = total ? Math.ceil(total / limit) : 1;
   const selectedFdo = effectiveSelectedPid ? fdos.find(fdo => fdo.pid === effectiveSelectedPid) || null : null;
 
-  const renderSortIndicator = (field: 'orcid' | 'researchDomain' | 'fairScore' | 'createdAt') => {
+  const renderSortIndicator = (field: 'orcid' | 'research_domain' | 'fair_score' | 'created_at') => {
     if (sortBy !== field) return null;
     return sortOrder === 'asc' ? ' ↑' : ' ↓';
   };
@@ -163,14 +163,14 @@ export function FdoTable({
                 <tr>
                   <th></th>
                   <th>PID</th>
-                  <th className={`cursor-pointer ${selectedFdo ? 'hidden xl:table-cell' : ''}`} onClick={() => onSort?.('researchDomain')}>
-                    Research Domain{renderSortIndicator('researchDomain')}
+                  <th className={`cursor-pointer ${selectedFdo ? 'hidden xl:table-cell' : ''}`} onClick={() => onSort?.('research_domain')}>
+                    Research Domain{renderSortIndicator('research_domain')}
                   </th>
-                  <th className="cursor-pointer" onClick={() => onSort?.('fairScore')}>
-                    FAIR Score{renderSortIndicator('fairScore')}
+                  <th className="cursor-pointer" onClick={() => onSort?.('fair_score')}>
+                    FAIR Score{renderSortIndicator('fair_score')}
                   </th>
-                  <th className={`cursor-pointer ${selectedFdo ? 'hidden lg:table-cell' : ''}`} onClick={() => onSort?.('createdAt')}>
-                    Created{renderSortIndicator('createdAt')}
+                  <th className={`cursor-pointer ${selectedFdo ? 'hidden lg:table-cell' : ''}`} onClick={() => onSort?.('created_at')}>
+                    Created{renderSortIndicator('created_at')}
                   </th>
                   {showOrcid && (
                     <th className={`cursor-pointer ${selectedFdo ? 'hidden 2xl:table-cell' : ''}`} onClick={() => onSort?.('orcid')}>
