@@ -1,0 +1,34 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":preserveSemverRanges",
+    "group:allNonMajor"
+  ],
+  "labels": ["dependencies"],
+  "baseBranchPatterns": ["development"],
+  "rangeStrategy": "replace",
+  "timezone": "UTC",
+  "schedule": ["before 6am on monday"],
+  "packageRules": [
+    {
+      "description": "TypeScript updates (no automerge)",
+      "matchPackageNames": ["typescript"],
+      "automerge": false
+    },
+    {
+      "description": "Automerge minor & patch devDependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "description": "Never automerge production dependencies",
+      "matchDepTypes": ["dependencies"],
+      "automerge": false
+    }
+  ],
+  "ignoreDeps": ["@types/node"]
+}
