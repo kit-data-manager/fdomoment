@@ -28,7 +28,7 @@
     "clsx": "^2.1.1",
     "daisyui": "^5.5.19",
     "keycloak-js": "^26.2.3",
-    "lucide-react": "^0.577.0",
+    "lucide-react": "^1.0.0",
     "next": "^16.1.6",
     "pg": "^8.20.0",
     "primereact": "^10.9.7",
