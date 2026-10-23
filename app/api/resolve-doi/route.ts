@@ -173,7 +173,11 @@ const resolveZenodo = async (doi: string): Promise<DoiMetadata | null> => {
   const apiUrl = `https://zenodo.org/api/records/${recordId}`;
   console.log("Getting Zenodo record from ", apiUrl);
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl, {
+        headers: {
+            "User-Agent": "FDO_Moment"
+        }
+    });
     
     if (!response.ok) {
       return null;
@@ -345,14 +349,19 @@ const fetchWithRedirects = async (url: string, maxRedirects: number = 5): Promis
   while (redirectCount < maxRedirects) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-    
+
+    console.log("Fetch -> {}", currentUrl);
     const response = await fetch(currentUrl, {
       redirect: 'manual',
-      signal: controller.signal
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "FDO_Moment"
+      }
     });
     clearTimeout(timeoutId);
 
 
+      console.log("Access Status -> {}, Location -> {}", response.status, response.headers.get('location'));
     if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {
       redirectCount++;
       const location = response.headers.get('location')!;

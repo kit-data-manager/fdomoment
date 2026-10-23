@@ -24,13 +24,37 @@ const keycloakConfig: KeycloakConfig = {
   clientId: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || '',
 };
 
+const keycloakInitOptions: KeycloakInitOptions = {
+  onLoad: 'check-sso',
+  checkLoginIframe: true,
+  pkceMethod: 'S256',
+};
+
+let keycloakInstance: Keycloak | null = null;
+let keycloakInitPromise: Promise<boolean> | null = null;
+let keycloakAuthResult: boolean | null = null;
+
+function getKeycloak(): Keycloak {
+  if (!keycloakInstance) {
+    keycloakInstance = new Keycloak(keycloakConfig);
+  }
+  return keycloakInstance;
+}
+
+function getKeycloakInitPromise(): Promise<boolean> {
+  if (!keycloakInitPromise) {
+    keycloakInitPromise = getKeycloak().init(keycloakInitOptions);
+  }
+  return keycloakInitPromise;
+}
+
 export function KeycloakProvider({ children }: { children: ReactNode }) {
-  const [keycloak, setKeycloak] = useState<Keycloak | null>(null);
-  const [authenticated, setAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [keycloak, setKeycloak] = useState<Keycloak | null>(keycloakInstance);
+  const [authenticated, setAuthenticated] = useState<boolean>(keycloakAuthResult ?? false);
+  const [isLoading, setIsLoading] = useState<boolean>(keycloakAuthResult === null);
   const [userName, setUserName] = useState<string | undefined>(undefined);
   const [groups, setGroups] = useState<string[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   const storeUser = async (userNameValue: string) => {
     try {
@@ -41,15 +65,9 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const kc = new Keycloak(keycloakConfig);
-    
-    const initOptions: KeycloakInitOptions = {
-      onLoad: 'check-sso',
-      checkLoginIframe: false,
-      pkceMethod: 'S256',
-    };
-    
-    kc.init(initOptions).then((auth: boolean) => {
+    const kc = getKeycloak();
+
+    const applyAuth = (auth: boolean) => {
       setKeycloak(kc);
       setAuthenticated(auth);
       setIsLoading(false);
@@ -59,44 +77,60 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
         setUserName(userNameValue);
         setGroups(groupsValue);
         setIsAdmin(groupsValue.includes('ROLE_ADMINISTRATOR'));
-        storeUser(userNameValue);
       }
-      
-      // Set up token refresh handlers after initialization
-      if (auth && kc) {
-        kc.onTokenExpired = () => {
-          kc.updateToken(30)
-            .then((updated: boolean) => {
-              if (updated) {
-                console.log('Token refreshed successfully');
-              } else {
-                console.log('Token is still valid');
-              }
-            })
-            .catch((error: unknown) => {
-              console.error('Failed to refresh token, user may need to re-authenticate:', error);
-            });
-        };
-        
-        kc.onAuthRefreshSuccess = () => {
-          console.log('Token refresh successful');
-        };
-        
-        kc.onAuthRefreshError = () => {
-          console.error('Token refresh error');
-        };
-      }
-    }).catch((error: unknown) => {
-      console.error('Keycloak initialization error:', error);
-      setKeycloak(kc);
+    };
+
+    kc.onTokenExpired = () => {
+      kc.updateToken(30)
+        .then((updated: boolean) => {
+          if (updated) {
+            console.log('Token refreshed successfully');
+          } else {
+            console.log('Token is still valid');
+          }
+        })
+        .catch((error: unknown) => {
+          console.error('Failed to refresh token, user may need to re-authenticate:', error);
+        });
+    };
+
+    kc.onAuthRefreshSuccess = () => {
+      console.log('Token refresh successful');
+    };
+
+    kc.onAuthRefreshError = () => {
+      console.error('Token refresh error');
+    };
+
+    kc.onAuthLogout = () => {
       setAuthenticated(false);
-      setIsLoading(false);
-    });
+      setUserName(undefined);
+      setGroups([]);
+      setIsAdmin(false);
+    };
+
+    if (keycloakAuthResult !== null) {
+      applyAuth(keycloakAuthResult);
+      return;
+    }
+
+    getKeycloakInitPromise()
+      .then((auth: boolean) => {
+        keycloakAuthResult = auth;
+        applyAuth(auth);
+        if (auth && kc.tokenParsed) {
+          storeUser(kc.tokenParsed['preferred_username'] || kc.tokenParsed['name']);
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('Keycloak initialization error:', error);
+        keycloakAuthResult = false;
+        applyAuth(false);
+      });
   }, []);
 
   useEffect(() => {
     if (keycloak && authenticated) {
-      // Set up periodic token refresh check
       const intervalId = setInterval(() => {
         if (keycloak.isTokenExpired()) {
           keycloak.updateToken(30)
@@ -109,15 +143,17 @@ export function KeycloakProvider({ children }: { children: ReactNode }) {
               console.error('Proactive token refresh failed:', error);
             });
         }
-      }, 30000); // Check every 30 seconds
-      
+      }, 30000);
+
       return () => clearInterval(intervalId);
     }
   }, [keycloak, authenticated]);
 
   const login = () => {
     if (keycloak) {
-      keycloak.login();
+      keycloak.login({
+        redirectUri: window.location.origin + window.location.pathname,
+      });
     }
   };
 
