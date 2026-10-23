@@ -1,6 +1,6 @@
-# FDO MoMEnT - The FAIR Digital Object Modular Minting & Enablement Toolkit
+# FAIR MoMEnT - The FAIR Digital Object Modular Minting & Enablement Toolkit
 
-FDO MoMEnT is a Web app that allows the creation of FAIR Digital Objects (FAIR DO). This is done in a modular way by selecting 
+FAIR MoMEnT is a Web app that allows the creation of FAIR Digital Objects (FAIR DO). This is done in a modular way by selecting 
 from a list of templates defining metadata available in the resulting FAIR DO. For further customization, additional metadata
 elements can be added as required to satisfy specific use cases or community needs. 
 
