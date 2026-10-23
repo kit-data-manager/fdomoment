@@ -170,7 +170,7 @@ const resolveZenodo = async (doi: string): Promise<DoiMetadata | null> => {
     return null;
   }
   
-  const apiUrl = `https://zenodo.org/api/records/${recordId}`;
+  const apiUrl = `https://zenodo.org/api/records/${encodeURIComponent(recordId)}`;
   console.log("Getting Zenodo record from ", apiUrl);
   try {
     const response = await fetch(apiUrl, {
