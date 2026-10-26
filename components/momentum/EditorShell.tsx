@@ -11,6 +11,7 @@ import {
     PublicationMetadata,
     SoftwareMetadata
 } from '@/lib/momentum/types';
+import {FDO_PROFILES, FDO_TYPES} from '@/lib/fdo/identifiers';
 import {useKeycloak} from '@/context/KeycloakContext';
 import {EditorNavigator} from '@/components/momentum/Navigator/EditorNavigator';
 import {CoreModule} from '@/components/momentum/CoreModule';
@@ -67,9 +68,9 @@ export function EditorShell(props: EditorShellProps) {
         let fdoRecord: RecordData = createRecordData();
 
         //add core attributes manually
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/OWNER', orcid);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/HELMHOLTZ_RESEARCH_FIELD', researchDomain);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/CORE');
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.OWNER, orcid);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.HELMHOLTZ_RESEARCH_FIELD, researchDomain);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, FDO_PROFILES.CORE);
 
         //collect other attributes only if module is enabled
         state['enabledModules'].filter((module) => module != 'core').forEach(module => {
@@ -141,31 +142,31 @@ export function EditorShell(props: EditorShellProps) {
     };
 
     const collectSoftwareAttributes = (metadata: SoftwareMetadata, fdoRecord: RecordData): RecordData => {
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_REPOSITORY_TYPE', metadata.repositoryType);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_LOCATION', metadata.repositoryUrl);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/SOFTWARE_LICENSE', getLicenseById(metadata.license));
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/README_LOCATION', metadata.readmeUrl);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/SOFTWARE');
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.SOFTWARE_REPOSITORY_TYPE, metadata.repositoryType);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.SOFTWARE_LOCATION, metadata.repositoryUrl);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.SOFTWARE_LICENSE, getLicenseById(metadata.license));
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.README_LOCATION, metadata.readmeUrl);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, FDO_PROFILES.SOFTWARE);
         return fdoRecord;
     }
 
     const collectDataObjectAttributes = (metadata: DataObjectMetadata, fdoRecord: RecordData): RecordData => {
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DATA_OBJECT_LOCATION', metadata.dataUrl);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DATA_OBJECT_LICENSE', getLicenseById(metadata.license));
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/MIME_TYPE', metadata.mimeType);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/DATA_OBJECT');
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.DATA_OBJECT_LOCATION, metadata.dataUrl);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.DATA_OBJECT_LICENSE, getLicenseById(metadata.license));
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.MIME_TYPE, metadata.mimeType);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, FDO_PROFILES.DATA_OBJECT);
         return fdoRecord;
     }
 
     const collectPublicationAttributes = (metadata: PublicationMetadata, fdoRecord: RecordData): RecordData => {
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/DOI', metadata.doi);
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_TITLE', metadata.title);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.DOI, metadata.doi);
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PUBLICATION_TITLE, metadata.title);
 
         metadata.creators.forEach((creator: Creator) => {
             const creatorValue = creator.orcid || creator.name || creator.id;
-            fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PUBLICATION_CREATOR', creatorValue);
+            fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PUBLICATION_CREATOR, creatorValue);
         })
-        fdoRecord = addRecordEntry(fdoRecord, '0.SIMPLE/PROFILE', '0.SIMPLE/PUBLICATION');
+        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, FDO_PROFILES.PUBLICATION);
         return fdoRecord;
     }
 

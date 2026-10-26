@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { FdoRecord } from '@/lib/database/types';
+import { FDO_TYPES, LEGACY_TYPE_KEYS } from '@/lib/fdo/identifiers';
 
 interface FullFdoRecord extends FdoRecord {
   record: Record<string, string | string[]>;
@@ -26,12 +27,12 @@ console.log(fullFdo);
     };
 
     const populateManualFields = async () => {
-      setManualTitle(extractFirst(record['0.SIMPLE/PUBLICATION_TITLE'] || ''));
-      setManualDoi(extractFirst(record['0.SIMPLE/DOI'] || ''));
-      setManualUrl(extractFirst(record['0.SIMPLE/DATA_OBJECT_LOCATION'] || record['0.SIMPLE/SOFTWARE_LOCATION'] || record['URL'] || ''));
-      setManualVersion(extractFirst(record['0.SIMPLE/VERSION'] || record['version'] || ''));
+      setManualTitle(extractFirst(record[FDO_TYPES.PUBLICATION_TITLE] || ''));
+      setManualDoi(extractFirst(record[FDO_TYPES.DOI] || ''));
+      setManualUrl(extractFirst(record[FDO_TYPES.DATA_OBJECT_LOCATION] || record[FDO_TYPES.SOFTWARE_LOCATION] || record['URL'] || ''));
+      setManualVersion(extractFirst(record[LEGACY_TYPE_KEYS.VERSION] || record['version'] || ''));
       
-      const orcidValue = record['0.SIMPLE/PUBLICATION_CREATOR'];
+      const orcidValue = record[FDO_TYPES.PUBLICATION_CREATOR];
       if (orcidValue) {
         const orcidList = Array.isArray(orcidValue) ? orcidValue : [orcidValue];
         

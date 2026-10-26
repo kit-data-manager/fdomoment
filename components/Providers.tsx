@@ -34,7 +34,7 @@ export function KeycloakWrapper({ children }: { children: ReactNode }) {
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      {children}
+            {children}
     </ThemeProvider>
   );
 }

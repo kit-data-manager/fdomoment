@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { FdoRecord } from '@/lib/database/types';
+import { FDO_TYPES, LEGACY_TYPE_KEYS } from '@/lib/fdo/identifiers';
 
 interface FullFdoRecord extends FdoRecord {
   record: Record<string, string | string[]>;
@@ -38,7 +39,7 @@ export function useCitationGeneration({
 
     const getAuthor = async (): Promise<string> => {
       if (manualAuthor) return manualAuthor;
-      const orcidValue = record['0.SIMPLE/PUBLICATION_CREATOR'];
+      const orcidValue = record[FDO_TYPES.PUBLICATION_CREATOR];
       
       const orcidList = Array.isArray(orcidValue) ? orcidValue : [orcidValue];
       
@@ -92,7 +93,7 @@ export function useCitationGeneration({
     const getUrl = () => manualUrl;
     const getVersion = () => manualVersion;
     const getYear = () => {
-      const dateValue = record['0.SIMPLE/PUBLICATION_DATE'] || record['0.SIMPLE/CREATION_DATE'] || '';
+      const dateValue = record[LEGACY_TYPE_KEYS.PUBLICATION_DATE] || record[LEGACY_TYPE_KEYS.CREATION_DATE] || '';
       const dateStr = Array.isArray(dateValue) ? dateValue[0] : dateValue;
       return dateStr ? new Date(dateStr).getFullYear().toString() : '';
     };
@@ -107,9 +108,9 @@ export function useCitationGeneration({
 
     if (citationStyle === 'bibtex') {
       let citeType = 'misc';
-      if (record['0.SIMPLE/DATA_OBJECT_LOCATION']) {
+      if (record[FDO_TYPES.DATA_OBJECT_LOCATION]) {
         citeType = 'dataset';
-      } else if (record['0.SIMPLE/SOFTWARE_LOCATION']) {
+      } else if (record[FDO_TYPES.SOFTWARE_LOCATION]) {
         citeType = 'software';
       }
 
