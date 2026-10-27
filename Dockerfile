@@ -1,5 +1,5 @@
 # Stage 1: base environment for Next.js builds
-FROM node:24.20.0-bullseye
+FROM node:lts-alpine3.24
 
 # Set working directory
 WORKDIR /app
