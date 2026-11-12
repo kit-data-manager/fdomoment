@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useTemplateSelection } from './useTemplateSelection';
 import { TemplateSelectionProps, TEMPLATES, TemplateConfig } from './types';
-import { MODULE_LABELS, ModuleIdentifier } from '@/lib/momentum/types';
+import { getModuleLabel, getModuleDescription } from '@/lib/momentum/registry';
 
 export function TemplateSelection({
   onSelectTemplate,
@@ -49,14 +49,9 @@ export function TemplateSelection({
     setActiveModules({});
   };
 
-  const tooltipDescription = (moduleId:ModuleIdentifier)=>{
-switch(moduleId){
-  case "core": return (<div>Core module mandatory for all FAIR Digital Objects.</div>)
-  case "dataobject": return (<div>Data object module for research data-focused FAIR Digital Objects.</div>)
-  case "software": return (<div>Software module for research software-focused FAIR Digital Objects.</div>)
-  case "publication": return (<div>Publication module for scientific publication-focused FAIR Digital Objects or for additional publication information.</div>)
-  case "misc": return (<div>Miscellaneous module for adding additional attributes to FAIR Digital Objects, i.e., to increase FAIRness or for customization.</div>)
-}
+  const tooltipDescription = (moduleId: string) => {
+    const desc = getModuleDescription(moduleId);
+    return <div>{desc || getModuleLabel(moduleId)}</div>;
   }
 
   if (selectedTemplate) {
@@ -81,7 +76,7 @@ switch(moduleId){
                     key={mod.moduleId}
                     className="badge badge-primary badge-sm"
                   >
-                    {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
+                    {getModuleLabel(mod.moduleId)}
                   </span>
                 ))}
             </div>
@@ -155,7 +150,7 @@ switch(moduleId){
                                               : 'badge-primary opacity-20 hover:opacity-60'
                                       }`}
                                   >
-                                    {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
+                                    {getModuleLabel(mod.moduleId)}
                                   </button>
                                 </div>
                             );
@@ -171,7 +166,7 @@ switch(moduleId){
                                           e.stopPropagation();
                                         }}
                                 >
-                                  🔒 {MODULE_LABELS[mod.moduleId as ModuleIdentifier]}
+                                  🔒 {getModuleLabel(mod.moduleId)}
                                 </button>
                               </div>
                           );

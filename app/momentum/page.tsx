@@ -36,6 +36,7 @@ export default function EditorPage() {
       updateSoftware={editorState.updateSoftware}
       updatePublication={editorState.updatePublication}
       updateMisc={editorState.updateMisc}
+      updateConfigModule={editorState.updateConfigModule}
       setTemplate={editorState.setTemplate}
       setActiveModule={editorState.setActiveModule as (module: string) => void}
       canCreate={editorState.canCreate}

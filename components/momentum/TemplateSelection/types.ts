@@ -1,63 +1,21 @@
-import { ModuleIdentifier } from '@/lib/momentum/types';
+import { TemplateDefinition } from '@/lib/momentum/config';
 
 export interface TemplateSelectionProps {
   onSelectTemplate: (templateId: string, enabledModules: string[]) => void;
 }
 
+/** Backwards-compatible re-export of the template module entry type. */
 export interface TemplateModule {
-  moduleId: ModuleIdentifier;
+  moduleId: string;
   selectable: boolean;
   defaultEnabled?: boolean;
 }
 
-export interface TemplateConfig {
-  id: string;
-  label: string;
-  description: string;
-  icon: string;
-  modules: TemplateModule[];
-}
+/** Backwards-compatible re-export of the template type from config. */
+export type TemplateConfig = TemplateDefinition;
 
-export const TEMPLATES: TemplateConfig[] = [
-  {
-    id: 'dataobject',
-    label: 'Data Object',
-    description: 'This template is recommended to create FAIR Digital Objects representing all kinds of digital assets like ' +
-        'measurements, images, surveys, tables, or simulation data. Optionally, publication information and additional, custom attributes can be added to increase ' +
-        'the FAIR score of the resulting FAIR Digital Object.',
-    icon: '🗄️',
-    modules: [
-      { moduleId: 'core', selectable: false },
-      { moduleId: 'dataobject', selectable: false },
-      { moduleId: 'publication', selectable: true, defaultEnabled: true },
-      { moduleId: 'misc', selectable: true, defaultEnabled: true },
-    ],
-  },
-  {
-    id: 'software',
-    label: 'Software',
-    description: 'This template is recommended to create FAIR Digital Objects representing source code, workflows, tools, or scripts. ' +
-        'Optionally, publication information and additional, custom attributes can be added to increase ' +
-        'the FAIR score of the resulting FAIR Digital Object.',
-    icon: '💻',
-    modules: [
-      { moduleId: 'core', selectable: false },
-      { moduleId: 'software', selectable: false },
-      { moduleId: 'publication', selectable: true, defaultEnabled: true },
-      { moduleId: 'misc', selectable: true, defaultEnabled: true },
-    ],
-  },
-  {
-    id: 'publication',
-    label: 'Publication',
-    description: 'This template is recommended to create FAIR Digital Objects representing scientific publications like ' +
-        'journal articles, conference papers, or reports. Optionally, additional, custom attributes can be added to increase ' +
-        'the FAIR score of the resulting FAIR Digital Object.',
-    icon: '📚',
-    modules: [
-      { moduleId: 'core', selectable: false },
-      { moduleId: 'publication', selectable: false },
-      { moduleId: 'misc', selectable: true },
-    ],
-  },
-];
+/**
+ * The templates are now driven by static configuration (see lib/momentum/templates.ts).
+ * Re-exported here so existing imports keep working.
+ */
+export { TEMPLATE_DEFINITIONS as TEMPLATES } from '@/lib/momentum/templates';

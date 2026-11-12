@@ -5,8 +5,6 @@ import {
   EditorState,
   CoreMetadata,
   DataObjectMetadata,
-  ModuleIdentifier,
-  MODULE_ORDER,
   SoftwareMetadata,
   PublicationMetadata,
   MiscEntry,
@@ -20,6 +18,11 @@ import {
   computePublicationMetadataStatus,
   computeMiscMetadataStatus,
 } from '@/lib/momentum/validation';
+import {
+  getModuleConfig,
+  computeModuleStatus,
+  isCoreModule,
+} from '@/lib/momentum/registry';
 
 function createInitialState(): EditorState {
   // Load user settings from localStorage
@@ -89,6 +92,7 @@ function createInitialState(): EditorState {
     misc: {
         entries: []
     },
+    configModules: {},
     moduleStatus: {
       core: 'incomplete',
       dataobject: 'pristine',
@@ -137,6 +141,26 @@ export function useEditorState() {
     }));
   };
 
+  /**
+   * Update a property value for a declaratively configured (generic) module.
+   */
+  const updateConfigModule = (
+    moduleId: string,
+    propertyId: string,
+    partial: { value?: any; status?: any; message?: string }
+  ) => {
+    setState(prev => {
+      const currentModule = prev.configModules[moduleId] ?? {};
+      const currentProp = currentModule[propertyId] ?? { value: null, status: 'none' as const };
+      const existingModules: Record<string, any> = { ...prev.configModules };
+      existingModules[moduleId] = {
+        ...currentModule,
+        [propertyId]: { ...currentProp, ...partial },
+      };
+      return { ...prev, configModules: existingModules };
+    });
+  };
+
   const setTemplate = (template: TemplateType, enabledModules?: string[]) => {
     setState(prev => {
       return {
@@ -155,14 +179,29 @@ export function useEditorState() {
   };
 
   const moduleStatus = useMemo<EditorState['moduleStatus']>(() => {
-    return {
+    const configStatus: EditorState['moduleStatus'] = {
       core: computeCoreMetadataStatus(state.core),
       dataobject: computeDataObjectMetadataStatus(state.dataobject),
       software: computeSoftwareMetadataStatus(state.software),
       publication: computePublicationMetadataStatus(state.publication),
       misc: computeMiscMetadataStatus(state.misc),
+      additional: computeMiscMetadataStatus(state.misc),
     };
-  }, [state.core, state.dataobject, state.software, state.publication, state.misc]);
+
+    // Reconcile registry-driven status for config-defined modules.
+    const allEnabled = state.enabledModules;
+    for (const moduleId of allEnabled) {
+      const cfgModule = getModuleConfig(moduleId);
+      if (!cfgModule) continue;
+      if (cfgModule.kind === 'generic') {
+        configStatus[moduleId] = computeModuleStatus(moduleId, {
+          properties: state.configModules[moduleId] ?? {},
+        });
+      }
+    }
+
+    return configStatus;
+  }, [state.core, state.dataobject, state.software, state.publication, state.misc, state.configModules, state.enabledModules]);
 
   const canCreate = useMemo(() => {
     // Must always have core module complete
@@ -186,6 +225,19 @@ export function useEditorState() {
       result = result && moduleStatus.publication === 'complete';
     }
 
+    // Any config-defined modules must also be 'complete' when enabled, but only if
+    // they declare required properties (optional-only generic modules never block).
+    for (const moduleId of enabled) {
+      if (isCoreModule(moduleId)) continue;
+      const cfgModule = getModuleConfig(moduleId);
+      if (!cfgModule) continue;
+      if (cfgModule.kind !== 'generic') continue;
+      const hasRequired = (cfgModule.properties ?? []).some((p) => p.required);
+      if (hasRequired && moduleStatus[moduleId] !== 'complete') {
+        result = false;
+      }
+    }
+
     return result;
   }, [moduleStatus, state.enabledModules]);
 
@@ -200,6 +252,7 @@ export function useEditorState() {
     updateSoftware,
     updatePublication,
     updateMisc,
+    updateConfigModule,
     setTemplate,
     setActiveModule,
     canCreate,

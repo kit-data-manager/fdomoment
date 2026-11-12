@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useId, useState } from 'react';
-import { EditorState, ModuleIdentifier, MODULE_LABELS } from '@/lib/momentum/types';
+import { EditorState, ModuleIdentifier } from '@/lib/momentum/types';
 import { NavigatorModule } from './NavigatorModule';
 import { NavigatorCreateButton } from './NavigatorCreateButton';
-import { TEMPLATES } from '../TemplateSelection/types';
+import { getTemplateModuleIds, getModuleLabel } from '@/lib/momentum/registry';
 import { Menu } from 'lucide-react';
 
 interface EditorNavigatorProps {
@@ -18,14 +18,14 @@ interface EditorNavigatorProps {
 
 function getModulesForTemplate(templateId: string | null, enabledModules?: string[]): ModuleIdentifier[] {
   if (!templateId) return [];
-  const tmpl = TEMPLATES.find(t => t.id === templateId);
-  if (!tmpl) return [];
+  const tplModuleIds = getTemplateModuleIds(templateId);
+  if (tplModuleIds.length === 0) return [];
 
   if (enabledModules && enabledModules.length > 0) {
     return enabledModules as ModuleIdentifier[];
   }
 
-  return tmpl.modules.map(m => m.moduleId);
+  return tplModuleIds as ModuleIdentifier[];
 }
 
 export function EditorNavigator({
@@ -84,7 +84,7 @@ export function EditorNavigator({
               key={module}
               module={module}
               status={moduleStatus[module]}
-              label={MODULE_LABELS[module]}
+              label={getModuleLabel(module)}
               isActive={state.activeModule === module}
               onClick={() => handleModuleClick(module)}
             />

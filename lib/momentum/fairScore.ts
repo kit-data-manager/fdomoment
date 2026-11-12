@@ -1,4 +1,5 @@
 import {EditorState, FairScore, ScoreTip} from './types';
+import { computeModuleFairScoreContributions } from './registry';
 
 export function calculateFairScore(state: EditorState): FairScore {
     let findable = 20;
@@ -75,6 +76,16 @@ export function calculateFairScore(state: EditorState): FairScore {
         reusable += Math.min(attribIncrease, 20);
         interoperable += Math.min(attribIncrease, 40);
     }
+
+    // Add contributions declared by config-defined (generic) modules.
+    const cfgContrib = computeModuleFairScoreContributions(
+      state.enabledModules,
+      state.configModules ?? {}
+    );
+    findable += cfgContrib.findable;
+    accessible += cfgContrib.accessible;
+    interoperable += cfgContrib.interoperable;
+    reusable += cfgContrib.reusable;
 
     findable = Math.min(findable, 100);
     accessible = Math.min(accessible, 100);

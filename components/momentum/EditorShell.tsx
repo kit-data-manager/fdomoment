@@ -6,8 +6,6 @@ import {
     DataObjectMetadata,
     EditorState, MiscEntry,
     MiscMetadata,
-    ModuleIdentifier,
-    MODULE_ORDER,
     PublicationMetadata,
     SoftwareMetadata
 } from '@/lib/momentum/types';
@@ -21,11 +19,19 @@ import {DataObjectModule} from "@/components/momentum/DataObjectModule";
 import {SoftwareModule} from "@/components/momentum/SoftwareModule";
 import {PublicationModule} from "./PublicationModule";
 import {AdditionalAttributesModule} from "@/components/momentum/AdditionalAttributesModule";
+import {GenericModule} from "@/components/momentum/GenericModule";
 import {addRecordEntry, createRecordData, RecordData} from "@/utils/recordBuilder";
 import {FdoCreatedDialog} from '@/components/momentum/FdoCreatedDialog';
 import {createFdoRecord, upsertFairScoreAggregation} from '@/lib/database/actions';
 import {calculateFairScore} from '@/lib/momentum/fairScore';
 import {getLicenseById} from "@/lib/momentum/constants";
+import {
+    getModuleConfig,
+    getStepOrder,
+    getTemplateModuleIds,
+    isCoreModule,
+    collectConfigRecordEntries,
+} from "@/lib/momentum/registry";
 
 
 interface EditorShellProps {
@@ -35,6 +41,7 @@ interface EditorShellProps {
     updateSoftware: (partial: Partial<any>) => void;
     updatePublication: (partial: Partial<any>) => void;
     updateMisc: (entries: any[]) => void;
+    updateConfigModule?: (moduleId: string, propertyId: string, partial: any) => void;
     setTemplate: (type: EditorState['template'], enabledModules?: string[]) => void;
     setActiveModule: (module: string) => void;
     canCreate: boolean;
@@ -51,6 +58,7 @@ export function EditorShell(props: EditorShellProps) {
         updateSoftware,
         updatePublication,
         updateMisc,
+        updateConfigModule,
         setTemplate,
         setActiveModule,
         canCreate,
@@ -74,7 +82,17 @@ export function EditorShell(props: EditorShellProps) {
 
         //collect other attributes only if module is enabled
         state['enabledModules'].filter((module) => module != 'core').forEach(module => {
-            switch (module as ModuleIdentifier) {
+            const cfgModule = getModuleConfig(module);
+            if (cfgModule && cfgModule.kind === 'generic') {
+                // Declarative module: fold each configured property into the record.
+                collectConfigRecordEntries(module, {
+                    properties: state.configModules[module] ?? {},
+                }, (key, value) => {
+                    fdoRecord = addRecordEntry(fdoRecord, key, value);
+                });
+                return;
+            }
+            switch (module) {
                 case "software":
                     fdoRecord = collectSoftwareAttributes(state['software'], fdoRecord);
                     break;
@@ -85,6 +103,7 @@ export function EditorShell(props: EditorShellProps) {
                     fdoRecord = collectPublicationAttributes(state['publication'], fdoRecord);
                     break;
                 case "misc":
+                case "additional":
                     fdoRecord = collectMiscAttributes(state['misc'], fdoRecord);
                     break;
                 default:
@@ -178,39 +197,50 @@ export function EditorShell(props: EditorShellProps) {
         return fdoRecord;
     }
 
+    const getStepModules = (): string[] => {
+        if (state.template) {
+            return getStepOrder(state.template);
+        }
+        return getTemplateModuleIds('dataobject');
+    };
+
     const getCurrentModuleIndex = () => {
-        return MODULE_ORDER.indexOf(state.activeModule as ModuleIdentifier);
+        return getStepModules().indexOf(state.activeModule);
     };
 
     const handleCoreNext = () => {
         if (!state.template) {
             setActiveModule('template-select');
-        } else if (state.template === 'dataobject') {
-            setActiveModule('dataobject');
-        } else if (state.template === 'software') {
-            setActiveModule('software');
-        } else if (state.template === 'publication') {
-            setActiveModule('publication');
+        } else {
+            // Move to the first enabled module after core in the template's step order.
+            const steps = getStepModules();
+            const startIndex = steps.indexOf('core');
+            for (let i = startIndex + 1; i < steps.length; i++) {
+                if (state.enabledModules.includes(steps[i])) {
+                    setActiveModule(steps[i]);
+                    break;
+                }
+            }
         }
     };
 
     const handleNextModule = () => {
-        const currentIndex = getCurrentModuleIndex();
-        // Find the next enabled module
-        for (let i = currentIndex + 1; i < MODULE_ORDER.length; i++) {
-            if (state.enabledModules.includes(MODULE_ORDER[i])) {
-                setActiveModule(MODULE_ORDER[i]);
+        const steps = getStepModules();
+        const currentIndex = steps.indexOf(state.activeModule);
+        for (let i = currentIndex + 1; i < steps.length; i++) {
+            if (state.enabledModules.includes(steps[i])) {
+                setActiveModule(steps[i]);
                 break;
             }
         }
     };
 
     const handlePrevModule = () => {
-        const currentIndex = getCurrentModuleIndex();
-        // Find the previous enabled module
+        const steps = getStepModules();
+        const currentIndex = steps.indexOf(state.activeModule);
         for (let i = currentIndex - 1; i >= 0; i--) {
-            if (state.enabledModules.includes(MODULE_ORDER[i]) || MODULE_ORDER[i] === 'core') {
-                setActiveModule(MODULE_ORDER[i]);
+            if (state.enabledModules.includes(steps[i]) || isCoreModule(steps[i])) {
+                setActiveModule(steps[i]);
                 break;
             }
         }
@@ -224,7 +254,36 @@ export function EditorShell(props: EditorShellProps) {
     //check if template is selected, otherwise template selection is rendered
     const isTemplateSelection = state.template !== null;
 
+    const hasEnabledModuleAfter = (moduleId: string): boolean => {
+        const steps = getStepModules();
+        const idx = steps.indexOf(moduleId);
+        if (idx === -1) return false;
+        for (let i = idx + 1; i < steps.length; i++) {
+            if (state.enabledModules.includes(steps[i])) return true;
+        }
+        return false;
+    };
+
     const renderActiveModule = () => {
+        const cfgModule = getModuleConfig(state.activeModule);
+        if (cfgModule && cfgModule.kind === 'generic') {
+            // Fully declarative module - render via GenericModule.
+            if (!updateConfigModule) return null;
+            return (
+                <GenericModule
+                    config={cfgModule}
+                    properties={state.configModules[state.activeModule] ?? {}}
+                    onPropertyChange={(propertyId, value) =>
+                        updateConfigModule(state.activeModule, propertyId, value)
+                    }
+                    showNext={hasEnabledModuleAfter(state.activeModule)}
+                    showPrev={true}
+                    onNextModule={handleNextModule}
+                    onPrevModule={handlePrevModule}
+                />
+            );
+        }
+
         switch (state.activeModule) {
             case 'core':
                 return (
@@ -253,7 +312,7 @@ export function EditorShell(props: EditorShellProps) {
                         core={state.core}
                         updateDataobject={updateDataset}
                         setActiveModule={setActiveModule as (module: string) => void}
-                        showNext={state.enabledModules.some(m => ['software', 'publication', 'misc'].includes(m))}
+                        showNext={hasEnabledModuleAfter('dataobject')}
                         showPrev={true}
                         onNextModule={handleNextModule}
                         onPrevModule={handlePrevModule}
@@ -266,7 +325,7 @@ export function EditorShell(props: EditorShellProps) {
                         software={state.software}
                         updateSoftware={updateSoftware}
                         setActiveModule={setActiveModule as (module: string) => void}
-                        showNext={state.enabledModules.some(m => ['publication', 'misc'].includes(m))}
+                        showNext={hasEnabledModuleAfter('software')}
                         showPrev={true}
                         onNextModule={handleNextModule}
                         onPrevModule={handlePrevModule}
@@ -279,7 +338,7 @@ export function EditorShell(props: EditorShellProps) {
                     <PublicationModule
                         publication={state.publication}
                         updatePublication={updatePublication}
-                        showNext={state.enabledModules.includes('misc')}
+                        showNext={hasEnabledModuleAfter('publication')}
                         showPrev={true}
                         onNextModule={handleNextModule}
                         onPrevModule={handlePrevModule}
@@ -287,13 +346,14 @@ export function EditorShell(props: EditorShellProps) {
                 );
 
             case 'misc':
+            case 'additional':
                 if (!state.misc) return null;
                 return (
                     <AdditionalAttributesModule
                         misc={state.misc}
                         researchDomain={state.core.researchDomain}
                         updateMisc={updateMisc}
-                        showNext={false}
+                        showNext={hasEnabledModuleAfter(state.activeModule)}
                         showPrev={true}
                         onNextModule={handleNextModule}
                         onPrevModule={handlePrevModule}

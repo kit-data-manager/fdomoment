@@ -9,11 +9,7 @@ export type ModuleStatus =
   | 'incomplete'
   | 'complete';
 
-export type TemplateType = 
-  | 'dataobject'
-  | 'software'
-  | 'publication'
-  | null;
+export type TemplateType = string | null;
 
 export type ModuleIdentifier = 'core' | 'dataobject' | 'software' | 'publication' | 'misc';
 
@@ -106,18 +102,21 @@ export type EditorState = {
   publication: PublicationMetadata;
   misc: MiscMetadata | null;
 
-  moduleStatus: {
-    core: ModuleStatus;
-    dataobject: ModuleStatus;
-    software: ModuleStatus;
-    publication: ModuleStatus;
-    misc: ModuleStatus;
-  };
+  /**
+   * Runtime state for declaratively configured (generic) modules.
+   * Keyed by module id, then property id.
+   */
+  configModules: Record<
+    string,
+    Record<string, { value: any; status: 'none' | 'pending' | 'valid' | 'invalid'; message?: string }>
+  >;
 
-  activeModule:
-    | ModuleIdentifier
-    | 'template-select';
+  moduleStatus: Record<string, ModuleStatus>;
+
+  activeModule: string;
 };
+
+export type ConfigPropertyValue = EditorState['configModules'][string][string];
 
 export type FairScore = {
   findable: number;
