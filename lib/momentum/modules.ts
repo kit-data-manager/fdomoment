@@ -12,6 +12,7 @@
  *     `statusId` / record-collector id, then register the component in the registry.
  */
 import { ModuleConfig } from './config';
+import { FDO_PROFILES } from '@/lib/fdo/identifiers';
 
 export const MODULE_CONFIGS: ModuleConfig[] = [
   {
@@ -23,6 +24,7 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     kind: 'custom',
     componentId: 'Core',
     statusId: 'core',
+    profile: FDO_PROFILES.CORE,
   },
   {
     id: 'dataobject',
@@ -33,6 +35,7 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     kind: 'custom',
     componentId: 'DataObject',
     statusId: 'dataobject',
+    profile: FDO_PROFILES.DATA_OBJECT,
   },
   {
     id: 'software',
@@ -43,6 +46,7 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     kind: 'custom',
     componentId: 'Software',
     statusId: 'software',
+    profile: FDO_PROFILES.SOFTWARE,
   },
   {
     id: 'publication',
@@ -53,6 +57,7 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     kind: 'custom',
     componentId: 'Publication',
     statusId: 'publication',
+    profile: FDO_PROFILES.PUBLICATION,
   },
   {
     id: 'additional',
@@ -63,6 +68,7 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     kind: 'custom',
     componentId: 'AdditionalMetadata',
     statusId: 'additional',
+    profile: FDO_PROFILES.ADDITIONAL_METADATA,
   },
 ];
 
@@ -71,50 +77,32 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
  * It is a "generic" module: every property listed here is rendered, validated,
  * scored and folded into the final FAIR Digital Object automatically.
  *
- * NOTE: Intentionally declared as a separate array so it is trivial to remove or
- * flag off. It is referenced by a sample template and the cross-module option
- * topic (so both the generic module and re-usable property catalog are exercised).
+ * Per the project conventions, all module properties are mandatory (required).
+ * Optional / freely definable attributes belong to the "Additional Metadata"
+ * module instead of being added here.
  */
 export const SAMPLE_MODULE_CONFIG: ModuleConfig = {
   id: 'project',
   label: 'Project',
-  description: 'Project module to attach project-level context to a FAIR Digital Object.',
+  description: 'Project module to attach the funding project context to a FAIR Digital Object.',
   icon: '🧩',
   role: 'enrichment',
   kind: 'generic',
+  profile: FDO_PROFILES.PROJECT,
   properties: [
     {
       id: 'projectName',
       label: 'Project Name',
-      required: false,
+      required: true,
       kind: 'text',
       placeholder: 'e.g. Helmholtz AI',
       affectsFairScore: { findable: 10, reusable: 10 },
       fdoType: '0.SIMPLE/PROJECT_NAME',
     },
     {
-      id: 'projectId',
-      label: 'Project Identifier',
-      required: false,
-      kind: 'select',
-      options: [
-        { id: 'from-publication', label: 'From publication (re-use)' },
-        { id: 'from-dataobject', label: 'From data object (re-use)' },
-        { id: 'helmholtz-ai', label: 'Helmholtz AI' },
-        { id: 'helmholtz-imaging', label: 'Helmholtz Imaging' },
-      ],
-      dependsOn: {
-        moduleId: 'core',
-        propertyId: 'researchDomain',
-        source: 'value',
-      },
-      affectsFairScore: { findable: 10 },
-      fdoType: '0.SIMPLE/PROJECT_ID',
-    },
-    {
-      id: 'grantedBy',
-      label: 'Granted by',
-      required: false,
+      id: 'funder',
+      label: 'Funder',
+      required: true,
       kind: 'select',
       options: [
         { id: 'helmholtz', label: 'Helmholtz Association' },
@@ -123,7 +111,7 @@ export const SAMPLE_MODULE_CONFIG: ModuleConfig = {
         { id: 'other', label: 'Other' },
       ],
       affectsFairScore: { reusable: 10 },
-      fdoType: '0.SIMPLE/PROJECT_GRANTEE',
+      fdoType: '0.SIMPLE/PROJECT_FUNDER',
     },
   ],
 };

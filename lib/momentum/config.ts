@@ -120,6 +120,13 @@ export interface ModuleConfig {
   properties?: PropertyConfig[];
   /** Allows a custom module to declare its own status function id. */
   statusId?: string;
+  /**
+   * The FAIR Digital Object profile identifier (value of the `0.SIMPLE/PROFILE`
+   * record entry) that identifies this module when it contributes to an FDO.
+   * Every *used* module should declare one so the created record lists all
+   * profiles it combines.
+   */
+  profile?: string;
 }
 
 /** A template referencing one or more modules. */

@@ -83,6 +83,13 @@ export function EditorShell(props: EditorShellProps) {
         //collect other attributes only if module is enabled
         state['enabledModules'].filter((module) => module != 'core').forEach(module => {
             const cfgModule = getModuleConfig(module);
+
+            // Every used module contributes its profile (0.SIMPLE/PROFILE) to the
+            // created FAIR Digital Object.
+            if (cfgModule?.profile) {
+                fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, cfgModule.profile);
+            }
+
             if (cfgModule && cfgModule.kind === 'generic') {
                 // Declarative module: fold each configured property into the record.
                 collectConfigRecordEntries(module, {
@@ -165,7 +172,6 @@ export function EditorShell(props: EditorShellProps) {
         fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.SOFTWARE_LOCATION, metadata.repositoryUrl);
         fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.SOFTWARE_LICENSE, getLicenseById(metadata.license));
         fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.README_LOCATION, metadata.readmeUrl);
-        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, FDO_PROFILES.SOFTWARE);
         return fdoRecord;
     }
 
@@ -173,7 +179,6 @@ export function EditorShell(props: EditorShellProps) {
         fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.DATA_OBJECT_LOCATION, metadata.dataUrl);
         fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.DATA_OBJECT_LICENSE, getLicenseById(metadata.license));
         fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.MIME_TYPE, metadata.mimeType);
-        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, FDO_PROFILES.DATA_OBJECT);
         return fdoRecord;
     }
 
@@ -185,7 +190,6 @@ export function EditorShell(props: EditorShellProps) {
             const creatorValue = creator.orcid || creator.name || creator.id;
             fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PUBLICATION_CREATOR, creatorValue);
         })
-        fdoRecord = addRecordEntry(fdoRecord, FDO_TYPES.PROFILE, FDO_PROFILES.PUBLICATION);
         return fdoRecord;
     }
 
