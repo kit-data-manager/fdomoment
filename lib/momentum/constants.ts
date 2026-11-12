@@ -40,8 +40,8 @@ export const MIME_TYPES = [
   { id: 'image/tiff', label: 'image/tiff', category: 'image' },
   { id: 'image/png', label: 'image/png', category: 'image' },
   { id: 'image/jpeg', label: 'image/jpeg', category: 'image' },
-  { id: 'audio/mpeg', label: 'audio/mpeg', description: 'media' },
-  { id: 'video/mp4',label: 'video/mp4', description: 'media' }
+  { id: 'audio/mpeg', label: 'audio/mpeg', category: 'media' },
+  { id: 'video/mp4', label: 'video/mp4', category: 'media' }
 ];
 
 export const DOMAIN_DEFAULT_LICENSE: Record<string, string> = {

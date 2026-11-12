@@ -21,22 +21,8 @@ import {
 } from './config';
 import { COMPLETE_MODULE_CONFIGS } from './modules';
 import { TEMPLATE_DEFINITIONS } from './templates';
+import { validateOrcidFormat } from './validation';
 
-/**
- * Registry of custom (specialized) module components. Keys reference
- * `ModuleConfig.componentId`. The generic module is resolved dynamically.
- */
-export interface CustomComponentRegistration {
-  /** Stable, descriptive id used for diagnostics. */
-  key: string;
-}
-
-/**
- * Status functions for specialized modules. Registered by `ModuleConfig.statusId`.
- * Falls back to a conservative "complete" of required sub-properties for generic
- * modules (handled in computeModuleStatus).
- */
-export type StatusFn = (data: any) => ModuleStatusLike;
 export type ModuleStatusLike = 'pristine' | 'incomplete' | 'complete';
 
 const moduleConfigsById: Record<string, ModuleConfig> = {};
@@ -49,27 +35,8 @@ for (const tpl of TEMPLATE_DEFINITIONS) {
   templateConfigsById[tpl.id] = tpl;
 }
 
-const statusFns: Record<string, StatusFn> = {};
-
-/** Register a status computation for a specialized module. */
-export function registerModuleStatus(id: string, fn: StatusFn): void {
-  statusFns[id] = fn;
-}
-
 export function getModuleConfig(id: string): ModuleConfig | undefined {
   return moduleConfigsById[id];
-}
-
-export function getAllModuleConfigs(): ModuleConfig[] {
-  return Object.values(moduleConfigsById);
-}
-
-export function getTemplateConfig(id: string): TemplateDefinition | undefined {
-  return templateConfigsById[id];
-}
-
-export function getAllTemplateConfigs(): TemplateDefinition[] {
-  return TEMPLATE_DEFINITIONS;
 }
 
 export function getModuleLabel(id: string): string {
@@ -118,16 +85,6 @@ export function getStepOrder(templateId: string): string[] {
 export function getTemplateModuleIds(templateId: string): string[] {
   const tpl = templateConfigsById[templateId];
   return tpl ? tpl.modules.map((m) => m.moduleId) : [];
-}
-
-export function getTemplateModuleMeta(templateId: string): TemplateDefinition['modules'] {
-  return templateConfigsById[templateId]?.modules ?? [];
-}
-
-const validators: Record<string, (value: any) => { valid: boolean; message?: string }> = {};
-
-export function registerPropertyValidator(id: string, fn: (value: any) => { valid: boolean; message?: string }): void {
-  validators[id] = fn;
 }
 
 function isValidUrl(value: string): boolean {
@@ -186,7 +143,7 @@ export function validatePropertyConfig(prop: PropertyConfig, value: any): { stat
     case 'email':
       return isValidEmail(stringValue) ? { status: 'valid' } : { status: 'invalid', message: v.message ?? 'Please provide a valid email address.' };
     case 'orcid':
-      return /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/.test(stringValue)
+      return validateOrcidFormat(stringValue)
         ? { status: 'valid' }
         : { status: 'invalid', message: v.message ?? 'Invalid ORCiD format.' };
     default:
@@ -197,20 +154,13 @@ export function validatePropertyConfig(prop: PropertyConfig, value: any): { stat
 /**
  * Compute the status of a module from its config.
  *
- * - For generic modules the status is derived from the property states.
- * - For specialized (custom) modules a registered status function is preferred; if
- *   none is registered, it falls back to the property-based check (if properties
- *   are declared) or a conservative default.
+ * For generic modules the status is derived from the required property states.
+ * (Specialized modules compute their own status via the legacy validation
+ * helpers on the hook side and are not routed through here.)
  */
 export function computeModuleStatus(moduleId: string, data: any): ModuleStatusLike {
   const cfg = moduleConfigsById[moduleId];
   if (!cfg) return 'incomplete';
-
-  if (cfg.kind === 'custom') {
-    const fn = statusFns[cfg.statusId ?? cfg.componentId ?? ''];
-    if (fn) return fn(data);
-    // Fall back to property-based check if a custom module exposes properties.
-  }
 
   const props = cfg.properties;
   if (!props || props.length === 0) return 'complete';

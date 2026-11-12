@@ -5,8 +5,6 @@ export type RepositoryType = 'GitHub' | 'GitLab.com' | 'Codebase@Helmholtz' | 'G
 export interface SoftwareModuleProps {
   software: SoftwareMetadata;
   updateSoftware: (partial: Partial<SoftwareMetadata>) => void;
-  activatePublication?: () => void;
-  setActiveModule?: (module: string) => void;
   showNext?: boolean;
   showPrev?: boolean;
   onNextModule?: () => void;

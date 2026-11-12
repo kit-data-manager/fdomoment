@@ -7,7 +7,6 @@ export interface OrcidValidationResult {
   orcidValidated: boolean;
   orcidName?: string;
   orcidEmail?: string;
-  orcidInstitution?: string;
 }
 
 export function useOrcidValidation(
@@ -22,7 +21,6 @@ export function useOrcidValidation(
       orcidValidated: false,
       orcidName: undefined,
       orcidEmail: undefined,
-      orcidInstitution: undefined,
     });
 
     if (validationTimeout) {

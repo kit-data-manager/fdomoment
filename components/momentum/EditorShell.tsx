@@ -109,7 +109,6 @@ export function EditorShell(props: EditorShellProps) {
                 case "publication":
                     fdoRecord = collectPublicationAttributes(state['publication'], fdoRecord);
                     break;
-                case "misc":
                 case "additional":
                     fdoRecord = collectMiscAttributes(state['misc'], fdoRecord);
                     break;
@@ -208,22 +207,14 @@ export function EditorShell(props: EditorShellProps) {
         return getTemplateModuleIds('dataobject');
     };
 
-    const getCurrentModuleIndex = () => {
-        return getStepModules().indexOf(state.activeModule);
-    };
-
     const handleCoreNext = () => {
-        if (!state.template) {
-            setActiveModule('template-select');
-        } else {
-            // Move to the first enabled module after core in the template's step order.
-            const steps = getStepModules();
-            const startIndex = steps.indexOf('core');
-            for (let i = startIndex + 1; i < steps.length; i++) {
-                if (state.enabledModules.includes(steps[i])) {
-                    setActiveModule(steps[i]);
-                    break;
-                }
+        // Move to the first enabled module after core in the template's step order.
+        const steps = getStepModules();
+        const startIndex = steps.indexOf('core');
+        for (let i = startIndex + 1; i < steps.length; i++) {
+            if (state.enabledModules.includes(steps[i])) {
+                setActiveModule(steps[i]);
+                break;
             }
         }
     };
@@ -315,7 +306,6 @@ export function EditorShell(props: EditorShellProps) {
                         dataobject={state.dataobject}
                         core={state.core}
                         updateDataobject={updateDataset}
-                        setActiveModule={setActiveModule as (module: string) => void}
                         showNext={hasEnabledModuleAfter('dataobject')}
                         showPrev={true}
                         onNextModule={handleNextModule}
@@ -328,7 +318,6 @@ export function EditorShell(props: EditorShellProps) {
                     <SoftwareModule
                         software={state.software}
                         updateSoftware={updateSoftware}
-                        setActiveModule={setActiveModule as (module: string) => void}
                         showNext={hasEnabledModuleAfter('software')}
                         showPrev={true}
                         onNextModule={handleNextModule}
@@ -337,7 +326,6 @@ export function EditorShell(props: EditorShellProps) {
                 );
 
             case 'publication':
-                if (!state.publication) return null;
                 return (
                     <PublicationModule
                         publication={state.publication}
@@ -349,7 +337,6 @@ export function EditorShell(props: EditorShellProps) {
                     />
                 );
 
-            case 'misc':
             case 'additional':
                 if (!state.misc) return null;
                 return (
@@ -389,8 +376,6 @@ export function EditorShell(props: EditorShellProps) {
                 state={state}
                 moduleStatus={state.moduleStatus}
                 setActiveModule={setActiveModule}
-                canCreate={canCreate}
-                onCreate={handleCreate}
              >
                 <main className="flex-1 overflow-y-auto bg-base-200">
                     <div className="flex flex-col md:flex-row gap-6 p-4 md:p-8">

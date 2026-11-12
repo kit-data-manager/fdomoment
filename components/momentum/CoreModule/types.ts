@@ -9,10 +9,3 @@ export interface CoreModuleProps {
   onNextModule?: () => void;
   onPrevModule?: () => void;
 }
-
-export interface NavigationButtonsProps {
-  showPrev: boolean;
-  showNext: boolean;
-  onPrev?: () => void;
-  onNext?: () => void;
-}

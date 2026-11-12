@@ -98,7 +98,7 @@ function createInitialState(): EditorState {
       dataobject: 'pristine',
       software: 'pristine',
       publication: 'pristine',
-      misc: 'pristine',
+      additional: 'pristine',
     },
   };
 }
@@ -184,7 +184,6 @@ export function useEditorState() {
       dataobject: computeDataObjectMetadataStatus(state.dataobject),
       software: computeSoftwareMetadataStatus(state.software),
       publication: computePublicationMetadataStatus(state.publication),
-      misc: computeMiscMetadataStatus(state.misc),
       additional: computeMiscMetadataStatus(state.misc),
     };
 

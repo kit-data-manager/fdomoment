@@ -118,8 +118,6 @@ export interface ModuleConfig {
   componentId?: string;
   /** Properties for generic modules; metadata/status reference for custom modules. */
   properties?: PropertyConfig[];
-  /** Allows a custom module to declare its own status function id. */
-  statusId?: string;
   /**
    * The FAIR Digital Object profile identifier (value of the `0.SIMPLE/PROFILE`
    * record entry) that identifies this module when it contributes to an FDO.

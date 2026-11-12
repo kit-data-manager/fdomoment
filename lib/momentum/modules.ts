@@ -8,8 +8,8 @@
  *   - For a "generic" module: provide `properties` (each rendered + validated by
  *     GenericModule/PropertyField automatically). It immediately integrates with
  *     templates, navigation, FAIR scoring and record building.
- *   - For a "custom" (specialized) module: provide `componentId` and optionally a
- *     `statusId` / record-collector id, then register the component in the registry.
+ *   - For a "custom" (specialized) module: provide `componentId`. The component is
+ *     dispatched by the editor (see EditorShell) and computes its own status.
  */
 import { ModuleConfig } from './config';
 import { FDO_PROFILES } from '@/lib/fdo/identifiers';
@@ -23,7 +23,6 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     role: 'core',
     kind: 'custom',
     componentId: 'Core',
-    statusId: 'core',
     profile: FDO_PROFILES.CORE,
   },
   {
@@ -34,7 +33,6 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     role: 'enrichment',
     kind: 'custom',
     componentId: 'DataObject',
-    statusId: 'dataobject',
     profile: FDO_PROFILES.DATA_OBJECT,
   },
   {
@@ -45,7 +43,6 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     role: 'enrichment',
     kind: 'custom',
     componentId: 'Software',
-    statusId: 'software',
     profile: FDO_PROFILES.SOFTWARE,
   },
   {
@@ -56,7 +53,6 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     role: 'enrichment',
     kind: 'custom',
     componentId: 'Publication',
-    statusId: 'publication',
     profile: FDO_PROFILES.PUBLICATION,
   },
   {
@@ -67,7 +63,6 @@ export const MODULE_CONFIGS: ModuleConfig[] = [
     role: 'enrichment',
     kind: 'custom',
     componentId: 'AdditionalMetadata',
-    statusId: 'additional',
     profile: FDO_PROFILES.ADDITIONAL_METADATA,
   },
 ];

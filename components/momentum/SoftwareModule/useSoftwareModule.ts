@@ -22,11 +22,8 @@ function getAccessToken(repoType: RepositoryType): string | undefined {
 
 export function useSoftwareModule(
   software: SoftwareMetadata,
-  updateSoftware: (partial: Partial<SoftwareMetadata>) => void,
-  activatePublication?: () => void,
-  setActiveModule?: (module: string) => void
+  updateSoftware: (partial: Partial<SoftwareMetadata>) => void
 ) {
-  const [showSuccess, setShowSuccess] = useState(false);
   const [isAutoImportLoading, setIsAutoImportLoading] = useState(false);
   const [autoImportError, setAutoImportError] = useState<string | null>(null);
   const [validationTimeout, setValidationTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -124,30 +121,11 @@ export function useSoftwareModule(
     }
   }, [software.repositoryUrl, software.license, software.readmeUrl, updateSoftware]);
 
-  const handleNext = useCallback(() => {
-    setShowSuccess(true);
-  }, []);
-
-  const handleAddPublication = useCallback(() => {
-    if (activatePublication && setActiveModule) {
-      activatePublication();
-      setActiveModule('publication');
-    }
-  }, [activatePublication, setActiveModule]);
-
-  const handleSkip = useCallback(() => {
-    setShowSuccess(false);
-  }, []);
-
   return {
-    showSuccess,
     isAutoImportLoading,
     autoImportError,
     parseRepoType,
     handleAutoImportClick,
     handleRepositoryUrlChange,
-    handleNext,
-    handleAddPublication,
-    handleSkip,
   };
 }

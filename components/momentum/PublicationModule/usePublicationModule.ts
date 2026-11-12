@@ -12,7 +12,6 @@ export function usePublicationModule(
     clearImportResult: () => void
   ) => {
     const result = await handleDoiImport(publication.doi);
-    console.log("RS ", result)
     if (result) {
       // Validate ORCiDs for imported creators
       const validatedCreators = await Promise.all(

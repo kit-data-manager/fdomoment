@@ -17,7 +17,6 @@ The customization system lives in `lib/momentum` and is composed of these files:
 | File | Purpose |
 |------|---------|
 | `config.ts` | Type definitions describing modules, properties, templates. |
-| `properties.ts` | Re-usable property builders (text, select, url, boolean). |
 | `modules.ts` | Module definitions (built-ins + a sample declarative module). |
 | `templates.ts` | Template definitions (which modules to combine, step order). |
 | `registry.ts` | Runtime wiring: labels, validation, FAIR scoring, record building. |
@@ -132,7 +131,7 @@ A module whose behavior can't be expressed declaratively (e.g. Software's
 auto-import, Publication's DOI import, Additional Metadata's type registry) is
 declared with `kind: 'custom'` and a `componentId`. The `EditorShell`
 dispatches these by id; the registry still provides label / description / role
-and can hold a `statusId` used for completeness.
+for them.
 
 ## FAIR Scoring & Record Building
 
@@ -149,8 +148,8 @@ and can hold a `statusId` used for completeness.
 - **Runtime (DB-backed) configuration** can be added later by moving the static
   arrays in `modules.ts` / `templates.ts` into the database and hydrating the
   registry at startup. The schema already supports it.
-- **Cross-module property reuse**: `lib/momentum/properties.ts` offers builders so
-  the same property can be shared across modules. `dependsOn` on a `PropertyConfig`
-  lets a property source options from another module's value.
+- **Cross-module property reuse** is supported through the shared property schema
+  in `lib/momentum/config.ts`; the `dependsOn` field on a `PropertyConfig` lets a
+  property source options from another module's value.
 - **Custom FDO type identifiers**: new `fdoType` values may need a corresponding
   entry in `lib/fdo/identifiers.ts` (the `FDO_TYPES` / `FDO_PROFILES` vocabulary).

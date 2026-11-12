@@ -1,12 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-interface CreatorWithOrcid {
-  id: string;
-  name: string;
-  orcid?: string;
-}
+import { Creator } from '@/lib/momentum/types';
 
 interface PublicationDataWithCreators {
   doi: string;
@@ -14,19 +9,13 @@ interface PublicationDataWithCreators {
   titleImported: boolean;
   publicationType: string;
   publicationTypeImported: boolean;
-  creators: CreatorWithOrcid[];
+  creators: Creator[];
   creatorsImported: boolean;
-}
-
-interface DoiImportResult {
-  data: PublicationDataWithCreators;
-  doi: string;
 }
 
 export function useDoiImport() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [importResult, setImportResult] = useState<DoiImportResult | null>(null);
 
   const handleDoiImport = async (doi: string): Promise<PublicationDataWithCreators | null> => {
     const normalized = normalizedDoi(doi);
@@ -38,7 +27,6 @@ export function useDoiImport() {
 
     setIsLoading(true);
     setError(null);
-    setImportResult(null);
 
     try {
       const response = await fetch('/api/resolve-doi', {
@@ -60,7 +48,7 @@ export function useDoiImport() {
 
       const metadata = result.metadata;
 
-      const creators: CreatorWithOrcid[] = [];
+      const creators: Creator[] = [];
       
       if (metadata.creators && Array.isArray(metadata.creators)) {
         metadata.creators.forEach((c: { familyName?: string; givenName?: string; orcid?: string }) => {
@@ -87,8 +75,6 @@ export function useDoiImport() {
         creatorsImported: creatorsImported,
       };
 
-      setImportResult({ data, doi: normalized });
-
       return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connection failed.');
@@ -99,7 +85,6 @@ export function useDoiImport() {
   };
 
   const clearImportResult = () => {
-    setImportResult(null);
     setError(null);
   };
 
@@ -107,7 +92,6 @@ export function useDoiImport() {
     handleDoiImport, 
     isLoading, 
     error, 
-    importResult,
     clearImportResult 
   };
 }

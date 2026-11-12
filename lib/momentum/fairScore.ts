@@ -35,7 +35,7 @@ export function calculateFairScore(state: EditorState): FairScore {
         reusable += 20;
     }
 
-    if ((hasDataObject || hasSoftware) && state.dataobject.license.length > 0 || state.software.license.length > 0) {
+    if ((hasDataObject && state.dataobject.license.length > 0) || (hasSoftware && state.software.license.length > 0)) {
         reusable += 40;
     }
 
@@ -162,7 +162,7 @@ export function calculateCurrentTip(state: EditorState): ScoreTip {
     if (!state.misc && state.template) {
         tips.push({
             text: 'Additional metadata may increase Interoperability and Reusability by up to 20%.',
-            targetModule: 'misc',
+            targetModule: 'additional',
             scoreGain: 40,
         });
     }

@@ -11,28 +11,6 @@ export type ModuleStatus =
 
 export type TemplateType = string | null;
 
-export type ModuleIdentifier = 'core' | 'dataobject' | 'software' | 'publication' | 'misc';
-
-export interface ModuleDefinition {
-  id: ModuleIdentifier;
-  label: string;
-}
-
-export const MODULES: ModuleDefinition[] = [
-  { id: 'core', label: 'Core' },
-  { id: 'dataobject', label: 'Data Object' },
-  { id: 'software', label: 'Software' },
-  { id: 'publication', label: 'Publication' },
-  { id: 'misc', label: 'Additional' },
-];
-
-export const MODULE_IDS = MODULES.map(m => m.id);
-export const MODULE_ORDER = MODULE_IDS;
-export const MODULE_LABELS: Record<ModuleIdentifier, string> = MODULES.reduce(
-  (acc, m) => ({ ...acc, [m.id]: m.label }),
-  {} as Record<ModuleIdentifier, string>
-);
-
 export type CoreMetadata = {
   researchDomain: ResearchDomain | null;
   orcid: string;
@@ -116,8 +94,6 @@ export type EditorState = {
   activeModule: string;
 };
 
-export type ConfigPropertyValue = EditorState['configModules'][string][string];
-
 export type FairScore = {
   findable: number;
   accessible: number;
@@ -130,17 +106,4 @@ export type ScoreTip = {
   text: string;
   targetModule: EditorState['activeModule'];
   scoreGain: number;
-};
-
-export type PIDRecordEntry = {
-  key: string;
-  name: string;
-  value: string;
-};
-
-export type PIDRecordEntries = Record<string, PIDRecordEntry[]>;
-
-export type PIDRecord = {
-  pid?: string;
-  entries: PIDRecordEntries;
 };

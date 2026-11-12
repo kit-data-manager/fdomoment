@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect, useId, useState } from 'react';
-import { EditorState, ModuleIdentifier } from '@/lib/momentum/types';
+import { EditorState } from '@/lib/momentum/types';
 import { NavigatorModule } from './NavigatorModule';
-import { NavigatorCreateButton } from './NavigatorCreateButton';
 import { getTemplateModuleIds, getModuleLabel } from '@/lib/momentum/registry';
 import { Menu } from 'lucide-react';
 
@@ -11,29 +10,25 @@ interface EditorNavigatorProps {
   state: EditorState;
   moduleStatus: EditorState['moduleStatus'];
   setActiveModule: (module: string) => void;
-  canCreate: boolean;
-  onCreate: () => void;
   children: React.ReactNode;
 }
 
-function getModulesForTemplate(templateId: string | null, enabledModules?: string[]): ModuleIdentifier[] {
+function getModulesForTemplate(templateId: string | null, enabledModules?: string[]): string[] {
   if (!templateId) return [];
   const tplModuleIds = getTemplateModuleIds(templateId);
   if (tplModuleIds.length === 0) return [];
 
   if (enabledModules && enabledModules.length > 0) {
-    return enabledModules as ModuleIdentifier[];
+    return enabledModules;
   }
 
-  return tplModuleIds as ModuleIdentifier[];
+  return tplModuleIds;
 }
 
 export function EditorNavigator({
   state,
   moduleStatus,
   setActiveModule,
-  canCreate,
-  onCreate,
   children,
 }: EditorNavigatorProps) {
   const modules = getModulesForTemplate(state.template, state.enabledModules);

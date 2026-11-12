@@ -10,9 +10,3 @@ export interface DoiMetadata {
   }>;
   creatorsString?: string;
 }
-
-export interface ResolveResult {
-  success: boolean;
-  error?: string;
-  metadata?: DoiMetadata;
-}

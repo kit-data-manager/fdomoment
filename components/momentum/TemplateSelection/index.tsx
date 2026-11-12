@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTemplateSelection } from './useTemplateSelection';
 import { TemplateSelectionProps, TEMPLATES, TemplateConfig } from './types';
 import { getModuleLabel, getModuleDescription } from '@/lib/momentum/registry';
 
 export function TemplateSelection({
   onSelectTemplate,
 }: TemplateSelectionProps) {
-  const { handleSelectTemplate } = useTemplateSelection({ onSelectTemplate });
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateConfig | null>(null);
   const [activeModules, setActiveModules] = useState<Record<string, boolean>>({});
 
@@ -40,7 +38,7 @@ export function TemplateSelection({
       const enabledModules = selectedTemplate.modules
         .filter(mod => activeModules[mod.moduleId])
         .map(mod => mod.moduleId);
-      handleSelectTemplate(selectedTemplate.id, enabledModules);
+      onSelectTemplate(selectedTemplate.id, enabledModules);
     }
   };
 

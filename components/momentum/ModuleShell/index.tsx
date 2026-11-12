@@ -5,7 +5,6 @@ import React from 'react';
 interface ModuleShellProps {
   title: string;
   badge?: 'required' | 'optional';
-  onClose?: () => void;
   children: React.ReactNode;
 }
 

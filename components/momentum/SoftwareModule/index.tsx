@@ -14,8 +14,6 @@ import SettingsModal from "@/components/SettingsModal";
 export function SoftwareModule({
   software,
   updateSoftware,
-  activatePublication,
-  setActiveModule,
   showNext = true,
   showPrev = false,
   onNextModule,
@@ -27,7 +25,7 @@ export function SoftwareModule({
     parseRepoType,
     handleAutoImportClick,
     handleRepositoryUrlChange,
-  } = useSoftwareModule(software, updateSoftware, activatePublication, setActiveModule);
+  } = useSoftwareModule(software, updateSoftware);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const repoType = software.repositoryType || parseRepoType(software.repositoryUrl);

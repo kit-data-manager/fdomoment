@@ -43,12 +43,7 @@ export function useDataObjectModule(
     triggerUrlValidation(value);
   }, [triggerUrlValidation, updateDataobject]);
 
-  const handleNext = useCallback(() => {
-  }, []);
-
   return {
-    validationTimeout,
     handleDataUrlChange,
-    handleNext,
   };
 }
